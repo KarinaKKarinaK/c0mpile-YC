@@ -1,96 +1,100 @@
 import Link from "next/link";
-import { Estimator, GlassBackdrop } from "@/components/Hero";
-import { Logo, Reveal } from "@/components/Ui";
-import { Accordion, AccordionItem, MobileMenu } from "@/components/kit";
+import { Drip, Estimator } from "@/components/Hero";
+import { Logo } from "@/components/Ui";
 
-const VALUE = [
-  { v: "10 s", l: "to a loan offer" },
-  { v: "$0", l: "due while the robot is down" },
-  { v: "8 to 30%", l: "of each job repays the loan" },
-  { v: "12%", l: "one flat fee. No interest" },
+const NAV = [["How it works", "#how"], ["Advantages", "#why"], ["Start", "#start"]];
+const HOW = [
+  { k: "Verified hours", d: "Every billed hour is checked against the robot's own energy draw. Faked hours never count." },
+  { k: "Live robot value", d: "Price moves with earnings, health, the FCC US-made rule and robotics news." },
+  { k: "Repay per job", d: "A share of each paid job goes to the loan. No work, no payment." },
+  { k: "Own it at zero", d: "One flat 12% fee, no interest. When the balance hits zero, the robot is yours." },
 ];
-const STEPS = [
-  { n: "1", k: "Connect", d: "Your robot's telemetry: hours, cycles, faults." },
-  { n: "2", k: "Get paid", d: "Each verified job pays you. A share repays the loan." },
-  { n: "3", k: "Own it", d: "Balance hits zero. The robot is yours." },
+const WHY = [
+  { q: "Nothing due when it's down", a: "A jammed line or a broken gripper means a smaller payment, not a missed one. Banks bill the same either way." },
+  { q: "An offer in ten seconds", a: "Pick the model. We price from list price, expected hours and live market data. No forms." },
+  { q: "Real robots, real prices", a: "Universal Robots, FANUC, Unitree, Boston Dynamics, Agility and more, at their sourced list prices." },
+  { q: "Earn twice", a: "Edge cases your robot records can be licensed to robot AI labs. You keep 80% and it pays the loan down." },
 ];
-const FAQ = [
-  { q: "Who lends the money?", a: "Licensed equipment lenders. We price the loan from your robot's data and run the repayment. Our own credit line comes with loss data." },
-  { q: "What if my robot breaks?", a: "No work, no repayment. Your payment shrinks with the robot's verified hours, so a bad week never turns into a missed payment." },
-  { q: "Which robots?", a: "Arms, AMRs, humanoids and quadrupeds from Universal Robots, FANUC, Unitree, Boston Dynamics, Agility and more. Prices on this page are real list prices." },
-  { q: "Is this live?", a: "The estimator, robot prices and news index are live. Fleet telemetry in the demo is synthetic and labelled. We are signing our first fleet partner." },
-];
+const Arrow = () => <span aria-hidden className="ml-2">&#8599;</span>;
+const Label = ({ children }: { children: string }) => <p className="font-mono text-[10px] uppercase tracking-[0.2em] opacity-50">( {children} )</p>;
 
 export default function Home() {
   return (
-    <main>
-      <section className="relative isolate min-h-[100svh] overflow-hidden">
-        <div className="absolute inset-0 -z-10"><GlassBackdrop /></div>
-        <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 text-[13px] font-medium">
-          <Logo />
-          <div className="hidden gap-8 text-white/80 md:flex">
-            <a href="#how" className="hover:text-white">How it works</a>
-            <a href="#faq" className="hover:text-white">FAQ</a>
-            <Link href="/desk" className="hover:text-white">Live demo</Link>
+    <main className="font-light">
+      <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
+        <Drip id="d1" className="-z-10 h-[70%]" />
+        <div className="grain -z-10" style={{ opacity: 0.18 }} />
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+          <Link href="/"><Logo /></Link>
+          <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
+            {NAV.map(([l, h]) => <a key={h} href={h} className="hover:text-white">{l}</a>)}
+            <Link href="/desk" className="hover:text-white">Live demo<Arrow /></Link>
           </div>
-          <div className="flex items-center gap-2">
-            <MobileMenu links={[{ href: "#how", label: "How it works" }, { href: "#faq", label: "FAQ" }, { href: "/desk", label: "Live demo" }]} />
-            <Link href="/desk" className="btn btn-light whitespace-nowrap font-semibold">Live demo</Link>
-          </div>
+          <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>
         </nav>
-
-        <div className="relative mx-auto max-w-5xl px-5 pt-[9vh] text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/70">Robot financing &middot; YC RFS: Wall Street for the Physical Buildout</p>
-          <h1 className="mt-5 text-[clamp(44px,8.4vw,112px)] font-black uppercase leading-[0.9] tracking-[-0.04em]">
-            Your robot<br />pays its own <span className="text-orange">loan.</span>
+        <div className="mx-auto max-w-7xl px-6 pt-[12vh] md:pl-[16%]">
+          <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
+            Your robot pays off<br />its <em>own loan</em>. Finance<br />that <em className="text-orange">clocks in</em>.
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-[16px] font-medium text-white/85">Priced on verified hours. Repaid from every job. Nothing due when it&apos;s down.</p>
-          <div className="mt-9"><Estimator /></div>
-          <Link href="/desk" className="btn btn-orange mt-6 px-7 py-3 text-[14px] font-semibold">See it run in a factory</Link>
+          <div className="mt-10"><Estimator /></div>
+        </div>
+        <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-7xl items-end justify-between px-6 text-ink">
+          <p className="max-w-xs text-[11px] leading-snug opacity-70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. Robot prices and news are live; demo fleet data is synthetic.</p>
+          <Link href="/desk" className="rounded-md border border-ink/30 bg-white/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.15em] backdrop-blur hover:bg-white">Live demo<Arrow /></Link>
         </div>
       </section>
 
-      <section className="border-y border-white/10">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4">
-          {VALUE.map((v, i) => (
-            <div key={v.l} className={`px-5 py-10 ${i ? "md:border-l" : ""} border-white/10`}>
-              <div className="text-4xl font-black tracking-tight md:text-6xl">{v.v}</div>
-              <div className="mt-2 text-[13px] text-white/60">{v.l}</div>
+      <section id="how" className="relative isolate overflow-hidden bg-paper text-ink">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:grid-cols-[16%_1fr]">
+          <Label>How it works</Label>
+          <div>
+            <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-6xl">What makes <em>Fleiss</em><br />different</h2>
+            <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {HOW.map((h) => (
+                <div key={h.k}><div className="text-[15px] font-bold">{h.k}</div><p className="mt-3 text-[13px] leading-relaxed opacity-70">{h.d}</p></div>
+              ))}
             </div>
-          ))}
+          </div>
+        </div>
+        <Drip id="d2" tone="light" className="h-56 opacity-90" />
+      </section>
+
+      <section id="why" className="bg-paper text-ink">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:grid-cols-[16%_1fr_1.3fr]">
+          <Label>Advantages</Label>
+          <div>
+            <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-5xl">Outsmart the <em>bank</em><br />with <em>Fleiss</em></h2>
+            <Link href="/desk" className="mt-8 inline-flex items-center rounded-md border border-ink/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.15em] hover:bg-ink hover:text-paper">Try the demo<Arrow /></Link>
+            <blockquote className="mt-14 text-xl font-light leading-snug">&ldquo;Today, banks underwrite a robot like a <em className="font-bold">forklift</em>.&rdquo;<span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.15em] opacity-50">Brad Flora, YC RFS Winter 2027</span></blockquote>
+          </div>
+          <div className="divide-y divide-ink/15 border-y border-ink/15">
+            {WHY.map((w) => (
+              <details key={w.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between text-[15px] font-bold">{w.q}<span className="text-xl font-light transition-transform group-open:rotate-45">+</span></summary>
+                <p className="mt-3 max-w-md text-[13px] leading-relaxed opacity-70">{w.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section id="how" className="mx-auto max-w-7xl px-5 py-28">
-        <Reveal><h2 className="max-w-4xl text-4xl font-extrabold uppercase leading-[0.95] tracking-[-0.03em] md:text-7xl">Banks see a forklift. <span className="text-blue">We see the work.</span></h2></Reveal>
-        <div className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 md:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <Reveal key={s.k} delay={i * 100}>
-              <div className="group h-full bg-ink p-8 transition-colors hover:bg-white/[0.03]">
-                <div className="text-7xl font-black text-white/10 transition-colors group-hover:text-orange">{s.n}</div>
-                <div className="mt-6 text-2xl font-bold">{s.k}</div>
-                <p className="mt-2 text-[14px] text-white/60">{s.d}</p>
-              </div>
-            </Reveal>
-          ))}
+      <section id="start" className="relative isolate overflow-hidden bg-ink">
+        <Drip id="d3" flip className="-z-10 h-[75%]" />
+        <div className="grain -z-10" style={{ opacity: 0.18 }} />
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-[38vh] md:grid-cols-[16%_1fr_auto] md:items-end">
+          <Label>Start now</Label>
+          <div>
+            <h2 className="text-4xl font-light tracking-[-0.02em] md:text-6xl">Put your robots <em className="text-orange">on the clock</em></h2>
+            <p className="mt-5 max-w-xl text-[14px] leading-relaxed text-white/70">US equipment finance was $1.51T in 2025. Physical AI raised $47.4B in H1 2026. Almost none of it is priced on what robots actually do.</p>
+          </div>
+          <Link href="/desk" className="inline-flex items-center rounded-md bg-white px-5 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink hover:bg-orange">Open the demo<Arrow /></Link>
         </div>
-        <Reveal className="mt-20">
-          <blockquote className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">&ldquo;Today, banks underwrite a robot like a <span className="text-orange">forklift.</span>&rdquo;</blockquote>
-          <p className="mt-3 font-mono text-[11px] text-white/45">Brad Flora, YC Request for Startups, Winter 2027</p>
-        </Reveal>
+        <footer className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-white/10 px-6 py-8 font-mono text-[10px] uppercase tracking-[0.15em] text-white/45">
+          <Logo />
+          <span>Built at c0mpiled-18, YC Startup School Hackathon, Taipei</span>
+          <span>Not affiliated with Y Combinator</span>
+        </footer>
       </section>
-
-      <section id="faq" className="mx-auto max-w-4xl px-5 pb-28">
-        <Accordion>{FAQ.map((f) => <AccordionItem key={f.q} title={f.q}>{f.a}</AccordionItem>)}</Accordion>
-        <div className="mt-20 flex flex-col items-center gap-5 text-center">
-          <h3 className="text-4xl font-black uppercase tracking-[-0.03em] md:text-6xl">Let the robot <span className="text-orange">pay.</span></h3>
-          <Link href="/desk" className="btn btn-orange px-7 py-3 text-[14px] font-semibold">Open the live demo</Link>
-        </div>
-      </section>
-
-      <footer className="border-t border-white/10 px-5 py-8 text-center font-mono text-[10px] text-white/40">
-        Built at c0mpiled-18, YC Startup School Hackathon, Taipei &middot; demo fleet telemetry synthetic, labelled &middot; not affiliated with Y Combinator
-      </footer>
     </main>
   );
 }

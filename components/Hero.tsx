@@ -1,35 +1,31 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { bankPayment, monthlyRevenue, offerLoan, type Robot } from "@/lib/engine";
 import { MODELS } from "@/lib/models";
 
-// The reference fluted-glass backdrop, recoloured to our blue with an orange core,
-// heavy grain on top. It drifts slowly and leans toward the cursor.
-export function GlassBackdrop() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current!;
-    let x = 0, y = 0, tx = 0, ty = 0, raf = 0;
-    const tick = () => {
-      x += (tx - x) * 0.05; y += (ty - y) * 0.05;
-      el.style.setProperty("--px", `${x * -24}px`); el.style.setProperty("--py", `${y * -14}px`);
-      raf = requestAnimationFrame(tick);
-    };
-    const move = (e: PointerEvent) => { tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5; };
-    window.addEventListener("pointermove", move); tick();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("pointermove", move); };
-  }, []);
+// Drippy, uneven, grainy gradient: soft hills displaced by noise, then blurred. Static, no motion.
+export function Drip({ id, flip = false, tone = "dark", className = "" }: { id: string; flip?: boolean; tone?: "dark" | "light"; className?: string }) {
+  const base = tone === "dark" ? "#02070A" : "#0b1a2a";
   return (
-    <div ref={ref} aria-hidden className="absolute inset-0 overflow-hidden bg-ink">
-      <div className="absolute -inset-10" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center 40%", filter: "hue-rotate(-34deg) saturate(1.15) brightness(0.95)", transform: "translate(var(--px,0), var(--py,0))", animation: "breathe 16s ease-in-out infinite" }} />
-      <div className="absolute inset-0" style={{ background: "radial-gradient(38% 16% at 50% 66%, #FC734D, transparent 75%)", mixBlendMode: "color", opacity: 0.85 }} />
-      <div className="grain" style={{ opacity: 0.32 }} />
-      <div className="absolute inset-x-0 bottom-0 h-48" style={{ background: "linear-gradient(transparent, #02070A)" }} />
-    </div>
+    <svg aria-hidden viewBox="0 0 1440 600" preserveAspectRatio="none" className={`pointer-events-none absolute inset-x-0 w-full ${flip ? "top-0 rotate-180" : "bottom-0"} ${className}`}>
+      <defs>
+        <filter id={id} x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.018" numOctaves="3" seed="7" />
+          <feDisplacementMap in="SourceGraphic" scale="120" xChannelSelector="R" yChannelSelector="G" />
+          <feGaussianBlur stdDeviation="26" />
+        </filter>
+      </defs>
+      <g filter={`url(#${id})`}>
+        <path d="M-100,620 L-100,330 C140,250 300,410 520,320 C690,250 760,190 900,270 C1050,350 1180,220 1300,250 C1400,275 1460,240 1540,260 L1540,620 Z" fill="#0297DE" />
+        <path d="M-100,620 L-100,430 C200,380 380,470 560,410 C700,360 800,330 930,390 C1080,460 1220,380 1540,420 L1540,620 Z" fill="#FC734D" opacity="0.9" />
+        <path d="M-100,620 L-100,500 C260,470 520,540 760,490 C980,450 1200,520 1540,500 L1540,620 Z" fill="#F4F1EC" />
+        <path d="M300,330 C420,290 520,360 600,330 C640,315 680,300 720,320 L720,360 C620,380 420,380 300,360 Z" fill={base} opacity="0.85" />
+      </g>
+    </svg>
   );
 }
 
-// Instant value: pick a real robot, see the offer.
+// Instant value, styled like a search box: pick a real robot, see the offer.
 export function Estimator() {
   const [i, setI] = useState(7);
   const m = MODELS[i];
@@ -38,19 +34,19 @@ export function Estimator() {
     return { loan: offerLoan(rb), rev: monthlyRevenue(rb) };
   }, [m]);
   return (
-    <div className="mx-auto w-full max-w-2xl rounded-3xl border border-white/15 bg-black/55 p-5 text-left backdrop-blur-xl sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60" htmlFor="model">Your robot</label>
-        <select id="model" value={i} onChange={(e) => setI(+e.target.value)} className="rounded-full border border-white/20 bg-black/40 px-4 py-2 text-[14px] font-semibold outline-none focus:border-blue">
-          {MODELS.map((x, k) => <option key={x.model} value={k}>{x.maker} {x.model} (${x.price.toLocaleString()})</option>)}
+    <div className="w-full max-w-2xl rounded-2xl bg-white/95 p-4 text-left text-ink shadow-[0_20px_80px_rgba(2,151,222,0.25)] sm:p-5">
+      <div className="flex items-center gap-3">
+        <span className="text-[12px] text-ink/50">Which robot?</span>
+        <select aria-label="Robot model" value={i} onChange={(e) => setI(+e.target.value)} className="min-w-0 flex-1 rounded-lg bg-ink/[0.04] px-3 py-2 text-[14px] font-medium outline-none focus:ring-2 focus:ring-blue">
+          {MODELS.map((x, k) => <option key={x.model} value={k}>{x.maker} {x.model}, ${x.price.toLocaleString()}</option>)}
         </select>
       </div>
-      <div className="mt-5 grid grid-cols-3 gap-3">
+      <div className="mt-4 grid grid-cols-3 gap-3 border-t border-ink/10 pt-4">
         {[["You get", `$${loan.advance.toLocaleString()}`], ["Repay per job", `${Math.round(loan.sweepPct * 100)}%`], ["Flat fee", `$${loan.fee.toLocaleString()}`]].map(([k, v]) => (
-          <div key={k}><div className="text-[11px] text-white/55">{k}</div><div className="text-xl font-extrabold tracking-tight sm:text-3xl">{v}</div></div>
+          <div key={k}><div className="text-[11px] text-ink/50">{k}</div><div className="text-2xl font-bold italic tracking-tight sm:text-3xl">{v}</div></div>
         ))}
       </div>
-      <p className="mt-4 text-[12px] text-white/55">Robot idle for a week? You pay nothing that week. A bank wants ${bankPayment(loan.advance).toLocaleString()}/mo either way. Estimate at ~${Math.round(rev).toLocaleString()}/mo of work [modelled].</p>
+      <p className="mt-3 text-[11px] text-ink/50">Idle week? Pay nothing. A bank wants ${bankPayment(loan.advance).toLocaleString()}/mo either way. Based on ~${Math.round(rev).toLocaleString()}/mo of work [modelled].</p>
     </div>
   );
 }
