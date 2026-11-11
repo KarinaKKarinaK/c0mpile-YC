@@ -24,7 +24,7 @@ const KINDS: Kind[] = ["Humanoid", "Quadruped", "Arm", "AMR"];
 const usd = (n: number) => (n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e4 ? `$${(n / 1e3).toFixed(1)}k` : `$${Math.round(n).toLocaleString()}`);
 const band = calibrate(Array.from({ length: 400 }, ((r) => () => honestHour(r))(rng(3))));
 type State = { fleet: Robot[]; loans: Record<string, Loan>; log: Event[]; covs: Covenant[]; sel: string };
-const KEY = "selfmade-v2";
+const KEY = "sweatequity-v1";
 
 export default function Desk() {
   const [s, setS] = useState<State>({ fleet: seedFleet(), loans: {}, log: [], covs: COVENANTS, sel: "R-06" });
