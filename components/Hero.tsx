@@ -25,45 +25,41 @@ export function Drip({ id, flip = false, tone = "dark", className = "" }: { id: 
   );
 }
 
-// Instant value, styled like a search box: pick a real robot, see the offer.
+// Instant value as one sentence: "Finance a [robot] and get $X today. It repays Y% of every job."
 export function Estimator() {
   const [i, setI] = useState(7);
   const m = MODELS[i];
-  const { loan, rev } = useMemo(() => {
+  const { loan } = useMemo(() => {
     const rb: Robot = { id: "R-99", name: m.model, kind: m.kind, site: "", ageMonths: 0, listPrice: m.price, domesticPct: m.usPct, ratePerHour: m.rate, hoursPerMonth: 480, uptime: 0.92, health: 0.95, x: 0, z: 0 };
     return { loan: offerLoan(rb), rev: monthlyRevenue(rb) };
   }, [m]);
   return (
-    <div className="w-full max-w-2xl rounded-2xl bg-white/95 p-4 text-left text-ink shadow-[0_20px_80px_rgba(2,151,222,0.25)] sm:p-5">
-      <div className="flex items-center gap-3">
-        <span className="text-[12px] text-ink/50">Which robot?</span>
-        <select aria-label="Robot model" value={i} onChange={(e) => setI(+e.target.value)} className="min-w-0 flex-1 rounded-lg bg-ink/[0.04] px-3 py-2 text-[14px] font-medium outline-none focus:ring-2 focus:ring-blue">
-          {MODELS.map((x, k) => <option key={x.model} value={k}>{x.maker} {x.model}, ${x.price.toLocaleString()}</option>)}
+    <div className="max-w-3xl text-[clamp(20px,2.3vw,30px)] font-light leading-[1.5]">
+      Finance a{" "}
+      <span className="relative inline-block">
+        <select aria-label="Robot model" value={i} onChange={(e) => setI(+e.target.value)} className="cursor-pointer appearance-none border-b-2 border-orange bg-transparent pr-6 font-bold italic text-white outline-none [field-sizing:content]">
+          {MODELS.map((x, k) => <option key={x.model} value={k} className="bg-ink text-base not-italic">{x.maker} {x.model}</option>)}
         </select>
-      </div>
-      <div className="mt-4 grid grid-cols-3 gap-3 border-t border-ink/10 pt-4">
-        {[["You get", `$${loan.advance.toLocaleString()}`], ["Repay per job", `${Math.round(loan.sweepPct * 100)}%`], ["Flat fee", `$${loan.fee.toLocaleString()}`]].map(([k, v]) => (
-          <div key={k}><div className="text-[11px] text-ink/50">{k}</div><div className="text-2xl font-bold italic tracking-tight sm:text-3xl">{v}</div></div>
-        ))}
-      </div>
-      <p className="mt-3 text-[11px] text-ink/50">Idle week? Pay nothing. A bank wants ${bankPayment(loan.advance).toLocaleString()}/mo either way. Based on ~${Math.round(rev).toLocaleString()}/mo of work [modelled].</p>
+        <span aria-hidden className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[0.6em] text-orange">&#9662;</span>
+      </span>{" "}
+      and get <b className="font-bold italic text-orange">${loan.advance.toLocaleString()}</b> today. It repays <b className="font-bold italic">{Math.round(loan.sweepPct * 100)}%</b> of every job, and <b className="font-bold italic">nothing</b> when it&apos;s down.
+      <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-white/40">List ${m.price.toLocaleString()} &middot; one flat fee ${loan.fee.toLocaleString()} &middot; bank equivalent ${bankPayment(loan.advance).toLocaleString()}/mo fixed &middot; [modelled]</span>
     </div>
   );
 }
 
-// Grainy wave: one soft hill of blue with an orange underglow, heavy grain, drifting slowly.
+// Grainy wave in full brand colours: a blue hill over an orange band, drifting slowly.
 export function Wave({ className = "" }: { className?: string }) {
   return (
     <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
       <svg viewBox="0 0 1440 900" preserveAspectRatio="none" className="absolute -inset-x-[10%] bottom-0 h-full w-[120%]" style={{ animation: "wave 18s ease-in-out infinite" }}>
-        <defs><filter id="wv" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="55" /></filter></defs>
+        <defs><filter id="wv" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="34" /></filter></defs>
         <g filter="url(#wv)">
-          <path d="M0,900 L0,640 C220,640 300,420 520,420 C760,420 820,700 1060,700 C1240,700 1330,520 1440,500 L1440,900 Z" fill="#0297DE" />
-          <path d="M0,900 L0,760 C260,760 360,600 560,600 C780,600 860,820 1080,820 C1250,820 1340,700 1440,690 L1440,900 Z" fill="#FC734D" opacity="0.9" />
-          <path d="M0,900 L0,850 C300,850 500,760 720,780 C960,800 1200,880 1440,860 L1440,900 Z" fill="#dfe9f5" opacity="0.8" />
+          <path d="M0,900 L0,640 C220,640 300,430 520,430 C760,430 820,690 1060,690 C1240,690 1330,520 1440,500 L1440,900 Z" fill="#0297DE" />
+          <path d="M0,900 L0,790 C260,790 360,640 560,640 C780,640 860,840 1080,840 C1250,840 1340,740 1440,730 L1440,900 Z" fill="#FC734D" />
         </g>
       </svg>
-      <div className="grain" style={{ opacity: 0.2 }} />
+      <div className="grain" style={{ opacity: 0.16, mixBlendMode: "soft-light" }} />
     </div>
   );
 }
@@ -85,13 +81,21 @@ export function CutLines({ labels }: { labels: [string, string, string, string] 
   );
 }
 
-// Real photo, pixelated: the CDN serves a tiny version and the browser scales it up crisp, with a dot screen.
-export function PixelPhoto({ src, children, className = "" }: { src: string; children?: React.ReactNode; className?: string }) {
+// Real photo, film look: soft focus, a motion ghost, heavy grain and a cool tint.
+export function FilmPhoto({ src, title, line, credit, page }: { src: string; title: string; line: string; credit: string; page: string }) {
+  const img = `${src}?w=900&q=70&auto=format`;
   return (
-    <div className={`relative overflow-hidden rounded-3xl ${className}`}>
-      <div className="absolute inset-0" style={{ backgroundImage: `url(${src}?w=72&q=70&auto=format)`, backgroundSize: "cover", backgroundPosition: "center", imageRendering: "pixelated" }} />
-      <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle, transparent 52%, rgba(2,7,10,0.35) 54%)", backgroundSize: "7px 7px" }} />
-      <div className="relative flex h-full items-center justify-center p-6">{children}</div>
-    </div>
+    <figure className="group relative aspect-[4/5] overflow-hidden bg-ink">
+      <div className="absolute inset-0 scale-105 transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url(${img})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(1.6px) saturate(0.8) contrast(1.08) brightness(0.85)" }} />
+      <div className="absolute inset-0 scale-105 opacity-40 mix-blend-screen" style={{ backgroundImage: `url(${img})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(7px)", transform: "translateX(22px)" }} />
+      <div className="absolute inset-0 mix-blend-soft-light" style={{ background: "linear-gradient(160deg, rgba(2,151,222,0.55), rgba(252,115,77,0.35))" }} />
+      <div className="grain" style={{ opacity: 0.45, mixBlendMode: "overlay" }} />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(transparent 45%, rgba(2,7,10,0.85))" }} />
+      <figcaption className="absolute inset-x-0 bottom-0 p-6">
+        <div className="text-2xl font-light tracking-tight">{title}</div>
+        <p className="mt-2 max-w-[260px] text-[13px] leading-snug text-white/75">{line}</p>
+        <a href={page} className="mt-3 block font-mono text-[9px] uppercase tracking-[0.15em] text-white/35 hover:text-white">Photo {credit} / Unsplash</a>
+      </figcaption>
+    </figure>
   );
 }

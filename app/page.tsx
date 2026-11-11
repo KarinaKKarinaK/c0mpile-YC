@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CutLines, Drip, Estimator, PixelPhoto, Wave } from "@/components/Hero";
+import { Drip, Estimator, FilmPhoto, Wave } from "@/components/Hero";
 import { PHOTOS } from "@/lib/photos";
 import { Logo } from "@/components/Ui";
 
@@ -24,8 +24,7 @@ export default function Home() {
     <main className="font-light">
       <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
         <div className="absolute inset-0 -z-10"><Wave /></div>
-        <CutLines labels={["Verify\nhours", "Price\nlive", "Repay\nper job", "Own it\nat zero"]} />
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between border-x border-b border-dashed border-white/15 px-6 py-5">
           <Link href="/"><Logo /></Link>
           <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
             {NAV.map(([l, h]) => <a key={h} href={h} className="hover:text-white">{l}</a>)}
@@ -33,11 +32,15 @@ export default function Home() {
           </div>
           <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>
         </nav>
-        <div className="mx-auto max-w-7xl px-6 pt-[12vh] md:pl-[16%]">
+        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[10vh] md:pl-[16%]">
           <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
             Your robot pays off<br />its <em>own loan</em>. Finance<br />that <em className="text-orange">clocks in</em>.
           </h1>
           <div className="mt-10"><Estimator /></div>
+          <Link href="/desk" className="group mt-12 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">
+            Open the live factory
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-white transition-transform group-hover:rotate-45">&#8599;</span>
+          </Link>
         </div>
         <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-7xl items-end justify-between px-6 text-ink">
           <p className="max-w-xs text-[11px] leading-snug opacity-70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. Robot prices and news are live; demo fleet data is synthetic.</p>
@@ -45,30 +48,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-ink px-6 py-24">
-        <div className="mx-auto max-w-7xl">
+      <section className="border-t border-dashed border-white/15 bg-ink">
+        <div className="mx-auto max-w-7xl border-x border-dashed border-white/15 px-6 py-20">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( On the floor )</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {PHOTOS.map((ph) => (
-              <figure key={ph.img}>
-                <PixelPhoto src={ph.img} className="aspect-[4/5]">
-                  <div className="w-full max-w-[260px] rounded-2xl border border-white/40 bg-white/85 p-4 text-ink shadow-xl backdrop-blur">
-                    <div className="text-[13px] font-bold">{ph.card.title}</div>
-                    <div className="mt-3 text-[11px] opacity-60">{ph.card.k}</div>
-                    <div className="text-3xl font-bold italic tracking-tight">{ph.card.v}</div>
-                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-blue" style={{ width: `${ph.card.pct}%` }} /></div>
-                    <div className="mt-2 flex justify-between text-[10px] opacity-60"><span>{ph.card.a}</span><span>{ph.card.b}</span></div>
-                  </div>
-                </PixelPhoto>
-                <figcaption className="mt-2 font-mono text-[9px] uppercase tracking-[0.15em] text-white/35">Photo: <a href={ph.page} className="hover:text-white">{ph.by}, Unsplash</a> &middot; figures [modelled]</figcaption>
-              </figure>
-            ))}
+          <div className="mt-8 grid gap-px bg-white/10 md:grid-cols-3">
+            {PHOTOS.map((ph) => <FilmPhoto key={ph.img} src={ph.img} title={ph.title} line={ph.line} credit={ph.by} page={ph.page} />)}
           </div>
         </div>
       </section>
 
       <section id="how" className="relative isolate overflow-hidden bg-paper text-ink">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:grid-cols-[16%_1fr]">
+        <div className="mx-auto grid max-w-7xl gap-10 border-x border-dashed border-ink/15 px-6 py-32 md:grid-cols-[16%_1fr]">
           <Label>How it works</Label>
           <div>
             <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-6xl">What makes <em>Hebl</em><br />different</h2>
@@ -83,7 +73,7 @@ export default function Home() {
       </section>
 
       <section id="why" className="bg-paper text-ink">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:grid-cols-[16%_1fr_1.3fr]">
+        <div className="mx-auto grid max-w-7xl gap-10 border-x border-t border-dashed border-ink/15 px-6 py-32 md:grid-cols-[16%_1fr_1.3fr]">
           <Label>Advantages</Label>
           <div>
             <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-5xl">Outsmart the <em>bank</em><br />with <em>Hebl</em></h2>

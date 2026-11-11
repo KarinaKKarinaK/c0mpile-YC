@@ -1,6 +1,6 @@
 "use client";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment, Html, Lightformer, OrbitControls, RoundedBox, SoftShadows } from "@react-three/drei";
+import { Environment, Html, Lightformer, OrbitControls, RoundedBox, SoftShadows } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
@@ -40,6 +40,29 @@ function useTextures() {
       for (let y = 0; y < 256; y++) { const v = 110 + Math.random() * 60; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(0, y, 256, 1); }
     }, 2);
     return { concrete, brushed };
+  }, []);
+}
+
+// Corrugated carton: kraft body, clear tape across the top seam, shipping label.
+function Carton({ w = 0.55, h = 0.42, d = 0.55 }: { w?: number; h?: number; d?: number }) {
+  return (
+    <group>
+      <RoundedBox args={[w, h, d]} radius={0.015} castShadow receiveShadow><meshStandardMaterial color="#a77b4f" roughness={0.92} /></RoundedBox>
+      <mesh position={[0, h / 2 + 0.002, 0]}><boxGeometry args={[w * 1.01, 0.004, 0.09]} /><meshStandardMaterial color="#c9a477" roughness={0.35} metalness={0.05} /></mesh>
+      <mesh position={[w * 0.18, 0, d / 2 + 0.002]}><planeGeometry args={[w * 0.32, h * 0.38]} /><meshStandardMaterial color="#f2efe8" roughness={0.8} /></mesh>
+      <mesh position={[w * 0.18, -h * 0.05, d / 2 + 0.003]}><planeGeometry args={[w * 0.22, h * 0.06]} /><meshStandardMaterial color="#1a1a1a" /></mesh>
+    </group>
+  );
+}
+
+// Chest wordmark texture for the humanoids.
+function useWordmark() {
+  return useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas"); c.width = 256; c.height = 64;
+    const g = c.getContext("2d")!; g.fillStyle = "#0b0f12"; g.fillRect(0, 0, 256, 64);
+    g.fillStyle = "#7fd4ff"; g.font = "600 34px sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("FIGURE", 128, 34);
+    return new THREE.CanvasTexture(c);
   }, []);
 }
 
@@ -98,7 +121,7 @@ function Line(p: P & { z: number }) {
   const jammed = !!p.rb.faulted;
   const tb = useRef({ off: 0, frozenAt: -1 });
   const boxes = useRef<THREE.Group>(null), outBoxes = useRef<THREE.Group>(null);
-  const turret = useRef<THREE.Group>(null), shoulder = useRef<THREE.Group>(null), elbow = useRef<THREE.Group>(null), held = useRef<THREE.Mesh>(null);
+  const turret = useRef<THREE.Group>(null), shoulder = useRef<THREE.Group>(null), elbow = useRef<THREE.Group>(null), held = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
     const now = clock.elapsedTime, k = tb.current;
     if (jammed && k.frozenAt < 0) k.frozenAt = now;
@@ -139,7 +162,7 @@ function Line(p: P & { z: number }) {
         <mesh position={[0.66, 1.18, 0]} rotation={[0, Math.PI / 2, 0]}><planeGeometry args={[0.8, 0.55]} /><meshStandardMaterial color="#05090c" /></mesh>
         <mesh position={[0, 1.95, 0.81]}><planeGeometry args={[0.5, 0.3]} /><meshStandardMaterial color="#0b2233" emissive="#0297DE" emissiveIntensity={0.4} /></mesh>
       </group>
-      <group ref={boxes}>{Array.from({ length: 8 }, (_, i) => <RoundedBox key={i} args={[0.55, 0.42, 0.55]} radius={0.03} castShadow>{M.card}</RoundedBox>)}</group>
+      <group ref={boxes}>{Array.from({ length: 8 }, (_, i) => <group key={i}><Carton /></group>)}</group>
       {/* control cabinet + stack light */}
       <group position={[BELT_START + 1.6, 0, -1.3]}>
         <RoundedBox args={[0.7, 1.7, 0.45]} radius={0.03} position={[0, 0.85, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
@@ -165,7 +188,7 @@ function Line(p: P & { z: number }) {
                 <group position={[0, 1.3, 0]} rotation={[0, 0, 1.6]}>
                   <mesh castShadow><cylinderGeometry args={[0.11, 0.11, 0.26, 24]} />{M.steel}</mesh>
                   {[-0.1, 0.1].map((dz) => <mesh key={dz} position={[0, -0.22, dz]} castShadow><boxGeometry args={[0.06, 0.24, 0.04]} />{M.steel}</mesh>)}
-                  <mesh ref={held} position={[0, -0.55, 0]} castShadow><boxGeometry args={[0.5, 0.4, 0.5]} />{M.card}</mesh>
+                  <group ref={held} position={[0, -0.55, 0]}><Carton w={0.5} h={0.4} d={0.5} /></group>
                 </group>
               </group>
             </group>
@@ -178,7 +201,7 @@ function Line(p: P & { z: number }) {
         <mesh position={[0, 0.94, 0]}><boxGeometry args={[0.85, 0.03, 1.85]} />{M.rubber}</mesh>
         {[-0.7, 0.7].map((dz) => [-0.4, 0.4].map((dx) => <mesh key={`${dx}${dz}`} position={[dx, 0.38, dz]}><boxGeometry args={[0.08, 0.76, 0.08]} />{M.steel}</mesh>))}
       </group>
-      <group ref={outBoxes}>{Array.from({ length: 8 }, (_, i) => <RoundedBox key={i} args={[0.55, 0.42, 0.55]} radius={0.03} castShadow>{M.card}</RoundedBox>)}</group>
+      <group ref={outBoxes}>{Array.from({ length: 8 }, (_, i) => <group key={i}><Carton /></group>)}</group>
       <group position={[2.4, 0, OUT_FROM + OUT_LEN + 0.35]}>
         <RoundedBox args={[1.4, 1.6, 1.0]} radius={0.05} position={[0, 0.8, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
         <mesh position={[0, 1.15, -0.505]}><planeGeometry args={[0.8, 0.55]} /><meshStandardMaterial color="#05090c" /></mesh>
@@ -216,32 +239,42 @@ function Amr(p: P & { i: number }) {
 
 function Humanoid(p: P & { z: number }) {
   const g = useRef<THREE.Group>(null), armL = useRef<THREE.Group>(null), armR = useRef<THREE.Group>(null);
+  const mark = useWordmark();
   useFrame(({ clock }) => {
-    const t = clock.elapsedTime * 2 + p.z;
-    if (p.rb.faulted) { if (g.current) g.current.rotation.z = 0.08; return; }
-    if (g.current) g.current.position.y = Math.abs(Math.sin(t)) * 0.03;
-    if (armL.current) armL.current.rotation.x = -0.9 + Math.sin(t) * 0.35;
-    if (armR.current) armR.current.rotation.x = -0.9 - Math.sin(t) * 0.35;
+    const t = clock.elapsedTime * 1.6 + p.z;
+    if (p.rb.faulted) { if (g.current) g.current.rotation.z = 0.06; return; }
+    if (g.current) g.current.position.y = Math.abs(Math.sin(t)) * 0.015;
+    if (armL.current) armL.current.rotation.x = -0.75 + Math.sin(t) * 0.25;
+    if (armR.current) armR.current.rotation.x = -0.75 - Math.sin(t) * 0.25;
   });
-  const limb = (len: number, r: number) => <mesh position={[0, -len / 2, 0]} castShadow><capsuleGeometry args={[r, len, 8, 16]} />{M.white}</mesh>;
+  const shell = <meshPhysicalMaterial color="#111518" roughness={0.28} metalness={0.3} clearcoat={1} clearcoatRoughness={0.15} />;
+  const joint = <meshStandardMaterial color="#0297DE" emissive="#0297DE" emissiveIntensity={1.4} />;
+  const limb = (len: number, r: number) => (
+    <group>
+      <mesh position={[0, -len / 2, 0]} castShadow><capsuleGeometry args={[r, len, 8, 20]} />{shell}</mesh>
+      <mesh position={[0, -len - 0.02, 0]}><torusGeometry args={[r * 0.9, 0.012, 8, 24]} />{joint}</mesh>
+    </group>
+  );
   return (
     <group position={[-4, 0, p.z - 1.9]}>
       <Pickable {...p} height={2.1}>
         <group ref={g}>
-          <RoundedBox args={[0.62, 0.78, 0.36]} radius={0.14} position={[0, 1.42, 0]} castShadow>{M.white}</RoundedBox>
-          <mesh position={[0, 1.42, 0.19]}><boxGeometry args={[0.3, 0.05, 0.01]} />{M.glowBlue}</mesh>
-          <RoundedBox args={[0.5, 0.3, 0.3]} radius={0.1} position={[0, 0.95, 0]} castShadow>{M.graphite}</RoundedBox>
-          <mesh position={[0, 2.0, 0]} castShadow><sphereGeometry args={[0.2, 32, 32]} />{M.white}</mesh>
-          <mesh position={[0, 2.0, 0.12]}><boxGeometry args={[0.28, 0.08, 0.12]} /><meshPhysicalMaterial color="#02070A" roughness={0.05} metalness={0.5} clearcoat={1} /></mesh>
-          <group ref={armL} position={[-0.4, 1.72, 0]}>{limb(0.6, 0.08)}</group>
-          <group ref={armR} position={[0.4, 1.72, 0]}>{limb(0.6, 0.08)}</group>
-          <group position={[-0.15, 0.82, 0]}>{limb(0.7, 0.1)}</group>
-          <group position={[0.15, 0.82, 0]}>{limb(0.7, 0.1)}</group>
+          <RoundedBox args={[0.56, 0.72, 0.32]} radius={0.14} position={[0, 1.44, 0]} castShadow>{shell}</RoundedBox>
+          {mark && <mesh position={[0, 1.52, 0.165]}><planeGeometry args={[0.32, 0.08]} /><meshBasicMaterial map={mark} /></mesh>}
+          <mesh position={[0, 1.08, 0]}><torusGeometry args={[0.2, 0.014, 8, 32]} />{joint}</mesh>
+          <RoundedBox args={[0.42, 0.26, 0.26]} radius={0.1} position={[0, 0.96, 0]} castShadow>{shell}</RoundedBox>
+          <mesh position={[0, 1.88, 0]}><cylinderGeometry args={[0.07, 0.08, 0.12, 20]} />{shell}</mesh>
+          <mesh position={[0, 2.06, 0]} scale={[0.9, 1.15, 1]} castShadow><sphereGeometry args={[0.17, 40, 40]} /><meshPhysicalMaterial color="#05080a" roughness={0.05} metalness={0.6} clearcoat={1} /></mesh>
+          <mesh position={[0, 2.08, 0.155]}><boxGeometry args={[0.16, 0.012, 0.01]} />{joint}</mesh>
+          <group ref={armL} position={[-0.36, 1.72, 0]}>{limb(0.62, 0.065)}</group>
+          <group ref={armR} position={[0.36, 1.72, 0]}>{limb(0.62, 0.065)}</group>
+          <group position={[-0.13, 0.84, 0]}>{limb(0.72, 0.085)}</group>
+          <group position={[0.13, 0.84, 0]}>{limb(0.72, 0.085)}</group>
         </group>
       </Pickable>
       <RoundedBox args={[1.4, 0.08, 0.7]} radius={0.02} position={[0, 0.95, 0.75]} castShadow receiveShadow>{M.steel}</RoundedBox>
       {[[-0.6, 0.45], [0.6, 0.45], [-0.6, 1.05], [0.6, 1.05]].map(([x, z]) => <mesh key={`${x}${z}`} position={[x, 0.47, z]} castShadow><boxGeometry args={[0.05, 0.95, 0.05]} />{M.steel}</mesh>)}
-      <RoundedBox args={[0.45, 0.32, 0.45]} radius={0.02} position={[0.3, 1.15, 0.75]} castShadow>{M.card}</RoundedBox>
+      <group position={[0.3, 1.2, 0.75]}><Carton w={0.45} h={0.32} d={0.45} /></group>
     </group>
   );
 }
@@ -352,9 +385,7 @@ export default function Fleet3D({ fleet, selected, onSelect }: { fleet: Robot[];
       <Building />
       {by("Arm").map((rb, i) => <Line key={rb.id} {...props(rb)} z={LINES[i]} />)}
       {by("Humanoid").map((rb, i) => <Humanoid key={rb.id} {...props(rb)} z={LINES[i]} />)}
-      {by("AMR").map((rb, i) => <Amr key={rb.id} {...props(rb)} i={i} />)}
       {by("Quadruped").map((rb, i) => <Quadruped key={rb.id} {...props(rb)} i={i} />)}
-      <ContactShadows position={[0, 0.015, 0]} scale={40} blur={2.4} far={4} opacity={0.6} />
       <Environment resolution={512} frames={1} environmentIntensity={0.9}>
         <Lightformer form="rect" intensity={3} color="#ffffff" position={[0, 8, 0]} rotation-x={Math.PI / 2} scale={[20, 4, 1]} />
         <Lightformer form="rect" intensity={2} color="#e8f2ff" position={[-12, 3, -4]} rotation-y={Math.PI / 2} scale={[12, 6, 1]} />
