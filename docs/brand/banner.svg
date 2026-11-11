@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420">
+  <defs>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.004 0.012" numOctaves="2" seed="11"/>
+      <feDisplacementMap in="SourceGraphic" scale="120"/>
+      <feGaussianBlur stdDeviation="38"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.35 0"/></filter>
+  </defs>
+  <rect width="1280" height="420" fill="#02070A"/>
+  <g filter="url(#soft)">
+    <path d="M-60,420 L-60,330 C120,320 230,220 420,240 C580,256 640,130 820,120 C980,110 1080,230 1180,280 C1240,310 1300,300 1340,290 L1340,420 Z" fill="#2A7FB8"/>
+    <path d="M-60,420 L-60,390 C140,380 220,320 360,330 C500,340 540,390 720,395 C860,398 940,350 1020,365 C1120,385 1240,410 1340,405 L1340,420 Z" fill="#E2774F"/>
+  </g>
+  <rect width="1280" height="420" filter="url(#grain)" opacity="0.55"/>
+  <g transform="translate(96 132) scale(1.15)" fill="#ffffff" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">
+    <path d="M12 8 H32 L54 84 H34 Z"/><path d="M66 8 H86 L108 84 H88 Z"/><path d="M30 37 H66 C78 37 82 47 86 55 H50 C40 55 36 45 30 37 Z"/>
+  </g>
+  <text x="250" y="226" fill="#ffffff" font-family="Helvetica Neue, Arial, sans-serif" font-size="112" font-weight="700" letter-spacing="-3">Hebl</text>
+  <text x="100" y="300" fill="#ffffff" fill-opacity="0.85" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="300">Loans for robots, repaid by the work they do.</text>
+  <text x="100" y="340" fill="#ffffff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="14" letter-spacing="3">YC RFS  /  WALL STREET FOR THE PHYSICAL BUILDOUT</text>
+</svg>

@@ -70,3 +70,20 @@ test("fixes: client output catches the careful spoofer; per-robot band stops blo
   assert.ok(honest.rate <= 0.05, `honest ${honest.rate}`);
   assert.ok(worn.rate <= 0.06, `worn ${worn.rate}`);
 });
+
+test("receipts: Merkle proof verifies an hour, and a tampered receipt fails", async () => {
+  const { makeReceipt, merkleRoot, merkleProof, verifyProof } = await import("./engine.ts");
+  const rs = await Promise.all([0, 1, 2, 3, 4].map((i) => makeReceipt("R-06", `2026-11-11T0${i}:00Z`, { cycles: 100 + i, kwh: 0.012 * (100 + i) + 0.35 }, null)));
+  const leaves = rs.map((r) => r.hash), root = await merkleRoot(leaves);
+  assert.equal(await verifyProof(leaves[3], await merkleProof(leaves, 3), root), true);
+  assert.equal(await verifyProof(leaves[3].replace(/^./, "0"), await merkleProof(leaves, 3), root), false);
+});
+
+test("agent: proposes a payment holiday on a fault, and it needs two different approvers", async () => {
+  const { proposeActions, approve } = await import("./engine.ts");
+  const rb = { ...seedFleet()[5], faulted: true, health: 0.55 };
+  const acts = proposeActions(rb, offerLoan(rb), "2026-11-11T22:00:00Z");
+  const hol = acts.find((a) => a.type === "payment_holiday")!;
+  assert.equal(approve(hol, "lender").status, "proposed");
+  assert.equal(approve(approve(hol, "lender"), "operator").status, "executed");
+});

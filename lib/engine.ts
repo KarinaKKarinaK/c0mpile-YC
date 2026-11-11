@@ -274,3 +274,60 @@ export function parseJobOffline(text: string): Job {
     client: text.match(/(?:from|for)\s+([A-Z][\w&]+(?:\s[A-Z][\w&]+)?)/)?.[1] ?? "Unknown client",
   };
 }
+
+// ---------- 5. Work receipts: every verified hour becomes a hashed receipt; each day rolls up into a Merkle root ----------
+export type Receipt = { robotId: string; at: string; cycles: number; kwh: number; units: number | null; ok: boolean; reason: string; hash: string };
+export async function sha(s: string) {
+  const buf = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+export async function makeReceipt(robotId: string, at: string, h: Hour, units: number | null): Promise<Receipt> {
+  const v = units === null ? verifyHour(h, BAND) : verifyWithOutput(h, units, BAND);
+  const body = { robotId, at, cycles: +h.cycles.toFixed(3), kwh: +h.kwh.toFixed(4), units, ok: v.ok, reason: v.reason };
+  return { ...body, hash: await sha(JSON.stringify(body)) };
+}
+export async function merkleRoot(leaves: string[]): Promise<string> {
+  if (!leaves.length) return "";
+  let level = leaves;
+  while (level.length > 1) {
+    const next: string[] = [];
+    for (let i = 0; i < level.length; i += 2) next.push(await sha(level[i] + (level[i + 1] ?? level[i])));
+    level = next;
+  }
+  return level[0];
+}
+export async function merkleProof(leaves: string[], index: number) {
+  const proof: { sibling: string; left: boolean }[] = [];
+  let level = leaves, i = index;
+  while (level.length > 1) {
+    const sib = i % 2 ? level[i - 1] : level[i + 1] ?? level[i];
+    proof.push({ sibling: sib, left: i % 2 === 1 });
+    const next: string[] = [];
+    for (let k = 0; k < level.length; k += 2) next.push(await sha(level[k] + (level[k + 1] ?? level[k])));
+    level = next; i = Math.floor(i / 2);
+  }
+  return proof;
+}
+export async function verifyProof(leaf: string, proof: { sibling: string; left: boolean }[], root: string) {
+  let h = leaf;
+  for (const p of proof) h = await sha(p.left ? p.sibling + h : h + p.sibling);
+  return h === root;
+}
+
+// ---------- 6. Agent actions: the agent proposes, code bounds it, two people approve ----------
+export type Action = { id: string; robotId: string; type: "maintenance" | "payment_holiday" | "lender_notice" | "find_work"; text: string; approvals: string[]; status: "proposed" | "executed"; needs: number };
+export function proposeActions(rb: Robot, loan: Loan | null, nowIso: string): Action[] {
+  const id = (t: string) => `${rb.id}-${t}-${nowIso.slice(0, 16)}`;
+  const out: Action[] = [];
+  if (rb.faulted || rb.health < 0.6) out.push({ id: id("mnt"), robotId: rb.id, type: "maintenance", text: `Open a service ticket with ${rb.maker ?? "the maker"} for ${rb.model ?? rb.kind}: health ${rb.health.toFixed(2)}.`, approvals: [], status: "proposed", needs: 1 });
+  if (loan && (rb.faulted || rb.uptime < 0.7)) {
+    out.push({ id: id("hol"), robotId: rb.id, type: "payment_holiday", text: `Pause the ${Math.round(loan.sweepPct * 100)}% sweep for 7 days, extend the term by 7 days. Balance stays $${loan.balance.toLocaleString()}.`, approvals: [], status: "proposed", needs: 2 });
+    out.push({ id: id("not"), robotId: rb.id, type: "lender_notice", text: `Tell the lender: ${rb.id} down, expected back in 48 h, no missed payment because repayment flexes with work.`, approvals: [], status: "proposed", needs: 1 });
+  }
+  if (!rb.faulted && rb.uptime < 0.9) out.push({ id: id("job"), robotId: rb.id, type: "find_work", text: `Idle capacity: offer ${rb.id} on the shared job board at $${rb.ratePerHour}/h for 40 h this week.`, approvals: [], status: "proposed", needs: 1 });
+  return out;
+}
+export function approve(a: Action, role: string): Action {
+  const approvals = a.approvals.includes(role) ? a.approvals : [...a.approvals, role];
+  return { ...a, approvals, status: new Set(approvals).size >= a.needs ? "executed" : "proposed" };
+}

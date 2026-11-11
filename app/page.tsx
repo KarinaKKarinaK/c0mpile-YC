@@ -20,6 +20,26 @@ const WHY = [
 const Arrow = () => <span aria-hidden className="ml-2">&#8599;</span>;
 const Label = ({ children }: { children: string }) => <p className="font-mono text-[10px] uppercase tracking-[0.2em] opacity-50">( {children} )</p>;
 
+const YC10: [string, string][] = [
+  ["1. Founder fit?", "Our fourth build where machines pay their own way: a drone that repays its lease (Shenzhen), a robot-data market (HK, finalist), an agent rules ledger (Nebius). Gap we are closing: an equipment-finance advisor."],
+  ["2. Market, growing?", "US equipment finance $1.51T in 2025 (ELFA), 55% of equipment spend financed. Physical AI raised $47.4B in H1 2026. US robot installs 38,400 in 2025, +12% (IFR)."],
+  ["3. How acute?", "A fixed bank payment ignores whether the robot worked. One jam or one slow month and a young fleet misses a payment; so founders burn equity on hardware instead."],
+  ["4. Competition?", "Equipment banks (fixed ~10.5%), Formic (robots as a service), USD.AI (GPU loans on telemetry, GPUs only), Stripe Capital (revenue share, card sales only)."],
+  ["5. Who wants it?", "Robot fleet operators who finance hardware, and lenders who cannot see what a robot earns. Today: operators can upload their own logs and get a priced offer."],
+  ["6. Why now?", "FCC rule of 28 Jul 2026 on foreign-made mobile robots, record physical AI funding, robots that already stream telemetry, and AI agents good enough to run collections."],
+  ["7. Proxies?", "Stripe Capital (repay as % of sales, 81k+ businesses funded), USD.AI for GPUs, aircraft and equipment lessors, revenue-based financing."],
+  ["8. Years of work?", "Yes. This is the same thesis we keep returning to: machines are becoming economic actors and need credit."],
+  ["9. Scalable?", "Software fee per loan on partner capital first, then our own credit line, then pools on Back a fleet. Every verified hour improves pricing: the data compounds."],
+  ["10. Good space?", "It is YC's own Winter 2027 request: Wall Street for the Physical Buildout, with a hook into Robots Made in America."],
+];
+const PLAN: [string, string][] = [
+  ["One idea, all in", "Hebl only. Robot credit priced on verified work. Everything else is cut."],
+  ["Run the operator's business", "Know their downtime cost, utilisation and cash cycle better than they do; the desk is built around their 8am check."],
+  ["Edge of what AI can do", "Agents propose service tickets, payment holidays and lender notices; code and two people approve. Work receipts prove every hour."],
+  ["Own the outcome", "Start as rails for licensed lenders, then lend from our own book: be the lender, not software for lenders."],
+  ["Most ambitious version", "The credit system for every machine that works: robots, GPUs, solar, EV fleets. Receipts become each machine's credit history."],
+];
+
 export default function Home() {
   return (
     <main className="font-light">
@@ -101,6 +121,31 @@ export default function Home() {
                 <p className="mt-3 max-w-md text-[13px] leading-relaxed opacity-70">{w.a}</p>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="answers" className="border-t border-dashed border-white/15 bg-ink">
+        <div className="mx-auto grid max-w-7xl gap-10 border-x border-dashed border-white/15 px-6 py-24 md:grid-cols-[16%_1fr_1fr]">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( Straight answers )</p>
+          <div>
+            <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">YC&apos;s ten <em>questions</em></h2>
+            <div className="mt-6 divide-y divide-dashed divide-white/15 border-y border-dashed border-white/15">
+              {YC10.map(([q, a]) => (
+                <details key={q} className="group py-4">
+                  <summary className="flex cursor-pointer list-none items-center justify-between text-[14px] font-bold">{q}<span className="text-lg font-light transition-transform group-open:rotate-45">+</span></summary>
+                  <p className="mt-2 text-[13px] leading-relaxed text-white/70">{a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">The <em className="text-orange">plan</em></h2>
+            <ol className="mt-6 space-y-5 text-[13px] leading-relaxed text-white/75">
+              {PLAN.map(([k, d], i) => (
+                <li key={k} className="border-l border-dashed border-white/20 pl-4"><span className="font-mono text-[10px] text-orange">0{i + 1}</span><div className="text-[15px] font-bold text-white">{k}</div>{d}</li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>

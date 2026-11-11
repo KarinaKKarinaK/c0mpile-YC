@@ -38,9 +38,20 @@ export default function Desk() {
   const [chain, setChain] = useState("");
   const [toast, setToast] = useState("");
   const [focus, setFocus] = useState<Kind>("Humanoid");
+  const [actions, setActions] = useState<{ id: string; type: string; text: string; approvals: string[]; status: string; needs: number }[]>([]);
+  const [receipts, setReceipts] = useState<null | { dayCount: number; dayRoot: string; receipts: { hash: string; ok: boolean }[]; durable: boolean }>(null);
   const market = useMarket();
 
   const rb = s.fleet.find((r) => r.id === s.sel)!;
+  useEffect(() => {
+    if (!rb.faulted) { setActions([]); return; }
+    fetch("/api/actions", { method: "POST", body: JSON.stringify({ robot: rb, loan: s.loans[rb.id] ?? null }) }).then((x) => x.json()).then((d) => setActions(d.actions ?? [])).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rb.id, rb.faulted]);
+  const approveAction = async (id: string, role: string) => {
+    const d = await fetch("/api/actions", { method: "PATCH", body: JSON.stringify({ id, role }) }).then((x) => x.json());
+    if (d.action) { setActions((a) => a.map((x) => (x.id === id ? d.action : x))); if (d.action.status === "executed") await log("agent.executed", { id, type: d.action.type, approvals: d.action.approvals }); }
+  };
   const loan = s.loans[rb.id];
   const offerL = useMemo(() => offerLoan(rb), [rb]);
   const idx = (r: Robot) => latest(market, r.kind) / 100;
@@ -94,6 +105,8 @@ export default function Desk() {
   const billable = hours ? hours.filter((h) => h.ok).length * (job?.job.payPerHour ?? 0) : 0;
   async function pay() {
     setBusy("pay");
+    const rc = await fetch("/api/receipts", { method: "POST", body: JSON.stringify({ robotId: rb.id, hours: rawHours?.map((h) => ({ ...h, units: Math.round(h.cycles) })) }) }).then((x) => x.json()).catch(() => null);
+    if (rc?.dayRoot) setReceipts(rc);
     const d = await fetch("/api/checkout", { method: "POST", body: JSON.stringify({ robotId: rb.id, hours: rawHours, payPerHour: job?.job.payPerHour, description: job?.job.task }) }).then((r) => r.json());
     if (d.url) { location.href = d.url; return; }
     if (!d.simulated) { flash(d.error ?? "Payment failed."); setBusy(""); return; }
@@ -224,6 +237,24 @@ export default function Desk() {
             <span className="glass rounded-full px-2.5 py-1">health {rb.health.toFixed(2)}</span>
           </div>
 
+          {actions.length > 0 && (
+            <div className="mt-5 rounded-md border border-dashed border-orange/40 p-3 text-[12px]">
+              <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-orange">Agent proposals &middot; nothing runs without approval</div>
+              <ul className="mt-2 space-y-2">
+                {actions.map((a) => (
+                  <li key={a.id} className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="min-w-0 flex-1 text-white/85">{a.text} <span className="text-white/40">({a.approvals.length}/{a.needs})</span></span>
+                    {a.status === "executed" ? <span className="text-blue">done</span> : (
+                      <span className="flex gap-1">{["operator", "lender"].map((role) => <button key={role} disabled={a.approvals.includes(role)} onClick={() => approveAction(a.id, role)} className="btn btn-ghost px-2 py-1 text-[10px]">{role}</button>)}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {receipts && (
+            <p className="mt-3 font-mono text-[10px] text-white/50">{receipts.receipts.length} work receipts issued &middot; today {receipts.dayCount} &middot; day root {receipts.dayRoot.slice(0, 12)}... <a className="text-orange hover:underline" href={`/api/receipts/proof?hash=${receipts.receipts[0]?.hash}`} target="_blank" rel="noreferrer">verify one</a>{receipts.durable ? "" : " (demo store)"}</p>
+          )}
           <ol className="mt-5 grid grid-cols-3 gap-1 text-[10px]">
             {["Fund", "Take a job", "Get paid"].map((t, i) => (
               <li key={t} className={`rounded-full px-2 py-1 text-center ${i <= step ? "bg-orange text-ink" : "bg-white/5 text-white/50"}`}>{i + 1} {t}</li>
