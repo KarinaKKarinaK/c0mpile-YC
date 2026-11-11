@@ -1,14 +1,22 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  evalOracle, seedFleet, offerLoan, applyPayment, licenseClip, checkJob, COVENANTS,
+  evalOracle, seedFleet, settleHours, offerLoan, applyPayment, licenseClip, checkJob, COVENANTS,
   canChange, append, verifyChain, fccCompliant, robotValue, stress, parseJobOffline,
 } from "./engine.ts";
 
-test("oracle: catches fake work, rarely flags honest work (numbers quoted in README)", () => {
-  const r = evalOracle();
-  assert.ok(r.catchRate >= 0.95, `catch ${r.catchRate}`);
-  assert.ok(r.falseFlagRate <= 0.04, `false flags ${r.falseFlagRate}`);
+test("oracle: rates quoted in README, including what slips through", () => {
+  const [idle, noEnergy, consistent, honest] = evalOracle().rows;
+  assert.ok(idle.rate >= 0.95 && noEnergy.rate >= 0.95);
+  assert.ok(consistent.rate < 0.2, "a physics-consistent spoof is NOT caught by this band; README says so");
+  assert.ok(honest.rate <= 0.05);
+});
+
+test("server settlement: idle hours are not billed, amount comes from verdicts", () => {
+  const hours = [{ cycles: 100, kwh: 1.55 }, { cycles: 5, kwh: 0.4 }, { cycles: 150, kwh: 2.15 }]; // exact physics, idle, exact physics
+  const s = settleHours(hours, 30);
+  assert.deepEqual(s.verdicts.map((v) => v.ok), [true, false, true]);
+  assert.equal(s.billable, 60);
 });
 
 test("loan: sweep repays from revenue and never goes below zero", () => {

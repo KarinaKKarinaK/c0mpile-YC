@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Drip, Estimator, FilmPhoto, Wave } from "@/components/Hero";
 import { PHOTOS } from "@/lib/photos";
-import { Logo } from "@/components/Ui";
+import { Logo, StickyHeader } from "@/components/Ui";
 
 const NAV = [["How it works", "#how"], ["Advantages", "#why"], ["Start", "#start"]];
 const HOW = [
@@ -22,7 +22,7 @@ const Label = ({ children }: { children: string }) => <p className="font-mono te
 export default function Home() {
   return (
     <main className="font-light">
-      <header className="sticky top-0 z-50 border-b border-dashed border-white/15 bg-ink/80 backdrop-blur-md">
+      <StickyHeader>
         <nav className="mx-auto flex max-w-7xl items-center justify-between border-x border-dashed border-white/15 px-6 py-4">
           <Link href="/"><Logo /></Link>
           <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
@@ -32,29 +32,35 @@ export default function Home() {
           </div>
           <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>
         </nav>
-      </header>
+      </StickyHeader>
       <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
         <div className="absolute inset-0 -z-10"><Wave /></div>
-        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[10vh] md:pl-[16%]">
+        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[20vh] md:pl-[16%]">
           <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
             Loans for robots,<br />repaid by the <em className="text-orange">work they do</em>.
           </h1>
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80">Hebl lends to companies buying robots. We read each robot&apos;s live data, take a small share of every job it completes as repayment, and take nothing when it sits idle. When the balance hits zero, the robot is yours.</p>
-          <div className="mt-10"><Estimator /></div>
           <Link href="/desk" className="group mt-12 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">
             Open the live factory
             <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-white transition-transform group-hover:rotate-45">&#8599;</span>
           </Link>
         </div>
         <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-7xl items-end justify-between px-6 text-ink">
-          <p className="max-w-xs text-[11px] leading-snug text-white/70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. Robot prices and news are live; demo fleet data is synthetic.</p>
+          <p className="max-w-xs text-[11px] leading-snug text-white/70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. News is live, robot prices are sourced list prices; demo fleet telemetry is synthetic.</p>
+        </div>
+      </section>
+
+      <section className="border-t border-dashed border-white/15 bg-ink">
+        <div className="mx-auto max-w-7xl border-x border-dashed border-white/15 px-6 py-20 md:pl-[16%]">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( Try it )</p>
+          <div className="mt-6"><Estimator /></div>
         </div>
       </section>
 
       <section className="border-t border-dashed border-white/15 bg-ink">
         <div className="mx-auto max-w-7xl border-x border-dashed border-white/15 px-6 py-20">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( On the floor )</p>
-          <div className="mt-8 grid gap-px bg-white/10 md:grid-cols-3">
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
             {PHOTOS.map((ph, i) => <FilmPhoto key={ph.img} i={i} src={ph.img} title={ph.title} line={ph.line} credit={ph.by} page={ph.page} />)}
           </div>
         </div>

@@ -97,14 +97,40 @@ export function verifyHour(h: Hour, band: { q: number; minCycles: number }) {
   if (residual > band.q) return { ok: false, reason: "cycles not backed by energy draw" };
   return { ok: true, reason: "telemetry matches work" };
 }
+// Harder cases, reported honestly: a spoofer who fakes energy consistent with cycles, and honest robots
+// whose physics drifted (worn motor draws 15% more). The band catches the first two fraud shapes, not the third.
+export function consistentSpoof(r: () => number): Hour {
+  const cycles = 60 + r() * 140;
+  return { cycles, kwh: A * cycles + B + (r() - 0.5) * 0.3 };
+}
+export function driftedHonest(r: () => number): Hour {
+  const cycles = 60 + r() * 140;
+  return { cycles, kwh: A * 1.15 * cycles + B + (r() - 0.5) * 0.3 };
+}
 export function evalOracle(seed = 7, n = 500) {
   const r = rng(seed);
   const band = calibrate(Array.from({ length: n }, () => honestHour(r)));
-  const honest = Array.from({ length: n }, () => honestHour(r));
-  const fake = Array.from({ length: n }, () => fakeHour(r));
-  const caught = fake.filter((h) => !verifyHour(h, band).ok).length;
-  const falseFlags = honest.filter((h) => !verifyHour(h, band).ok).length;
-  return { n, caught, falseFlags, catchRate: caught / n, falseFlagRate: falseFlags / n, band };
+  const flagged = (hs: Hour[]) => hs.filter((h) => !verifyHour(h, band).ok).length;
+  const idle = Array.from({ length: n }, () => ({ cycles: 3 + r() * 10, kwh: B + r() * 0.1 }));
+  const noEnergy = Array.from({ length: n }, () => { const c = 90 + r() * 110; return { cycles: c, kwh: B + r() * 0.4 }; });
+  const rows = [
+    { name: "fraud: idle robot billed as busy", n, flagged: flagged(idle) },
+    { name: "fraud: cycles with no energy behind them", n, flagged: flagged(noEnergy) },
+    { name: "fraud: energy faked to match cycles", n, flagged: flagged(Array.from({ length: n }, () => consistentSpoof(r))) },
+    { name: "honest: normal physics", n, flagged: flagged(Array.from({ length: n }, () => honestHour(r))) },
+    { name: "honest: worn motor, +15% energy", n, flagged: flagged(Array.from({ length: n }, () => driftedHonest(r))) },
+  ].map((x) => ({ ...x, rate: x.flagged / x.n }));
+  return { rows, band };
+}
+// Shared band and server-side settlement: the server, not the browser, decides what is billable.
+export const BAND = calibrate(Array.from({ length: 400 }, ((r) => () => honestHour(r))(rng(3))));
+export function settleHours(hours: Hour[], payPerHour: number) {
+  const verdicts = hours.map((h) => verifyHour(h, BAND));
+  return { verdicts, billable: verdicts.filter((v) => v.ok).length * payPerHour };
+}
+export async function hashHours(hours: Hour[]) {
+  const buf = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(hours)));
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // ---------- 2. Price: robot value index ----------

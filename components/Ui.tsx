@@ -79,3 +79,14 @@ export function Logo() {
   );
 }
 
+
+// Nav that sits transparently on the hero and only gets a backdrop once you scroll.
+export function StickyHeader({ children }: { children: ReactNode }) {
+  const [solid, setSolid] = useState(false);
+  useEffect(() => {
+    const on = () => setSolid(window.scrollY > 24);
+    on(); window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
+  return <header className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${solid ? "border-b border-dashed border-white/15 bg-ink/80 backdrop-blur-md" : "border-b border-transparent bg-transparent"}`}>{children}</header>;
+}

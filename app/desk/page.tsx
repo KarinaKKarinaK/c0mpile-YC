@@ -23,7 +23,7 @@ const CLIP_PRICE = [40, 80, 150]; // USD per licence by rarity [target]
 const KINDS: Kind[] = ["Humanoid", "Quadruped", "Arm", "AMR"];
 const usd = (n: number) => (n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e4 ? `$${(n / 1e3).toFixed(1)}k` : `$${Math.round(n).toLocaleString()}`);
 const band = calibrate(Array.from({ length: 400 }, ((r) => () => honestHour(r))(rng(3))));
-type State = { fleet: Robot[]; loans: Record<string, Loan>; log: Event[]; covs: Covenant[]; sel: string };
+type State = { fleet: Robot[]; loans: Record<string, Loan>; log: Event[]; covs: Covenant[]; sel: string; settled?: string[] };
 const KEY = "hebl-v1";
 
 export default function Desk() {
@@ -62,7 +62,8 @@ export default function Desk() {
     history.replaceState(null, "", "/desk");
     fetch(`/api/checkout?id=${id}`).then((r) => r.json()).then(async (d) => {
       if (!d.paid) return flash("Stripe says this session is not paid. Nothing moved.");
-      await settle(st, d.robotId, d.amount, `stripe ${d.id.slice(0, 14)}`);
+      if ((st.settled ?? []).includes(d.id)) return flash("This payment was already settled. Nothing moved.");
+      await settle({ ...st, settled: [...(st.settled ?? []), d.id] }, d.robotId, d.amount, `stripe ${d.id.slice(0, 14)}`);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -83,17 +84,20 @@ export default function Desk() {
     await log(check.ok ? "job.accepted" : "job.blocked", { robotId: rb.id, job: d.job, broken: check.broken.map((c) => c.id), readBy: d.provider });
     setBusy("");
   }
-  const hours = useMemo(() => {
+  // raw telemetry for the job; the browser shows verdicts, the server re-checks and bills
+  const rawHours = useMemo(() => {
     if (!job?.check.ok) return null;
     const r = rng(job.job.hours * 7 + rb.x * 13);
-    return Array.from({ length: Math.ceil(job.job.hours) }, (_, i) => verifyHour(spoof && i % 3 === 2 ? fakeHour(r) : honestHour(r), band));
+    return Array.from({ length: Math.ceil(job.job.hours) }, (_, i) => (spoof && i % 3 === 2 ? fakeHour(r) : honestHour(r)));
   }, [job, spoof, rb.x]);
+  const hours = rawHours?.map((h) => verifyHour(h, band)) ?? null;
   const billable = hours ? hours.filter((h) => h.ok).length * (job?.job.payPerHour ?? 0) : 0;
   async function pay() {
     setBusy("pay");
-    const d = await fetch("/api/checkout", { method: "POST", body: JSON.stringify({ robotId: rb.id, amount: billable, description: job?.job.task }) }).then((r) => r.json());
+    const d = await fetch("/api/checkout", { method: "POST", body: JSON.stringify({ robotId: rb.id, hours: rawHours, payPerHour: job?.job.payPerHour, description: job?.job.task }) }).then((r) => r.json());
     if (d.url) { location.href = d.url; return; }
-    await settle(s, rb.id, billable, "simulated payment (no Stripe key)");
+    if (!d.simulated) { flash(d.error ?? "Payment failed."); setBusy(""); return; }
+    await settle(s, rb.id, d.amount, `simulated payment, server verdicts ${d.verdicts}, hours sha256 ${String(d.hash).slice(0, 10)}`);
     setJob(null); setBusy("");
   }
   async function license() {

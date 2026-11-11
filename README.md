@@ -4,144 +4,119 @@
 
 # Hebl
 
-*Your robot pays its own loan.*
+*Loans for robots, repaid by the work they do.*
 
-**[Live demo: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)**
+**[Live demo: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)** | [Operator desk](https://selfmade-yc.vercel.app/desk) | [Back a fleet](https://selfmade-yc.vercel.app/invest)
 
-![Tests](https://img.shields.io/badge/tests-7_passing-0297DE)
-![Spoofed hours caught](https://img.shields.io/badge/spoofed_hours_caught-500%2F500-FC734D)
-![False flags](https://img.shields.io/badge/false_flags-2.4%25-0297DE)
-![Model](https://img.shields.io/badge/model-GMI_Cloud-02070A)
-![Payments](https://img.shields.io/badge/payments-Stripe_test_mode-635BFF)
-
-**500 / 500** spoofed hours caught | **2.4%** honest hours flagged | **0** robot lenders using live telemetry found
-<sub>Oracle numbers measured on synthetic telemetry, 11 Nov 2026, `node scripts/eval.ts`. Lender search: our scan, see [Why it's different](#why-its-different).</sub>
+![Tests](https://img.shields.io/badge/tests-8_passing-0297DE)
+![Payments](https://img.shields.io/badge/payments-Stripe_Checkout_(test_keys_pending)-635BFF)
 
 </div>
 
-Robot fleets borrow like it is 1995: a bank prices the robot like a forklift and wants the same payment whether it worked all month or sat broken. Hebl lends against what a robot actually earns, reads that from the robot's own telemetry, and takes repayment as a share of every verified job through Stripe. A robot is the first asset with two cash flows, work and data, and we underwrite both.
+Hebl lends to companies buying robots. Each robot's live telemetry proves the hours it worked; a share of every verified job repays the loan through Stripe, and nothing is due while the robot is idle. At zero, the operator owns the robot. Qualified investors can back pools of these loans and are paid from the same verified jobs.
 
-Built in four hours at c0mpiled-18, the YC Startup School Hackathon in Taipei, for YC's Request for Startups **Wall Street for the Physical Buildout** (Brad Flora), with a hook into **Robots Made in America** (Diana Hu).
+Built at c0mpiled-18, the YC Startup School Hackathon in Taipei, for YC's Request for Startups **Wall Street for the Physical Buildout** (Brad Flora): "Today, banks underwrite a robot like a forklift." Not affiliated with Y Combinator.
 
 ## Try it in two minutes
 | Step | Where | What you see |
 |------|-------|--------------|
-| 1 | `/desk`, click a robot in the 3D fleet | Its value index, FCC status and our offer next to a 10.55% bank loan |
-| 2 | Fund this robot | A `loan.funded` event lands in the sha256 audit chain |
-| 3 | Job inbox, Offer 2, Read offer | The model reads the offer; covenant C1 blocks the $12/h job by name |
-| 4 | Offer 1, Read offer | Accepted. With spoofed hours ticked, orange hours fail the telemetry check and are not billed |
-| 5 | Collect with Stripe | Stripe Checkout (test card 4242 4242 4242 4242). On return, the sweep moves the loan balance |
-| 6 | Tag and license clip | An edge-case failure becomes a data licence; 80% goes to the operator and pays the loan down |
-| 7 | Covenant ledger | Lowering C1 needs both lender and operator; Apply stays disabled until two different people approve |
-| 8 | Audit chain, Tamper, Verify | Editing event 0 is caught |
+| 1 | Landing, "Try it" | Pick a real robot model (sourced list price) and see the advance, the share per job and the bank equivalent |
+| 2 | `/desk`, Today | Yesterday's earnings, what went to lenders, what is down and what it costs |
+| 3 | Fund a robot, then a job offer | The model reads the offer; covenant C1 blocks the $12/h job by name |
+| 4 | Take the $31/h job, faked hours ticked | The server re-checks every telemetry hour and bills only verified ones |
+| 5 | Trigger line jam | The 3D line stops like an e-stop, revenue drops, the repayment flexes down |
+| 6 | `/invest` | Pools by robot type, a live payout feed, payouts pause for the jammed robot |
 
 ## Why it matters
-- US equipment finance was **$1.51T** in 2025, with 55.2% of equipment spend financed ([ELFA via SupplyChain247](https://www.supplychain247.com/article/industry_horizon_report_shows_equipment_finance_industry_expanded_to_1.5_trillion)).
-- Physical AI startups raised **$47.4B** in H1 2026 ([Crunchbase](https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/)), much of it equity spent on hardware that debt should fund.
-- Since 28 Jul 2026 the FCC no longer authorizes new foreign-made mobile robots, humanoids and quadrupeds; fixed arms are excluded ([FCC DA 26-786](https://docs.fcc.gov/public/attachments/DOC-423682A1.pdf)). YC's RFS: more than 65% domestic component cost, 75% in 2029 ([YC RFS](https://www.ycombinator.com/rfs)). That changes what a robot is worth. Our index prices it.
-- YC's RFS, in one line: "Today, banks underwrite a robot like a forklift."
+- US equipment finance was **$1.51T** in 2025, 55.2% of equipment spend financed ([ELFA via SupplyChain247](https://www.supplychain247.com/article/industry_horizon_report_shows_equipment_finance_industry_expanded_to_1.5_trillion)).
+- Physical AI startups raised **$47.4B** in H1 2026 ([Crunchbase](https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/)), much of it equity spent on hardware.
+- US industrial robot installs: **38,400** in 2025, +12% ([IFR](https://ifr.org/downloads/press_docs/EN-2026-SEP-24-IFR_Press_Release_WR-USA.pdf)).
+- Since 28 Jul 2026 the FCC no longer authorizes new foreign-made mobile robots, humanoids and quadrupeds ([FCC DA 26-786](https://docs.fcc.gov/public/attachments/DOC-423682A1.pdf)). That changes what a robot is worth; our value index prices it [modelled].
 
-## Why it's different
-| Who | What they do | What is missing |
-|-----|--------------|-----------------|
-| USD.AI + Aravolta (YC) | GPU loans with live GPU telemetry | GPUs only; no revenue sweep found |
-| Formic | Robots as a service with bundled financing | An operator, not a lender |
-| kineo finance | Asset financing for robot startups | No telemetry pricing found |
-| Silicon Data, Ornn | GPU price indexes | No robot price index exists |
+## Who else is here
+| Who | What they do | Gap |
+|-----|--------------|-----|
+| Banks, equipment lenders | Fixed loans, about 10.5% in our example | Same bill whether the robot works or not |
+| Formic | Robots as a service with financing bundled | An operator, not a lender |
+| USD.AI + Aravolta (YC) | GPU loans priced on live telemetry | GPUs only |
+| Stripe Capital | Repayment as a share of sales | Card sales, not machine output |
 
-- **Repayment rides on revenue.** A share of each verified job, like Stripe Capital, so a slow month means a smaller payment, not a default.
-- **Fake work is the fraud that kills asset lenders.** Every billed hour must match the robot's energy draw inside a calibrated band.
-- **Rules the agent cannot overrule.** Covenants are a ledger; changing one takes two different people.
-- **Two cash flows.** Edge-case clips are licensed to robot model labs; the operator keeps 80%.
+In our scan on 11 Nov 2026 we did not find a lender pricing robot loans on live telemetry with repayment taken per job. That is a search result, not proof.
 
 ## How it works
 ```mermaid
 flowchart LR
-  T[Robot telemetry] --> V[Verify: conformal work oracle]
-  O[Job offer text] --> M[Model reads it: GMI Cloud] --> C[Covenant ledger decides]
-  V --> P[Price: value index + loan]
-  C --> S[Stripe Checkout: job paid]
-  S --> R[Sweep: % to lender, rest to operator]
-  F[Failure clip] --> D[Model tags it] --> L[Licence: 80% to operator, applied to loan]
-  R --> A[(sha256 audit chain)]
-  L --> A
-  C --> A
+  T[Robot telemetry hours] --> S[Server: verify every hour]
+  O[Job offer text] --> M[Model reads it] --> C[Covenant ledger decides]
+  S --> P[Stripe Checkout for verified hours only]
+  P --> R[Share of each job to the loan]
+  R --> I[Investor pools, pro rata]
+  C --> A[(sha256 audit chain)]
+  R --> A
 ```
-| # | Stage | What it does | Code |
-|---|-------|--------------|------|
-| 1 | Verify | Split-conformal band on energy vs cycles; idle or spoofed hours rejected | `lib/engine.ts` `calibrate`, `verifyHour` |
-| 2 | Price | Value = half asset value, half income value, times health; -20% for non-compliant mobile robots [modelled] | `robotValue` |
-| 3 | Lend | Advance 60% of value, one flat 12% fee, sweep 8 to 30% of revenue | `offerLoan`, `applyPayment` |
-| 4 | Govern | Covenants checked in code; quorum of 2 distinct approvers to change | `checkJob`, `canChange` |
-| 5 | Audit | Each event hashed with the previous hash; any edit breaks the chain | `append`, `verifyChain` |
-| 6 | Read | Model turns messy offers and failure notes into JSON; code validates and decides | `app/api/agent/route.ts` |
-| 7 | Pay | Stripe Checkout; only a session Stripe marks paid moves the loan | `app/api/checkout/route.ts` |
-
-## What it looks like
-<img src="docs/desk.png" alt="Lending desk with 3D fleet" width="100%">
+| Stage | What it does | Code |
+|-------|--------------|------|
+| Verify | Split-conformal band on energy vs cycles, run on the server | `lib/engine.ts` `settleHours`, `app/api/checkout/route.ts` |
+| Settle | The desk posts telemetry hours, not an amount; verdicts and a sha256 of the hours go into the Stripe session metadata; each session settles once | `app/api/checkout/route.ts`, `app/desk/page.tsx` |
+| Price | Value from depreciated list price, verified income, health and FCC status [modelled] | `robotValue` |
+| Lend | Advance 60% of value, one flat 12% fee, 8 to 30% of each job | `offerLoan`, `applyPayment` |
+| Govern | Covenants in code; a change needs two distinct approvers | `checkJob`, `canChange` |
+| Market | Live robotics news moves a resale index per robot type; weights are ours | `lib/market.ts`, `app/api/market/route.ts` |
 
 ## The numbers
-| Metric | Ours | How measured |
-|--------|------|--------------|
-| Spoofed hours caught | 500 / 500 | `node scripts/eval.ts`, 500 synthetic spoofed hours (idle and no-energy shapes) |
-| Honest hours wrongly flagged | 12 / 500 (2.4%) | same run, calibrated at alpha 0.02 on 500 separate honest hours |
-| Tests | 7 passing | `npm test` |
+Run `node scripts/eval.ts` (deterministic, synthetic telemetry):
 
-The telemetry is synthetic, so the catch rate shows the mechanism works, not field accuracy. Field accuracy needs a fleet partner.
+| Case | Flagged | Meaning |
+|------|---------|---------|
+| Fraud: idle robot billed as busy | 500/500 (100%) | caught |
+| Fraud: cycles with no energy behind them | 500/500 (100%) | caught |
+| Fraud: energy faked to match cycles | 6/500 (1.2%) | **slips through**: this band alone cannot stop it |
+| Honest: normal physics | 4/500 (0.8%) | false flags |
+| Honest: worn motor, +15% energy | 379/500 (75.8%) | **would wrongly block real work**: the band needs per-robot recalibration |
 
-## Decisions are code: the model only reads
-The model never moves money. It turns a job offer into `{task, hours, payPerHour, client}` and a failure note into `{tag, rarity}`. The server clamps every field, the covenant ledger decides, and licence prices come from a fixed table. If no key is set, an offline parser takes over and the UI says so.
-
-## Built on GMI Cloud and Stripe
-- **GMI Cloud**: OpenAI-compatible endpoint `https://api.gmi-serving.com/v1`, model set by `GMI_MODEL`. Used for reading job offers and tagging failure clips. Falls back to OpenRouter, then to the offline parser. Provider, model and latency are shown on screen.
-- **Stripe**: Checkout in test mode for job payments. The return URL is checked server side with `checkout.sessions.retrieve`; nothing moves unless `payment_status` is `paid`. Next step: Stripe Connect to split the payout at source.
+The last two fraud and drift rows are the honest limits of a single physics band. Next steps: per-robot calibration, cross-checks with job output (counted picks, client confirmation) and a second sensor.
 
 ## What is real, what is simulated
 | Layer | Status |
 |-------|--------|
-| Covenant ledger, two-person rule, sha256 chain | Real |
-| Work oracle | Real code, synthetic telemetry |
-| Model reading offers and clips | Real call when `GMI_API_KEY` is set; offline parser otherwise, labelled |
-| Job payment | Real Stripe Checkout, test mode; simulated if no key, labelled |
-| Fleet, prices, telemetry | [synthetic] |
-| Value index, loan terms, FCC discount, licence prices | [modelled] / [target] |
-| Bank comparison rate 10.55% | Example bank equipment rate from our research |
+| Robot models and list prices | Sourced list prices (`lib/models.ts`) |
+| Robotics news feed | Live RSS; impact weights are ours [modelled] |
+| Hourly rates, fleet, telemetry | [synthetic] |
+| Server-side hour verification and billing | Real code |
+| Stripe Checkout | Real code; test keys not yet set on the live site, so payments run in labelled simulated mode |
+| Model reading offers | GMI Cloud when a key is set; offline parser otherwise, labelled on screen |
+| Covenant two-person rule | Real code, but in the demo one browser clicks both approvals |
+| Loan ledger and audit chain | Real sha256 chain, stored in the browser for the demo |
+| Investor pools (`/invest`) | Demo only, not an offer; yields [modelled] |
+| 3D factory | Illustration of the operator view |
 
 ## Run it locally
 ```bash
 npm install
 cp .env.example .env.local   # optional: GMI, OpenRouter, Stripe test keys
-npm run dev                  # http://localhost:3000
+npm run dev
 ```
-
-## Commands
 | Task | Command |
 |------|---------|
 | Test | `npm test` |
-| Oracle numbers | `node scripts/eval.ts` |
+| Oracle table | `node scripts/eval.ts` |
 | Build | `npm run build` |
 
 ## Stack
-Next.js 16, React 19, Tailwind 4, three.js with react-three-fiber and drei, Stripe, GMI Cloud. Fonts: Instrument Serif and Space Mono.
+Next.js 16, React 19, Tailwind 4, three.js with react-three-fiber, drei and postprocessing, Stripe, GMI Cloud (OpenAI-compatible). Fonts: Red Hat Display, Geist Mono.
 
 ## Repository layout
 | Path | What |
 |------|------|
-| `lib/engine.ts` | Every money decision: oracle, value, loan, covenants, audit chain |
-| `lib/engine.test.ts` | Tests |
-| `app/page.tsx`, `components/BeadCurtain.tsx` | Landing page and the bead-curtain hero |
-| `app/desk/page.tsx`, `components/Fleet3D.tsx` | Lending desk and 3D fleet |
-| `app/api/agent`, `app/api/checkout` | Model and Stripe routes |
-| `scripts/eval.ts` | Prints the measured oracle numbers |
+| `lib/engine.ts` | Every money decision: oracle, settlement, value, loan, covenants, audit chain |
+| `lib/models.ts`, `lib/market.ts`, `lib/photos.ts` | Sourced robot prices, news index, photo credits |
+| `app/page.tsx`, `components/Hero.tsx` | Landing page, calculator, background |
+| `app/desk/page.tsx`, `components/Fleet3D.tsx` | Operator desk and 3D factory |
+| `app/invest/page.tsx` | Back a fleet |
+| `app/api/agent`, `app/api/checkout`, `app/api/market` | Model, payments, news |
 
 ## Known limits
-- No real robots yet: telemetry, prices and the fleet are synthetic.
-- The loan is not funded with real money; Hebl would start as the underwriting layer for licensed equipment lenders.
-- State lives in the browser (localStorage) for the demo.
-- The FCC discount is a modelled assumption, not market data.
+No real robots yet; the pools take no money; the ledger lives in the browser; one physics band cannot catch a careful spoofer.
 
 ## Team
-Karina Kalicka-Molin.
-
-## License
-All rights reserved.
+Karina Kalicka-Molin, Julian Mundelein.
