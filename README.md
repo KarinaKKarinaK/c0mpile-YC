@@ -2,7 +2,7 @@
 
 <img src="docs/brand/banner.svg" alt="Hebl: loans for robots, repaid by the work they do" width="100%">
 
-**[Live demo](https://selfmade-yc.vercel.app)** | [See it run](https://selfmade-yc.vercel.app/pipeline) | [Operator desk](https://selfmade-yc.vercel.app/desk) | [Back a fleet](https://selfmade-yc.vercel.app/invest) | [Releases](https://github.com/KarinaKKarinaK/c0mpile-YC/releases)
+**[Live demo](https://selfmade-yc.vercel.app)** | [Judges' guide](docs/JUDGES_GUIDE.md) | [See it run](https://selfmade-yc.vercel.app/pipeline) | [Operator desk](https://selfmade-yc.vercel.app/desk) | [Back a fleet](https://selfmade-yc.vercel.app/invest) | [Releases](https://github.com/KarinaKKarinaK/c0mpile-YC/releases)
 
 ![Tests](https://img.shields.io/badge/tests-11_passing-0297DE) ![Next.js](https://img.shields.io/badge/Next.js-16-02070A) ![Stripe](https://img.shields.io/badge/Stripe-Checkout-635BFF) ![RFS](https://img.shields.io/badge/YC_RFS-Wall_Street_for_the_Physical_Buildout-FC734D)
 
