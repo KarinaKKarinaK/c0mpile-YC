@@ -27,6 +27,7 @@ export default function Home() {
           <Link href="/"><Logo /></Link>
           <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
             {NAV.map(([l, h]) => <a key={h} href={h} className="hover:text-white">{l}</a>)}
+            <Link href="/invest" className="hover:text-white">Back a fleet</Link>
             <Link href="/desk" className="hover:text-white">Live demo<Arrow /></Link>
           </div>
           <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>

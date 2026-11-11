@@ -131,6 +131,7 @@ export default function Desk() {
       <header className="flex items-center justify-between px-4 py-4 text-[12px] sm:px-6">
         <Link href="/"><Logo /></Link>
         <div className="flex items-center gap-2 text-white/60">
+          <Link href="/invest" className="hover:text-white">Back a fleet</Link>
           <span className="hidden sm:inline">AI: {provider}</span>
           <span className="hidden sm:inline">&middot; Stripe test mode &middot;</span>
           <button className="btn btn-ghost" onClick={() => { localStorage.removeItem(KEY); location.reload(); }}>Reset</button>

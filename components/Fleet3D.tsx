@@ -314,7 +314,7 @@ function Humanoid(p: P & { z: number }) {
     </>
   );
   return (
-    <group position={[-4, 0, p.z - 1.9]}>
+    <group position={[[-6.3, -2.6, -4.7][Math.round((p.z + 5) / 5)] ?? -4, 0, p.z - [1.85, 2.05, 1.95][Math.round((p.z + 5) / 5)]]} rotation={[0, [0.12, -0.18, 0.05][Math.round((p.z + 5) / 5)] ?? 0, 0]}>
       <Pickable {...p} height={2.1}>
         <group ref={g}>
           <RoundedBox args={[0.56, 0.72, 0.32]} radius={0.14} position={[0, 1.44, 0]} castShadow>{shell}</RoundedBox>
