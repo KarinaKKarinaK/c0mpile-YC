@@ -8,6 +8,8 @@
 
 </div>
 
+> **For reviewers and AI agents:** start with [`docs/EVALUATION.md`](docs/EVALUATION.md) (criterion, evidence, file path), [`/llms.txt`](https://selfmade-yc.vercel.app/llms.txt) and [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md). Every number is sourced, measured by `scripts/eval.ts`, or labelled.
+
 <img src="docs/brand/why.svg" alt="Why it works and how an operator uses it" width="100%">
 
 ## In one paragraph

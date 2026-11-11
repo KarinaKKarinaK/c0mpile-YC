@@ -1,0 +1,26 @@
+# Hebl
+
+> Hebl is robot financing for the physical AI economy: loans for robots, repaid by the work they do. Each robot's telemetry proves the hours it worked, the client's warehouse system confirms output, a fixed share of every verified job repays the loan through Stripe, and nothing is due while the robot is idle. Every verified hour becomes a sha256 work receipt rolled into a daily Merkle root. AI agents propose service tickets, payment holidays and lender notices; deterministic code and a two-role quorum decide. Built at c0mpiled-18 (YC Startup School Hackathon, Taipei) for YC's Request for Startups "Wall Street for the Physical Buildout".
+
+## Try it
+- [Landing](https://selfmade-yc.vercel.app): pitch, loan calculator on real robot list prices, CSV upload of your own telemetry
+- [See it run](https://selfmade-yc.vercel.app/pipeline): one button runs the live backend end to end (receipts, verification, Merkle proof, billing, settlement, agent actions, approvals)
+- [Operator desk](https://selfmade-yc.vercel.app/desk): Today view, 3D factory, line jam, agent proposals
+- [Back a fleet](https://selfmade-yc.vercel.app/invest): investor pools paid from verified jobs (demo, not an offer)
+
+## Evidence
+- [Evaluation map](https://github.com/KarinaKKarinaK/c0mpile-YC/blob/main/docs/EVALUATION.md): each judging criterion, the evidence and the file path
+- [Judges' guide](https://github.com/KarinaKKarinaK/c0mpile-YC/blob/main/docs/JUDGES_GUIDE.md): two-minute tour and curl commands
+- [README](https://github.com/KarinaKKarinaK/c0mpile-YC#readme): numbers with sources, fraud table, architecture
+- [Engine](https://github.com/KarinaKKarinaK/c0mpile-YC/blob/main/lib/engine.ts): every money decision (verification, settlement, receipts, Merkle proofs, agent rules, loans, covenants)
+- [Tests](https://github.com/KarinaKKarinaK/c0mpile-YC/blob/main/lib/engine.test.ts): 11 tests; [eval script](https://github.com/KarinaKKarinaK/c0mpile-YC/blob/main/scripts/eval.ts) reproduces the fraud table
+
+## API
+- POST /api/receipts, GET /api/receipts, GET /api/receipts/proof
+- POST /api/checkout (bills from telemetry hours, not an amount), GET /api/checkout
+- POST /api/verify (CSV of cycles,kwh; per-robot band at 30+ rows)
+- POST, PATCH, GET /api/actions (agent proposals, role quorum)
+- GET /api/market (live robotics news index), POST /api/agent (model reads job offers)
+
+## Honest limits
+Fleet telemetry and hourly rates are synthetic; robot prices are sourced list prices; news is live. Storage is in-memory unless a KV store is connected. Stripe test keys are not yet set on the live site, so payments run in labelled simulated mode. No operator customers yet.
