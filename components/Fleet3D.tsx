@@ -1,6 +1,6 @@
 "use client";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment, Html, Lightformer, MeshReflectorMaterial, OrbitControls, RoundedBox, SoftShadows } from "@react-three/drei";
+import { ContactShadows, Environment, Html, Lightformer, OrbitControls, RoundedBox, SoftShadows } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
@@ -88,100 +88,104 @@ function Beacon({ y }: { y: number }) {
   );
 }
 
-function Conveyor({ z, jammed }: { z: number; jammed: boolean }) {
-  const boxes = useRef<THREE.Group>(null);
-  const len = BELT_END - BELT_START;
-  useFrame(({ clock }) => {
-    const t = clock.elapsedTime;
-    boxes.current?.children.forEach((b, i) => {
-      const travel = ((t * SPEED + i * SPACING) % (len + SPACING)) - 0.2;
-      let x = BELT_START + travel;
-      if (jammed) x = Math.min(BELT_START + ((t * SPEED + i * SPACING) % 999), BELT_END - 0.5 - i * 0.62); // queue up at the end
-      b.position.x = x;
-      b.visible = jammed || x < BELT_END - 0.3;
-      b.rotation.z = jammed && i > 2 ? Math.sin(i) * 0.12 : 0;
-    });
-  });
-  const rollers = useMemo(() => Array.from({ length: 22 }, (_, i) => BELT_START + 0.25 + i * (len / 22)), [len]);
-  return (
-    <group position={[0, 0, z]}>
-      <RoundedBox args={[len + 0.4, 0.18, 1.3]} radius={0.04} position={[(BELT_START + BELT_END) / 2, 0.82, 0]} castShadow receiveShadow>{M.graphite}</RoundedBox>
-      <mesh position={[(BELT_START + BELT_END) / 2, 0.93, 0]} receiveShadow><boxGeometry args={[len, 0.04, 1.05]} />{M.rubber}</mesh>
-      {rollers.map((x) => (
-        <mesh key={x} position={[x, 0.86, 0.62]} rotation={[Math.PI / 2, 0, 0]}><cylinderGeometry args={[0.07, 0.07, 0.06, 16]} />{M.steel}</mesh>
-      ))}
-      {[-8.6, -5, -1.5, 0.6].map((x) => [-0.55, 0.55].map((dz) => (
-        <mesh key={`${x}${dz}`} position={[x, 0.37, dz]} castShadow><boxGeometry args={[0.1, 0.74, 0.1]} />{M.steel}</mesh>
-      )))}
-      {[-0.6, 0.6].map((dz) => (
-        <group key={dz}>
-          <mesh position={[(BELT_START + BELT_END) / 2, 1.12, dz]} castShadow><boxGeometry args={[len, 0.04, 0.04]} />{M.steel}</mesh>
-          {Array.from({ length: 9 }, (_, k) => BELT_START + 0.4 + k * (len - 0.8) / 8).map((x) => <mesh key={x} position={[x, 1.02, dz]}><boxGeometry args={[0.03, 0.2, 0.03]} />{M.steel}</mesh>)}
-        </group>
-      ))}
-      <group position={[BELT_START - 0.35, 0, 0]}>
-        <RoundedBox args={[0.6, 0.5, 1.2]} radius={0.04} position={[0, 0.82, 0]} castShadow>{M.graphite}</RoundedBox>
-        <mesh position={[0, 0.82, 0.75]} rotation={[Math.PI / 2, 0, 0]} castShadow><cylinderGeometry args={[0.16, 0.16, 0.35, 28]} />{M.white}</mesh>
-      </group>
-      <group position={[BELT_START - 0.4, 0, -1.3]}>
-        <RoundedBox args={[0.7, 1.7, 0.45]} radius={0.03} position={[0, 0.85, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
-        <mesh position={[0, 1.25, 0.231]}><planeGeometry args={[0.42, 0.28]} /><meshStandardMaterial color="#0b2233" emissive={jammed ? "#FC734D" : "#0297DE"} emissiveIntensity={0.6} /></mesh>
-        <mesh position={[0.18, 0.75, 0.231]}><circleGeometry args={[0.05, 20]} /><meshStandardMaterial color="#c62828" /></mesh>
-        <mesh position={[0, 2.05, 0]}><cylinderGeometry args={[0.025, 0.025, 0.6, 10]} />{M.steel}</mesh>
-        {[["#2e7d32", !jammed], ["#f9a825", jammed], ["#c62828", false]].map(([c, on], k) => (
-          <mesh key={k} position={[0, 2.4 + k * 0.13, 0]}><cylinderGeometry args={[0.07, 0.07, 0.12, 20]} /><meshStandardMaterial color={c as string} emissive={c as string} emissiveIntensity={on ? 2.2 : 0.05} transparent opacity={0.9} /></mesh>
-        ))}
-      </group>
-      <group ref={boxes}>
-        {Array.from({ length: 5 }, (_, i) => (
-          <RoundedBox key={i} args={[0.55, 0.42, 0.55]} radius={0.03} position={[0, 1.17, 0]} castShadow>{M.card}</RoundedBox>
-        ))}
-      </group>
-    </group>
-  );
-}
+// One production line with a single time base: infeed machine -> belt -> stop plate -> arm pick
+// -> outfeed belt -> wrap tunnel. A fault stops the whole line in place (e-stop), like a real cell.
+const STOP = BELT_END - 0.35, ENTRY = BELT_START + 0.6, P_BOX = SPACING / SPEED;
+const T_BELT = (STOP - ENTRY) / SPEED, OUT_FROM = 1.45, OUT_LEN = 1.4;
+const smooth = (x: number) => x * x * (3 - 2 * x);
 
-function Arm(p: P & { z: number }) {
+function Line(p: P & { z: number }) {
+  const jammed = !!p.rb.faulted;
+  const tb = useRef({ off: 0, frozenAt: -1 });
+  const boxes = useRef<THREE.Group>(null), outBoxes = useRef<THREE.Group>(null);
   const turret = useRef<THREE.Group>(null), shoulder = useRef<THREE.Group>(null), elbow = useRef<THREE.Group>(null), held = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
-    if (p.rb.faulted) { // frozen mid-swing
-      turret.current!.rotation.y = 0.7; shoulder.current!.rotation.z = -0.15; elbow.current!.rotation.z = 0.4; held.current!.visible = false; return;
-    }
-    const ph = ((clock.elapsedTime * SPEED) / SPACING) % 1; // one pick per box
-    const swing = ph < 0.5 ? Math.sin(ph * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5 : Math.sin((1 - ph) * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5;
-    turret.current!.rotation.y = -Math.PI / 2 + swing * Math.PI * 0.62;
-    shoulder.current!.rotation.z = -0.55 + Math.sin(ph * Math.PI * 4) * 0.12;
-    elbow.current!.rotation.z = 1.1 - Math.sin(ph * Math.PI * 4) * 0.25;
-    held.current!.visible = ph < 0.5;
+    const now = clock.elapsedTime, k = tb.current;
+    if (jammed && k.frozenAt < 0) k.frozenAt = now;
+    if (!jammed && k.frozenAt >= 0) { k.off += now - k.frozenAt; k.frozenAt = -1; }
+    const t = (k.frozenAt >= 0 ? k.frozenAt : now) - k.off + 60; // start with a full line
+    const kNow = Math.floor(t / P_BOX);
+    const place = (grp: THREE.Group | null, onBelt: boolean) => grp?.children.forEach((bx, j) => {
+      const kk = kNow - ((((kNow - j) % 8) + 8) % 8);
+      const age = t - kk * P_BOX;
+      if (onBelt) { bx.visible = age < T_BELT || (jammed && age >= T_BELT && age < T_BELT + 0.01); bx.position.set(Math.min(ENTRY + age * SPEED, STOP), 1.17, 0); }
+      else { const o = age - T_BELT - P_BOX / 2; bx.visible = o >= 0 && o < OUT_LEN / SPEED; bx.position.set(2.4, 1.17, OUT_FROM + Math.max(0, o) * SPEED); }
+    });
+    place(boxes.current, true); place(outBoxes.current, false);
+    // arm: pick at the stop plate, swing 90 degrees, drop on the outfeed, swing back
+    const ph = ((((t - T_BELT) % P_BOX) + P_BOX) % P_BOX) / P_BOX;
+    const s = ph < 0.5 ? smooth(ph * 2) : smooth((1 - ph) * 2);
+    const dip = Math.max(0, 1 - Math.min(ph, Math.abs(ph - 0.5), 1 - ph) * 10); // lower near pick and place
+    turret.current!.rotation.y = Math.PI + s * (Math.PI / 2);
+    shoulder.current!.rotation.z = -0.45 - dip * 0.22;
+    elbow.current!.rotation.z = -1.15 + dip * 0.18;
+    held.current!.visible = ph < 0.5 && !(jammed && ph < 0.02);
   });
+  const len = BELT_END - BELT_START;
+  const rollers = useMemo(() => Array.from({ length: 22 }, (_, i) => BELT_START + 0.25 + i * (len / 22)), [len]);
   return (
-    <group position={[2.4, 0, p.z]}>
-      <Pickable {...p} height={2.6}>
-        <RoundedBox args={[1.2, 0.3, 1.2]} radius={0.05} position={[0, 0.15, 0]} castShadow>{M.graphite}</RoundedBox>
-        {[[-0.48, -0.48], [0.48, -0.48], [-0.48, 0.48], [0.48, 0.48]].map(([x, z]) => <mesh key={`${x}${z}`} position={[x, 0.32, z]}><cylinderGeometry args={[0.04, 0.04, 0.05, 12]} />{M.steel}</mesh>)}
-        <group ref={turret} position={[0, 0.3, 0]}>
-          <mesh position={[0, 0.25, 0]} castShadow><cylinderGeometry args={[0.42, 0.5, 0.5, 40]} />{M.paint}</mesh>
-          <group ref={shoulder} position={[0, 0.65, 0]}>
-            <mesh rotation={[Math.PI / 2, 0, 0]} castShadow><cylinderGeometry args={[0.24, 0.24, 0.62, 32]} />{M.graphite}</mesh>
-            <RoundedBox args={[0.34, 1.5, 0.34]} radius={0.12} position={[0, 0.75, 0]} castShadow>{M.paint}</RoundedBox>
-            <group ref={elbow} position={[0, 1.5, 0]}>
-              <mesh rotation={[Math.PI / 2, 0, 0]} castShadow><cylinderGeometry args={[0.19, 0.19, 0.5, 32]} />{M.graphite}</mesh>
-              <RoundedBox args={[1.35, 0.26, 0.26]} radius={0.1} position={[0.65, 0, 0]} castShadow>{M.paint}</RoundedBox>
-              <group position={[1.35, -0.1, 0]}>
-                <mesh castShadow><cylinderGeometry args={[0.11, 0.11, 0.26, 24]} />{M.steel}</mesh>
-                {[-0.1, 0.1].map((dz) => <mesh key={dz} position={[0, -0.22, dz]} castShadow><boxGeometry args={[0.06, 0.24, 0.04]} />{M.steel}</mesh>)}
-                <mesh ref={held} position={[0, -0.55, 0]} castShadow><boxGeometry args={[0.5, 0.4, 0.5]} />{M.card}</mesh>
+    <group position={[0, 0, p.z]}>
+      {/* main belt */}
+      <RoundedBox args={[len + 0.4, 0.18, 1.3]} radius={0.04} position={[(BELT_START + BELT_END) / 2, 0.82, 0]} castShadow receiveShadow>{M.graphite}</RoundedBox>
+      <mesh position={[(BELT_START + BELT_END) / 2, 0.93, 0]} receiveShadow><boxGeometry args={[len, 0.04, 1.05]} />{M.rubber}</mesh>
+      {rollers.map((x) => <mesh key={x} position={[x, 0.86, 0.62]} rotation={[Math.PI / 2, 0, 0]}><cylinderGeometry args={[0.07, 0.07, 0.06, 16]} />{M.steel}</mesh>)}
+      {[-8.6, -5, -1.5, 0.6].map((x) => [-0.55, 0.55].map((dz) => <mesh key={`${x}${dz}`} position={[x, 0.37, dz]} castShadow><boxGeometry args={[0.1, 0.74, 0.1]} />{M.steel}</mesh>))}
+      {[-0.6, 0.6].map((dz) => <mesh key={dz} position={[(BELT_START + BELT_END) / 2 + 0.6, 1.12, dz]} castShadow><boxGeometry args={[len - 1.2, 0.04, 0.04]} />{M.steel}</mesh>)}
+      <mesh position={[STOP + 0.33, 1.1, 0]} castShadow><boxGeometry args={[0.06, 0.3, 1.1]} />{M.paint}</mesh>
+      {/* infeed machine the boxes come out of */}
+      <group position={[BELT_START + 0.4, 0, 0]}>
+        <RoundedBox args={[1.3, 1.9, 1.6]} radius={0.05} position={[0, 0.95, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
+        <mesh position={[0.651, 1.2, 0]}><planeGeometry args={[0.02, 0.01]} /></mesh>
+        <mesh position={[0.66, 1.18, 0]} rotation={[0, Math.PI / 2, 0]}><planeGeometry args={[0.8, 0.55]} /><meshStandardMaterial color="#05090c" /></mesh>
+        <mesh position={[0, 1.95, 0.81]}><planeGeometry args={[0.5, 0.3]} /><meshStandardMaterial color="#0b2233" emissive="#0297DE" emissiveIntensity={0.4} /></mesh>
+      </group>
+      <group ref={boxes}>{Array.from({ length: 8 }, (_, i) => <RoundedBox key={i} args={[0.55, 0.42, 0.55]} radius={0.03} castShadow>{M.card}</RoundedBox>)}</group>
+      {/* control cabinet + stack light */}
+      <group position={[BELT_START + 1.6, 0, -1.3]}>
+        <RoundedBox args={[0.7, 1.7, 0.45]} radius={0.03} position={[0, 0.85, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
+        <mesh position={[0, 1.25, 0.231]}><planeGeometry args={[0.42, 0.28]} /><meshStandardMaterial color="#0b2233" emissive={jammed ? "#FC734D" : "#0297DE"} emissiveIntensity={0.6} /></mesh>
+        <mesh position={[0, 2.05, 0]}><cylinderGeometry args={[0.025, 0.025, 0.6, 10]} />{M.steel}</mesh>
+        {[["#2e7d32", !jammed], ["#f9a825", jammed], ["#c62828", false]].map(([c, on], k) => (
+          <mesh key={k} position={[0, 2.4 + k * 0.13, 0]}><cylinderGeometry args={[0.07, 0.07, 0.12, 20]} /><meshStandardMaterial color={c as string} emissive={c as string} emissiveIntensity={on ? 2.2 : 0.05} /></mesh>
+        ))}
+      </group>
+      {/* arm */}
+      <group position={[2.4, 0, 0]}>
+        <Pickable {...p} height={2.6}>
+          <RoundedBox args={[1.2, 0.3, 1.2]} radius={0.05} position={[0, 0.15, 0]} castShadow>{M.graphite}</RoundedBox>
+          {[[-0.48, -0.48], [0.48, -0.48], [-0.48, 0.48], [0.48, 0.48]].map(([x, z]) => <mesh key={`${x}${z}`} position={[x, 0.32, z]}><cylinderGeometry args={[0.04, 0.04, 0.05, 12]} />{M.steel}</mesh>)}
+          <group ref={turret} position={[0, 0.3, 0]}>
+            <mesh position={[0, 0.25, 0]} castShadow><cylinderGeometry args={[0.42, 0.5, 0.5, 40]} />{M.paint}</mesh>
+            <group ref={shoulder} position={[0, 0.65, 0]}>
+              <mesh rotation={[Math.PI / 2, 0, 0]} castShadow><cylinderGeometry args={[0.24, 0.24, 0.62, 32]} />{M.graphite}</mesh>
+              <RoundedBox args={[0.34, 1.3, 0.34]} radius={0.12} position={[0, 0.65, 0]} castShadow>{M.paint}</RoundedBox>
+              <group ref={elbow} position={[0, 1.3, 0]}>
+                <mesh rotation={[Math.PI / 2, 0, 0]} castShadow><cylinderGeometry args={[0.19, 0.19, 0.5, 32]} />{M.graphite}</mesh>
+                <RoundedBox args={[0.26, 1.35, 0.26]} radius={0.1} position={[0, 0.62, 0]} castShadow>{M.paint}</RoundedBox>
+                <group position={[0, 1.3, 0]} rotation={[0, 0, 1.6]}>
+                  <mesh castShadow><cylinderGeometry args={[0.11, 0.11, 0.26, 24]} />{M.steel}</mesh>
+                  {[-0.1, 0.1].map((dz) => <mesh key={dz} position={[0, -0.22, dz]} castShadow><boxGeometry args={[0.06, 0.24, 0.04]} />{M.steel}</mesh>)}
+                  <mesh ref={held} position={[0, -0.55, 0]} castShadow><boxGeometry args={[0.5, 0.4, 0.5]} />{M.card}</mesh>
+                </group>
               </group>
             </group>
           </group>
-        </group>
-      </Pickable>
-      <group position={[0, 0, 2.3]}>
-        <mesh position={[0, 0.08, 0]} castShadow receiveShadow><boxGeometry args={[1.3, 0.16, 1.1]} /><meshStandardMaterial color="#6b5236" roughness={0.9} /></mesh>
-        {[[-0.3, 0.38, -0.25], [0.3, 0.38, -0.25], [-0.3, 0.38, 0.25], [0.3, 0.38, 0.25], [0, 0.8, 0]].map(([x, y, zz], i) => (
-          <mesh key={i} position={[x, y, zz]} castShadow><boxGeometry args={[0.55, 0.42, 0.48]} />{M.card}</mesh>
-        ))}
+        </Pickable>
       </group>
+      {/* outfeed belt into the wrap tunnel */}
+      <group position={[2.4, 0, OUT_FROM + 0.7]}>
+        <RoundedBox args={[1.0, 0.16, 1.9]} radius={0.04} position={[0, 0.84, 0]} castShadow receiveShadow>{M.graphite}</RoundedBox>
+        <mesh position={[0, 0.94, 0]}><boxGeometry args={[0.85, 0.03, 1.85]} />{M.rubber}</mesh>
+        {[-0.7, 0.7].map((dz) => [-0.4, 0.4].map((dx) => <mesh key={`${dx}${dz}`} position={[dx, 0.38, dz]}><boxGeometry args={[0.08, 0.76, 0.08]} />{M.steel}</mesh>))}
+      </group>
+      <group ref={outBoxes}>{Array.from({ length: 8 }, (_, i) => <RoundedBox key={i} args={[0.55, 0.42, 0.55]} radius={0.03} castShadow>{M.card}</RoundedBox>)}</group>
+      <group position={[2.4, 0, OUT_FROM + OUT_LEN + 0.35]}>
+        <RoundedBox args={[1.4, 1.6, 1.0]} radius={0.05} position={[0, 0.8, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
+        <mesh position={[0, 1.15, -0.505]}><planeGeometry args={[0.8, 0.55]} /><meshStandardMaterial color="#05090c" /></mesh>
+      </group>
+      {/* fence behind the arm */}
+      <mesh position={[2.4, 0.95, -1.15]}><planeGeometry args={[2.2, 1.5]} /><meshStandardMaterial color="#c9a227" transparent opacity={0.3} side={THREE.DoubleSide} /></mesh>
+      {[1.3, 3.5].map((x) => <mesh key={x} position={[x, 0.9, -1.15]} castShadow><boxGeometry args={[0.07, 1.8, 0.07]} /><meshStandardMaterial color="#c9a227" /></mesh>)}
     </group>
   );
 }
@@ -295,28 +299,13 @@ function Racks() {
   );
 }
 
-// Yellow safety fencing around each arm cell: posts, mesh panels.
-function Fence({ z }: { z: number }) {
-  const panel = <meshStandardMaterial color="#c9a227" metalness={0.3} roughness={0.5} transparent opacity={0.35} side={THREE.DoubleSide} />;
-  return (
-    <group position={[2.4, 0, z]}>
-      {[[-1.6, -1.4], [1.6, -1.4], [1.6, 1.4], [3.0, 1.4], [3.0, 3.5], [1.6, 3.5]].map(([x, zz], i) => (
-        <mesh key={i} position={[x, 0.9, zz]} castShadow><boxGeometry args={[0.07, 1.8, 0.07]} /><meshStandardMaterial color="#c9a227" metalness={0.4} roughness={0.4} /></mesh>
-      ))}
-      <mesh position={[0, 0.95, -1.4]}><planeGeometry args={[3.2, 1.5]} />{panel}</mesh>
-      <mesh position={[1.6, 0.95, 0]} rotation={[0, Math.PI / 2, 0]}><planeGeometry args={[2.8, 1.5]} />{panel}</mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}><ringGeometry args={[1.5, 1.6, 64]} /><meshStandardMaterial color="#c9a227" roughness={0.7} /></mesh>
-    </group>
-  );
-}
-
 function Building() {
   const tex = useTextures();
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1, 0, 0.25]} receiveShadow>
         <planeGeometry args={[30, 24]} />
-        <MeshReflectorMaterial blur={[300, 80]} resolution={512} mixBlur={1} mixStrength={2.5} roughness={0.92} depthScale={0.6} minDepthThreshold={0.6} maxDepthThreshold={1.2} color="#7d878f" metalness={0.15} mirror={0} map={tex?.concrete} roughnessMap={tex?.concrete} />
+        <meshStandardMaterial color="#8f969c" roughness={0.97} metalness={0} map={tex?.concrete ?? null} />
       </mesh>
       {LINES.map((z) => <mesh key={z} rotation={[-Math.PI / 2, 0, 0]} position={[-4, 0.01, z + 1.05]}><planeGeometry args={[11, 0.08]} /><meshStandardMaterial color="#c9a227" roughness={0.6} /></mesh>)}
       <mesh position={[1, 5, -11.6]} receiveShadow><boxGeometry args={[30, 10, 0.3]} />{M.wall}</mesh>
@@ -334,8 +323,10 @@ function Building() {
           <mesh position={[x, 8.6, 0]}><boxGeometry args={[0.2, 0.35, 24]} />{M.graphite}</mesh>
         </group>
       ))}
+      <mesh position={[1, 0.45, 12.3]} receiveShadow castShadow><boxGeometry args={[30, 0.9, 0.25]} />{M.wall}</mesh>
+      <mesh position={[16.1, 0.45, 0.25]} receiveShadow castShadow><boxGeometry args={[0.25, 0.9, 24]} />{M.wall}</mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1, -0.02, 0.25]}><planeGeometry args={[80, 70]} /><meshStandardMaterial color="#0a0d10" roughness={1} /></mesh>
       <Racks />
-      {LINES.map((z) => <Fence key={`f${z}`} z={z} />)}
       {LINES.map((z) => (
         <group key={z} position={[-4, 6.2, z]}>
           <mesh><boxGeometry args={[9, 0.08, 0.35]} /><meshStandardMaterial color="#ffffff" emissive="#dff3ff" emissiveIntensity={3} toneMapped={false} /></mesh>
@@ -352,15 +343,14 @@ export default function Fleet3D({ fleet, selected, onSelect }: { fleet: Robot[];
   const props = (rb: Robot) => ({ rb, selected: rb.id === selected, onSelect, max });
   return (
     <Canvas shadows camera={{ position: [13, 9, 15], fov: 38 }} dpr={[1, 1.5]} gl={{ antialias: false, toneMapping: THREE.ACESFilmicToneMapping }}>
-      <color attach="background" args={["#02070A"]} />
+      <color attach="background" args={["#0a0d10"]} />
       <SoftShadows size={22} samples={10} focus={0.6} />
       <fog attach="fog" args={["#05090c", 26, 60]} />
       <hemisphereLight args={["#dfefff", "#2a2420", 0.55]} />
       <directionalLight position={[8, 14, 6]} intensity={0.9} castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-14} shadow-bias={-0.0003} />
             <pointLight position={[11, 4, 8]} color="#ffe9d6" intensity={18} distance={18} />
       <Building />
-      {LINES.map((z, i) => <Conveyor key={z} z={z} jammed={!!by("Arm")[i]?.faulted} />)}
-      {by("Arm").map((rb, i) => <Arm key={rb.id} {...props(rb)} z={LINES[i]} />)}
+      {by("Arm").map((rb, i) => <Line key={rb.id} {...props(rb)} z={LINES[i]} />)}
       {by("Humanoid").map((rb, i) => <Humanoid key={rb.id} {...props(rb)} z={LINES[i]} />)}
       {by("AMR").map((rb, i) => <Amr key={rb.id} {...props(rb)} i={i} />)}
       {by("Quadruped").map((rb, i) => <Quadruped key={rb.id} {...props(rb)} i={i} />)}
