@@ -8,7 +8,7 @@
 
 **[Live demo: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)** | [Operator desk](https://selfmade-yc.vercel.app/desk) | [Back a fleet](https://selfmade-yc.vercel.app/invest)
 
-![Tests](https://img.shields.io/badge/tests-8_passing-0297DE)
+![Tests](https://img.shields.io/badge/tests-9_passing-0297DE)
 ![Payments](https://img.shields.io/badge/payments-Stripe_Checkout_(test_keys_pending)-635BFF)
 
 </div>
@@ -74,7 +74,15 @@ Run `node scripts/eval.ts` (deterministic, synthetic telemetry):
 | Honest: normal physics | 4/500 (0.8%) | false flags |
 | Honest: worn motor, +15% energy | 379/500 (75.8%) | **would wrongly block real work**: the band needs per-robot recalibration |
 
-The last two fraud and drift rows are the honest limits of a single physics band. Next steps: per-robot calibration, cross-checks with job output (counted picks, client confirmation) and a second sensor.
+Those are the honest limits of a single physics band, so we added two fixes (same script):
+
+| With the fix | Flagged | Meaning |
+|--------------|---------|---------|
+| Fraud: energy faked, checked against the client's own confirmed output | 500/500 (100%) | caught: a second, independent source |
+| Honest: normal, checked against client output | 13/500 (2.6%) | the price of the extra check |
+| Honest: worn motor, judged against its own fitted energy line | 10/500 (2.0%) | per-robot band fixes drift |
+
+Operators can test this with their own data: upload a CSV of `cycles,kwh` per hour on the landing page (`app/api/verify`). With 30+ rows the server fits that robot's own band.
 
 ## What is real, what is simulated
 | Layer | Status |
@@ -88,6 +96,8 @@ The last two fraud and drift rows are the honest limits of a single physics band
 | Covenant two-person rule | Real code, but in the demo one browser clicks both approvals |
 | Loan ledger and audit chain | Real sha256 chain, stored in the browser for the demo |
 | Investor pools (`/invest`) | Demo only, not an offer; yields [modelled] |
+| Telemetry CSV upload | Real: server verifies your rows and prices an offer [modelled pricing] |
+| Lender model | Software fee per loan on partner capital; no own balance sheet at start |
 | 3D factory | Illustration of the operator view |
 
 ## Run it locally
@@ -116,7 +126,7 @@ Next.js 16, React 19, Tailwind 4, three.js with react-three-fiber, drei and post
 | `app/api/agent`, `app/api/checkout`, `app/api/market` | Model, payments, news |
 
 ## Known limits
-No real robots yet; the pools take no money; the ledger lives in the browser; one physics band cannot catch a careful spoofer.
+No real fleet partner yet (operators can upload their own logs); the pools take no money; the ledger lives in the browser; the client-output check needs a WMS integration per customer.
 
 ## Team
 Karina Kalicka-Molin, Julian Mundelein.

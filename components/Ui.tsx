@@ -88,5 +88,31 @@ export function StickyHeader({ children }: { children: ReactNode }) {
     on(); window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
-  return <header className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${solid ? "border-b border-dashed border-white/15 bg-ink/80 backdrop-blur-md" : "border-b border-transparent bg-transparent"}`}>{children}</header>;
+  return <header className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 border-b border-dashed border-white/15 ${solid ? "bg-ink/80 backdrop-blur-md" : "bg-transparent"}`}>{children}</header>;
+}
+
+// Nav links that show where you are: current section on the landing page, or the current page.
+export function NavLinks({ items }: { items: { label: string; href: string }[] }) {
+  const [active, setActive] = useState("");
+  useEffect(() => {
+    if (location.pathname !== "/") { setActive(location.pathname); return; }
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && setActive(`#${e.target.id}`)), { rootMargin: "-45% 0px -50% 0px" });
+    items.filter((i) => i.href.startsWith("#")).forEach((i) => { const el = document.querySelector(i.href); if (el) io.observe(el); });
+    const top = () => window.scrollY < 200 && setActive("");
+    window.addEventListener("scroll", top, { passive: true });
+    return () => { io.disconnect(); window.removeEventListener("scroll", top); };
+  }, [items]);
+  return (
+    <div className="hidden gap-10 font-mono text-[10px] uppercase tracking-[0.2em] md:flex">
+      {items.map((i) => {
+        const on = active === i.href;
+        return (
+          <a key={i.href} href={i.href} aria-current={on ? "page" : undefined} className={`relative pb-1 transition-colors ${on ? "text-white" : "text-white/55 hover:text-white"}`}>
+            {i.label}
+            <span className={`absolute inset-x-0 -bottom-0.5 h-px bg-orange transition-transform duration-300 ${on ? "scale-x-100" : "scale-x-0"}`} />
+          </a>
+        );
+      })}
+    </div>
+  );
 }

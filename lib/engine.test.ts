@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  evalOracle, seedFleet, settleHours, offerLoan, applyPayment, licenseClip, checkJob, COVENANTS,
+  evalOracle, evalFixes, seedFleet, settleHours, offerLoan, applyPayment, licenseClip, checkJob, COVENANTS,
   canChange, append, verifyChain, fccCompliant, robotValue, stress, parseJobOffline,
 } from "./engine.ts";
 
@@ -62,4 +62,11 @@ test("stress: a 40% uptime drop shrinks our payment instead of missing one", () 
 test("offline parser reads a plain job offer", () => {
   const j = parseJobOffline("Pallet moving for Acme Foods, 6 hours at $31/h");
   assert.deepEqual(j, { task: "pallet", hours: 6, payPerHour: 31, client: "Acme Foods" });
+});
+
+test("fixes: client output catches the careful spoofer; per-robot band stops blocking worn motors", () => {
+  const [spoof, honest, worn] = evalFixes();
+  assert.ok(spoof.rate >= 0.95, `spoof ${spoof.rate}`);
+  assert.ok(honest.rate <= 0.05, `honest ${honest.rate}`);
+  assert.ok(worn.rate <= 0.06, `worn ${worn.rate}`);
 });

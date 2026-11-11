@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Drip, Estimator, FilmPhoto, Wave } from "@/components/Hero";
+import { Drip, Estimator, FilmPhoto, UploadTry, Wave } from "@/components/Hero";
 import { PHOTOS } from "@/lib/photos";
-import { Logo, StickyHeader } from "@/components/Ui";
+import { Logo, NavLinks, StickyHeader } from "@/components/Ui";
 
 const NAV = [["How it works", "#how"], ["Advantages", "#why"], ["Start", "#start"]];
 const HOW = [
@@ -11,6 +11,7 @@ const HOW = [
   { k: "Own it at zero", d: "One flat 12% fee, no interest. When the balance hits zero, the robot is yours." },
 ];
 const WHY = [
+  { q: "For lenders: your capital, our rails", a: "You fund the loans and keep them on your book. Hebl prices each robot from its own data, verifies every billed hour against telemetry and the client's warehouse system, and collects through Stripe. We charge a software fee per loan, so we can start without a lending licence or our own balance sheet." },
   { q: "Nothing due when it's down", a: "A jammed line or a broken gripper means a smaller payment, not a missed one. Banks bill the same either way." },
   { q: "An offer in ten seconds", a: "Pick the model. We price from list price, expected hours and live market data. No forms." },
   { q: "Real robots, real prices", a: "Universal Robots, FANUC, Unitree, Boston Dynamics, Agility and more, at their sourced list prices." },
@@ -25,11 +26,7 @@ export default function Home() {
       <StickyHeader>
         <nav className="mx-auto flex max-w-7xl items-center justify-between border-x border-dashed border-white/15 px-6 py-4">
           <Link href="/"><Logo /></Link>
-          <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
-            {NAV.map(([l, h]) => <a key={h} href={h} className="hover:text-white">{l}</a>)}
-            <Link href="/invest" className="hover:text-white">Back a fleet</Link>
-            <Link href="/desk" className="hover:text-white">Live demo<Arrow /></Link>
-          </div>
+          <NavLinks items={[{ label: "How it works", href: "#how" }, { label: "For lenders", href: "#why" }, { label: "Start", href: "#start" }, { label: "Back a fleet", href: "/invest" }, { label: "Live demo", href: "/desk" }]} />
           <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>
         </nav>
       </StickyHeader>
@@ -37,10 +34,16 @@ export default function Home() {
         <div className="absolute inset-0 -z-10"><Wave /></div>
         <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[20vh] md:pl-[16%]">
           <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
-            Loans for robots,<br />repaid by the <em className="text-orange">work they do</em>.
+            <span className="fade-line inline-block">Loans for robots,</span><br />
+            <span className="fade-line inline-block" style={{ animationDelay: "160ms" }}>repaid by the <em className="text-orange">work they do</em>.</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80">Hebl lends to companies buying robots. We read each robot&apos;s live data, take a small share of every job it completes as repayment, and take nothing when it sits idle. When the balance hits zero, the robot is yours.</p>
-          <Link href="/desk" className="group mt-12 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">
+          <p className="fade-line mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80" style={{ animationDelay: "320ms" }}>You get the robot with our money. It pays us back a small share of every job it does, and nothing on days it sits idle.</p>
+          <ol className="fade-line mt-8 grid max-w-3xl gap-px border border-dashed border-white/15 sm:grid-cols-3" style={{ animationDelay: "480ms" }}>
+            {[["1", "Your robot works", "It logs every hour itself."], ["2", "We verify each hour", "Its telemetry and your warehouse system must agree."], ["3", "A share repays the loan", "Of every paid job. Idle hours cost nothing."]].map(([n, k, d]) => (
+              <li key={n} className="bg-ink/40 p-4 backdrop-blur-sm"><span className="font-mono text-[10px] text-orange">{n}</span><div className="mt-1 text-[15px] font-bold">{k}</div><div className="text-[12px] text-white/60">{d}</div></li>
+            ))}
+          </ol>
+          <Link href="/desk" style={{ animationDelay: "640ms" }} className="fade-line group mt-10 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">
             Open the live factory
             <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-white transition-transform group-hover:rotate-45">&#8599;</span>
           </Link>
@@ -54,6 +57,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl border-x border-dashed border-white/15 px-6 py-20 md:pl-[16%]">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( Try it )</p>
           <div className="mt-6"><Estimator /></div>
+          <p className="mt-16 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( Or bring your own robot&apos;s log )</p>
+          <div className="mt-5"><UploadTry /></div>
         </div>
       </section>
 

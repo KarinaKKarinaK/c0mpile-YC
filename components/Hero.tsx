@@ -121,3 +121,38 @@ export function FilmPhoto({ src, title, line, credit, page }: { src: string; tit
     </figure>
   );
 }
+
+// Bring your own data: paste or upload a telemetry CSV (cycles,kwh per hour) and get verified hours and an offer.
+export function UploadTry() {
+  const [csv, setCsv] = useState("");
+  const [res, setRes] = useState<null | { rows: number; verified: number; rejected: number; band: string; model: string; offer: { advance: number; sweepPct: number }; error?: string }>(null);
+  const [busy, setBusy] = useState(false);
+  const sample = () => {
+    let seed = 5; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const rows = Array.from({ length: 60 }, (_, i) => { const c = i % 11 === 5 ? 4 + r() * 6 : 60 + r() * 140; return `${c.toFixed(0)},${(0.0138 * c + 0.35 + (r() - 0.5) * 0.3).toFixed(3)}`; });
+    setCsv("cycles,kwh\n" + rows.join("\n"));
+  };
+  const run = async () => {
+    setBusy(true);
+    const d = await fetch("/api/verify", { method: "POST", body: JSON.stringify({ csv, model: "Spot" }) }).then((x) => x.json()).catch(() => ({ error: "Network error" }));
+    setRes(d); setBusy(false);
+  };
+  return (
+    <div className="max-w-3xl">
+      <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.15em]">
+        <label className="cursor-pointer rounded-md border border-white/25 px-4 py-2.5 hover:bg-white hover:text-ink">
+          Upload CSV<input type="file" accept=".csv,.txt" className="hidden" onChange={async (e) => { const f = e.target.files?.[0]; if (f) setCsv(await f.text()); }} />
+        </label>
+        <button onClick={sample} className="rounded-md border border-white/25 px-4 py-2.5 hover:bg-white hover:text-ink">Use a sample log</button>
+        <button onClick={run} disabled={!csv || busy} className="rounded-md bg-orange px-4 py-2.5 text-ink disabled:opacity-40">{busy ? "Checking..." : "Verify and price"}</button>
+        <span className="normal-case tracking-normal text-white/40">one row per hour: cycles,kwh</span>
+      </div>
+      {csv && <pre className="mt-4 max-h-28 overflow-auto rounded-md border border-dashed border-white/15 p-3 font-mono text-[11px] text-white/50">{csv.slice(0, 600)}</pre>}
+      {res && (res.error ? <p className="mt-4 text-[13px] text-orange">{res.error}</p> : (
+        <p className="mt-5 text-[clamp(18px,2vw,26px)] font-light leading-snug">
+          <b className="font-bold italic">{res.verified}</b> of {res.rows} hours verified, <b className="font-bold italic text-orange">{res.rejected}</b> rejected ({res.band} band). A {res.model} working like this gets <b className="font-bold italic text-orange">${res.offer.advance.toLocaleString()}</b> and repays <b className="font-bold italic">{Math.round(res.offer.sweepPct * 100)}%</b> of each job. [modelled]
+        </p>
+      ))}
+    </div>
+  );
+}

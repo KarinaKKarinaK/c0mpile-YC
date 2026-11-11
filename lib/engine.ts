@@ -122,6 +122,45 @@ export function evalOracle(seed = 7, n = 500) {
   ].map((x) => ({ ...x, rate: x.flagged / x.n }));
   return { rows, band };
 }
+// Fix 1 for careful spoofers: a second, independent source. The client's own warehouse system
+// confirms units handled; an hour counts only if telemetry AND confirmed output agree (units ~ cycles x 0.9..1.1).
+export function verifyWithOutput(h: Hour, units: number, band: { q: number; minCycles: number }) {
+  const t = verifyHour(h, band);
+  if (!t.ok) return t;
+  const ratio = units / Math.max(1, h.cycles);
+  if (ratio < 0.85 || ratio > 1.15) return { ok: false, reason: "client-confirmed output does not match cycles" };
+  return { ok: true, reason: "telemetry and client output agree" };
+}
+// Fix 2 for drift: fit each robot's own energy line from its recent honest hours, then band around that.
+export function calibrateFor(hours: Hour[], alpha = 0.02) {
+  const n = hours.length, mx = hours.reduce((a, h) => a + h.cycles, 0) / n, my = hours.reduce((a, h) => a + h.kwh, 0) / n;
+  const a = hours.reduce((s, h) => s + (h.cycles - mx) * (h.kwh - my), 0) / Math.max(1e-9, hours.reduce((s, h) => s + (h.cycles - mx) ** 2, 0));
+  const b = my - a * mx;
+  const res = hours.map((h) => Math.abs(h.kwh - (a * h.cycles + b))).sort((x, y) => x - y);
+  return { a, b, q: res[Math.min(n - 1, Math.ceil((n + 1) * (1 - alpha)) - 1)], minCycles: 40 };
+}
+export function verifyHourFor(h: Hour, m: { a: number; b: number; q: number; minCycles: number }) {
+  if (h.cycles < m.minCycles) return { ok: false, reason: "robot idle during billed hour" };
+  return Math.abs(h.kwh - (m.a * h.cycles + m.b)) > m.q ? { ok: false, reason: "cycles not backed by energy draw" } : { ok: true, reason: "telemetry matches work" };
+}
+export function evalFixes(seed = 9, n = 500) {
+  const r = rng(seed);
+  const band = calibrate(Array.from({ length: n }, () => honestHour(r)));
+  // careful spoofer: physics-consistent energy, but the client only confirms what was really done (30% of claimed)
+  const spoof = Array.from({ length: n }, () => ({ h: consistentSpoof(r), share: 0.3 }));
+  const caught = spoof.filter((x) => !verifyWithOutput(x.h, x.h.cycles * x.share, band).ok).length;
+  const honest = Array.from({ length: n }, () => honestHour(r));
+  const honestFlags = honest.filter((h) => !verifyWithOutput(h, h.cycles * (0.95 + r() * 0.1), band).ok).length;
+  // worn motor: per-robot band from its own last 200 hours
+  const own = calibrateFor(Array.from({ length: 200 }, () => driftedHonest(r)));
+  const worn = Array.from({ length: n }, () => driftedHonest(r)).filter((h) => !verifyHourFor(h, own).ok).length;
+  return [
+    { name: "fraud: energy faked, checked vs client output", n, flagged: caught },
+    { name: "honest: normal, checked vs client output", n, flagged: honestFlags },
+    { name: "honest: worn motor, per-robot band", n, flagged: worn },
+  ].map((x) => ({ ...x, rate: x.flagged / x.n }));
+}
+
 // Shared band and server-side settlement: the server, not the browser, decides what is billable.
 export const BAND = calibrate(Array.from({ length: 400 }, ((r) => () => honestHour(r))(rng(3))));
 export function settleHours(hours: Hour[], payPerHour: number) {
