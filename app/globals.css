@@ -89,3 +89,5 @@ h1 em, h2 em, h3 em, blockquote em { font-style: italic; font-weight: 700; }
 .font-serif { letter-spacing: -0.02em; }
 
 @keyframes breathe { 0%,100% { scale: 1.04; } 50% { scale: 1.1; } }
+
+@keyframes wave { 0%,100% { transform: translateX(0) scaleY(1); } 50% { transform: translateX(-5%) scaleY(1.08); } }

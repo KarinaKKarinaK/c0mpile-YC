@@ -1,4 +1,4 @@
-# Fleiss: rules for every session
+# Hebl: rules for every session
 
 Hackathon: c0mpiled-18, YC Startup School Hackathon, Taipei. Track: YC RFS (Wall Street for the Physical Buildout).
 Deadline: Wed 11 Nov 2026 22:45 Taipei (internal: code freeze 22:00, video uploaded 22:30).

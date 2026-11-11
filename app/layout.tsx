@@ -6,7 +6,7 @@ const sans = Red_Hat_Display({ variable: "--font-geist", subsets: ["latin"], wei
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fleiss: your robot pays off its own loan",
+  title: "Hebl: leverage that clocks in",
   description: "Robot financing priced on verified hours and repaid as a share of every job. Nothing due when the robot is down.",
 };
 

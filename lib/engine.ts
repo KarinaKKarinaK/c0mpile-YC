@@ -1,4 +1,4 @@
-// Fleiss engine. Every money decision is plain code here; the model never decides.
+// Hebl engine. Every money decision is plain code here; the model never decides.
 // Shared by the browser UI, the API routes and the tests (node --test).
 
 export type Kind = "AMR" | "Arm" | "Humanoid" | "Quadruped";

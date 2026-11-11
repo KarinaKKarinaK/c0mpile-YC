@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Drip, Estimator } from "@/components/Hero";
+import { CutLines, Drip, Estimator, PixelPhoto, Wave } from "@/components/Hero";
+import { PHOTOS } from "@/lib/photos";
 import { Logo } from "@/components/Ui";
 
 const NAV = [["How it works", "#how"], ["Advantages", "#why"], ["Start", "#start"]];
@@ -22,8 +23,8 @@ export default function Home() {
   return (
     <main className="font-light">
       <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
-        <Drip id="d1" className="-z-10 h-[70%]" />
-        <div className="grain -z-10" style={{ opacity: 0.18 }} />
+        <div className="absolute inset-0 -z-10"><Wave /></div>
+        <CutLines labels={["Verify\nhours", "Price\nlive", "Repay\nper job", "Own it\nat zero"]} />
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
           <Link href="/"><Logo /></Link>
           <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
@@ -44,11 +45,33 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="bg-ink px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( On the floor )</p>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {PHOTOS.map((ph) => (
+              <figure key={ph.img}>
+                <PixelPhoto src={ph.img} className="aspect-[4/5]">
+                  <div className="w-full max-w-[260px] rounded-2xl border border-white/40 bg-white/85 p-4 text-ink shadow-xl backdrop-blur">
+                    <div className="text-[13px] font-bold">{ph.card.title}</div>
+                    <div className="mt-3 text-[11px] opacity-60">{ph.card.k}</div>
+                    <div className="text-3xl font-bold italic tracking-tight">{ph.card.v}</div>
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-blue" style={{ width: `${ph.card.pct}%` }} /></div>
+                    <div className="mt-2 flex justify-between text-[10px] opacity-60"><span>{ph.card.a}</span><span>{ph.card.b}</span></div>
+                  </div>
+                </PixelPhoto>
+                <figcaption className="mt-2 font-mono text-[9px] uppercase tracking-[0.15em] text-white/35">Photo: <a href={ph.page} className="hover:text-white">{ph.by}, Unsplash</a> &middot; figures [modelled]</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="how" className="relative isolate overflow-hidden bg-paper text-ink">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:grid-cols-[16%_1fr]">
           <Label>How it works</Label>
           <div>
-            <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-6xl">What makes <em>Fleiss</em><br />different</h2>
+            <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-6xl">What makes <em>Hebl</em><br />different</h2>
             <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {HOW.map((h) => (
                 <div key={h.k}><div className="text-[15px] font-bold">{h.k}</div><p className="mt-3 text-[13px] leading-relaxed opacity-70">{h.d}</p></div>
@@ -63,7 +86,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-32 md:grid-cols-[16%_1fr_1.3fr]">
           <Label>Advantages</Label>
           <div>
-            <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-5xl">Outsmart the <em>bank</em><br />with <em>Fleiss</em></h2>
+            <h2 className="text-4xl font-light leading-tight tracking-[-0.02em] md:text-5xl">Outsmart the <em>bank</em><br />with <em>Hebl</em></h2>
             <Link href="/desk" className="mt-8 inline-flex items-center rounded-md border border-ink/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.15em] hover:bg-ink hover:text-paper">Try the demo<Arrow /></Link>
             <blockquote className="mt-14 text-xl font-light leading-snug">&ldquo;Today, banks underwrite a robot like a <em className="font-bold">forklift</em>.&rdquo;<span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.15em] opacity-50">Brad Flora, YC RFS Winter 2027</span></blockquote>
           </div>

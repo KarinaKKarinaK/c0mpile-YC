@@ -60,17 +60,21 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
   return <div ref={ref} className={`reveal ${inView ? "in" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
 }
 
-export function Logo() {
-  // An F that is also a progress meter: blue stem and top bar, orange lower bar = the loan being paid down.
+// Hebl mark: a slanted H, two leaning strokes joined by a soft crossbar. One colour.
+export function HeblMark({ size = 22, className = "" }: { size?: number; className?: string }) {
   return (
-    <span className="flex items-center gap-2.5 text-[17px] font-extrabold tracking-[-0.03em]">
-      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-        <rect x="2" y="2" width="5" height="18" rx="2.5" fill="#0297DE" />
-        <rect x="2" y="2" width="18" height="5" rx="2.5" fill="#0297DE" />
-        <rect x="9" y="10" width="7" height="5" rx="2.5" fill="#FC734D" />
-        <rect x="17" y="10" width="3" height="5" rx="1.5" fill="#FC734D" opacity="0.35" />
-      </svg>
-      Fleiss
+    <svg width={size * 1.25} height={size} viewBox="0 0 120 92" aria-hidden className={className} fill="currentColor" stroke="currentColor" strokeWidth="6" strokeLinejoin="round">
+      <path d="M12 8 H32 L54 84 H34 Z" />
+      <path d="M66 8 H86 L108 84 H88 Z" />
+      <path d="M30 37 H66 C78 37 82 47 86 55 H50 C40 55 36 45 30 37 Z" />
+    </svg>
+  );
+}
+export function Logo() {
+  return (
+    <span className="flex items-center gap-2 text-[18px] font-bold tracking-[-0.02em] text-white">
+      <HeblMark />
+      Hebl
     </span>
   );
 }
