@@ -113,6 +113,15 @@ export default function Desk() {
   const fleetRev = s.fleet.reduce((a, r) => a + monthlyRevenue(r), 0);
   const lent = Object.values(s.loans).reduce((a, l) => a + l.balance, 0);
   const running = s.fleet.filter((r) => !r.faulted).length;
+  const swept = s.fleet.reduce((a, r) => a + (s.loans[r.id] ? monthlyRevenue(r) * s.loans[r.id].sweepPct : 0), 0);
+  const downCost = s.fleet.filter((r) => r.faulted).reduce((a, r) => a + (monthlyRevenue({ ...r, faulted: false }) - monthlyRevenue(r)) / 30, 0);
+  const best = [...s.fleet].filter((r) => !s.loans[r.id]).sort((x, y) => offerLoan(y).advance - offerLoan(x).advance)[0];
+  const pick = (id: string) => { setS((p) => ({ ...p, sel: id })); setJob(null); document.getElementById("robot")?.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const todo = [
+    ...s.fleet.filter((r) => r.faulted).map((r) => ({ k: `f${r.id}`, warn: true, title: `${r.maker} ${r.model} stopped`, sub: `Line jam, costing ${usd((monthlyRevenue({ ...r, faulted: false }) - monthlyRevenue(r)) / 30)} a day`, cta: "Send technician", go: () => setFault(r.id, false) })),
+    ...(best ? [{ k: "fund", warn: false, title: `Fund the ${best.model}: get ${usd(offerLoan(best).advance)}`, sub: `Repay ${(offerLoan(best).sweepPct * 100).toFixed(0)}% of its jobs, no interest`, cta: "Review", go: () => pick(best.id) }] : []),
+    ...(loan ? [{ k: "jobs", warn: false, title: `3 job offers for the ${rb.model}`, sub: "The AI reads them, your loan rules decide", cta: "Open", go: () => pick(rb.id) }] : []),
+  ];
   const step = !loan ? 0 : job ? 1 : 2;
   const paidPct = loan ? 1 - loan.balance / (loan.advance + loan.fee) : 0;
   const fcc = !MOBILE.includes(rb.kind) ? "FCC: out of scope" : fccCompliant(rb) ? "FCC: compliant" : "FCC: new models blocked";
@@ -128,10 +137,27 @@ export default function Desk() {
         </div>
       </header>
 
-      <section className="grid grid-cols-2 gap-px overflow-hidden border-y border-white/10 bg-white/10 sm:grid-cols-4">
-        {[["Fleet value", usd(fleetValue)], ["Revenue / month", usd(fleetRev)], ["Lent out", usd(lent)], ["Running", `${running} / ${s.fleet.length}`]].map(([k, v]) => (
-          <div key={k} className="bg-ink px-4 py-4 sm:px-6"><div className="text-[10px] uppercase tracking-wider text-white/45">{k}</div><div className={`font-serif text-4xl ${k === "Running" && running < s.fleet.length ? "text-orange" : ""}`}>{v}</div></div>
-        ))}
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-4 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
+        <div className="card p-5">
+          <div className="flex items-baseline justify-between"><h1 className="font-serif text-3xl font-light">Today</h1><span className="font-mono text-[11px] text-white/45">{ready ? new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : ""}</span></div>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {[["Earned yesterday", usd(fleetRev / 30), ""], ["To lenders", usd(swept / 30), ""], ["Down now", `${s.fleet.length - running}`, s.fleet.length - running ? `-${usd(downCost)}/day` : "all running"], ["Still owed", usd(lent), Object.keys(s.loans).length ? `${Object.keys(s.loans).length} loans` : "no loans yet"]].map(([k, v, sub]) => (
+              <div key={k}><div className="font-mono text-[10px] uppercase tracking-wider text-white/45">{k}</div><div className={`font-serif text-4xl font-light ${k === "Down now" && running < s.fleet.length ? "text-orange" : ""}`}>{v}</div><div className="text-[11px] text-white/45">{sub}</div></div>
+            ))}
+          </div>
+        </div>
+        <div className="card p-5">
+          <div className="font-mono text-[10px] uppercase tracking-wider text-white/45">Needs you ({todo.length})</div>
+          <ul className="mt-3 space-y-2">
+            {todo.map((t) => (
+              <li key={t.k} className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.04] px-3 py-2.5 text-[13px]">
+                <span className="min-w-0"><span className={t.warn ? "text-orange" : "text-white/90"}>{t.title}</span><span className="block text-[11px] text-white/45">{t.sub}</span></span>
+                <button className={`btn shrink-0 ${t.warn ? "btn-orange" : "btn-ghost"}`} onClick={t.go}>{t.cta}</button>
+              </li>
+            ))}
+            {!todo.length && <li className="text-[13px] text-white/50">Nothing. Your robots are working.</li>}
+          </ul>
+        </div>
       </section>
 
       <section className="relative h-[52vh] min-h-[360px] sm:h-[60vh]">
@@ -178,7 +204,7 @@ export default function Desk() {
           </ul>
         </section>
 
-        <section className="card min-w-0 p-5">
+        <section id="robot" className="card min-w-0 scroll-mt-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="text-[11px] text-white/50">{rb.id} &middot; {rb.maker} &middot; {rb.madeIn}</div>

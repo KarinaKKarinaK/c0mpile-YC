@@ -61,14 +61,14 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
 }
 
 export function Logo() {
+  // A sweat drop with a rising equity line inside.
   return (
-    <span className="flex items-center gap-2 text-[15px]">
-      <svg width="22" height="16" viewBox="0 0 22 16" aria-hidden>
-        {[2, 6, 10, 14, 18].map((x, i) => (
-          <rect key={x} x={x} y={[5, 2, 0, 2, 5][i]} width="2.4" height={[6, 12, 16, 12, 6][i]} rx="1.2" fill={i === 2 ? "#FC734D" : "#fff"} />
-        ))}
+    <span className="flex items-center gap-2 text-[15px] font-medium tracking-tight">
+      <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden>
+        <path d="M10 1 C10 1 2 10.5 2 15.5 A8 8 0 0 0 18 15.5 C18 10.5 10 1 10 1 Z" fill="#FC734D" />
+        <path d="M5.5 17.5 L8.6 14.6 L10.8 16.4 L14.6 12.2" fill="none" stroke="#02070A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      Selfmade
+      Sweat Equity
     </span>
   );
 }

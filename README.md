@@ -4,7 +4,7 @@
 
 # Selfmade
 
-*Robots that pay for themselves.*
+*Bot and paid for.*
 
 **[Live demo: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)**
 

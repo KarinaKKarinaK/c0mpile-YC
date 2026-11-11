@@ -1,7 +1,7 @@
 "use client";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment, Html, Lightformer, MeshReflectorMaterial, OrbitControls, RoundedBox } from "@react-three/drei";
-import { Bloom, EffectComposer, N8AO, Vignette } from "@react-three/postprocessing";
+import { ContactShadows, Environment, Html, Lightformer, MeshReflectorMaterial, OrbitControls, RoundedBox, SoftShadows } from "@react-three/drei";
+import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import type { Robot } from "@/lib/engine";
@@ -20,6 +20,29 @@ const M = {
   glowBlue: <meshStandardMaterial color="#0297DE" emissive="#0297DE" emissiveIntensity={4} toneMapped={false} />,
   wall: <meshStandardMaterial color="#0b1218" roughness={0.85} metalness={0.2} />,
 };
+// Procedural textures (no downloads): concrete grain and brushed-metal streaks.
+function noiseTex(w: number, h: number, paint: (ctx: CanvasRenderingContext2D) => void, repeat: number) {
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  paint(c.getContext("2d")!);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat, repeat); t.anisotropy = 8;
+  return t;
+}
+function useTextures() {
+  return useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const concrete = noiseTex(512, 512, (g) => {
+      g.fillStyle = "#1b2228"; g.fillRect(0, 0, 512, 512);
+      for (let i = 0; i < 26000; i++) { const v = 20 + Math.random() * 40; g.fillStyle = `rgba(${v},${v + 6},${v + 10},${Math.random() * 0.35})`; g.fillRect(Math.random() * 512, Math.random() * 512, 1.5, 1.5); }
+      g.strokeStyle = "rgba(0,0,0,0.5)"; g.lineWidth = 2; g.strokeRect(0, 0, 512, 512); // slab joints
+    }, 8);
+    const brushed = noiseTex(256, 256, (g) => {
+      g.fillStyle = "#808080"; g.fillRect(0, 0, 256, 256);
+      for (let y = 0; y < 256; y++) { const v = 110 + Math.random() * 60; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(0, y, 256, 1); }
+    }, 2);
+    return { concrete, brushed };
+  }, []);
+}
+
 const LINES = [-5, 0, 5];
 const SPEED = 0.6, SPACING = 2.4, BELT_START = -9, BELT_END = 1;
 
@@ -151,7 +174,7 @@ function Amr(p: P & { i: number }) {
     const a = clock.elapsedTime * 0.18 + (p.i * Math.PI * 2) / 3;
     const x = 7.5 + Math.cos(a) * 2.4, z = Math.sin(a) * 7;
     g.current.position.set(x, 0, z);
-    g.current.rotation.y = -Math.atan2(Math.cos(a) * 7, -Math.sin(a) * 2.4) + Math.PI / 2;
+    g.current.rotation.y = Math.atan2(-Math.cos(a) * 7, -Math.sin(a) * 2.4);
   });
   return (
     <group ref={g} position={[7.5 + 2.4, 0, p.i * 3 - 3]}>
@@ -179,7 +202,7 @@ function Humanoid(p: P & { z: number }) {
   });
   const limb = (len: number, r: number) => <mesh position={[0, -len / 2, 0]} castShadow><capsuleGeometry args={[r, len, 8, 16]} />{M.white}</mesh>;
   return (
-    <group position={[-4, 0, p.z - 1.7]} rotation={[0, Math.PI, 0]}>
+    <group position={[-4, 0, p.z - 1.9]}>
       <Pickable {...p} height={2.1}>
         <group ref={g}>
           <RoundedBox args={[0.62, 0.78, 0.36]} radius={0.14} position={[0, 1.42, 0]} castShadow>{M.white}</RoundedBox>
@@ -193,7 +216,9 @@ function Humanoid(p: P & { z: number }) {
           <group position={[0.15, 0.82, 0]}>{limb(0.7, 0.1)}</group>
         </group>
       </Pickable>
-      <RoundedBox args={[1.4, 0.08, 0.8]} radius={0.02} position={[0, 0.95, 0.9]} castShadow receiveShadow>{M.steel}</RoundedBox>
+      <RoundedBox args={[1.4, 0.08, 0.7]} radius={0.02} position={[0, 0.95, 0.75]} castShadow receiveShadow>{M.steel}</RoundedBox>
+      {[[-0.6, 0.45], [0.6, 0.45], [-0.6, 1.05], [0.6, 1.05]].map(([x, z]) => <mesh key={`${x}${z}`} position={[x, 0.47, z]} castShadow><boxGeometry args={[0.05, 0.95, 0.05]} />{M.steel}</mesh>)}
+      <RoundedBox args={[0.45, 0.32, 0.45]} radius={0.02} position={[0.3, 1.15, 0.75]} castShadow>{M.card}</RoundedBox>
     </group>
   );
 }
@@ -204,7 +229,7 @@ function Quadruped(p: P & { i: number }) {
     if (!g.current || p.rb.faulted) return;
     const t = clock.elapsedTime * 0.3 + p.i * 2.1;
     g.current.position.x = -7 + ((Math.sin(t) + 1) / 2) * 12;
-    g.current.rotation.y = Math.cos(t) > 0 ? 0 : Math.PI;
+    g.current.rotation.y = THREE.MathUtils.lerp(g.current.rotation.y, Math.cos(t) > 0 ? 0 : Math.PI, 0.06);
     legs.current?.children.forEach((l, k) => { l.rotation.z = Math.sin(clock.elapsedTime * 7 + k * Math.PI) * 0.35; });
   });
   return (
@@ -225,12 +250,54 @@ function Quadruped(p: P & { i: number }) {
   );
 }
 
+// Pallet racking along the back wall: uprights, beams, stocked pallets.
+function Racks() {
+  const bays = Array.from({ length: 7 }, (_, i) => -11 + i * 3.1);
+  return (
+    <group position={[0, 0, -10.2]}>
+      {bays.map((x) => (
+        <group key={x} position={[x, 0, 0]}>
+          {[-1.45, 1.45].map((dx) => [-0.5, 0.5].map((dz) => <mesh key={`${dx}${dz}`} position={[dx, 2.6, dz]} castShadow><boxGeometry args={[0.1, 5.2, 0.1]} /><meshStandardMaterial color="#1f5f8a" metalness={0.6} roughness={0.4} /></mesh>))}
+          {[0.15, 1.8, 3.45].map((y) => (
+            <group key={y} position={[0, y, 0]}>
+              {[-0.5, 0.5].map((dz) => <mesh key={dz} position={[0, 0, dz]} castShadow><boxGeometry args={[3, 0.14, 0.08]} />{M.paint}</mesh>)}
+              {[-0.75, 0.75].map((px) => (
+                <group key={px} position={[px, 0.12, 0]}>
+                  <mesh castShadow receiveShadow><boxGeometry args={[1.2, 0.12, 1]} /><meshStandardMaterial color="#6b5236" roughness={0.9} /></mesh>
+                  <mesh position={[0, 0.55, 0]} castShadow><boxGeometry args={[1.1, 0.95, 0.9]} />{M.card}</mesh>
+                  <mesh position={[0, 0.55, 0.451]}><planeGeometry args={[0.4, 0.25]} /><meshStandardMaterial color="#f2f2f2" roughness={0.8} /></mesh>
+                </group>
+              ))}
+            </group>
+          ))}
+        </group>
+      ))}
+    </group>
+  );
+}
+
+// Yellow safety fencing around each arm cell: posts, mesh panels.
+function Fence({ z }: { z: number }) {
+  const panel = <meshStandardMaterial color="#c9a227" metalness={0.3} roughness={0.5} transparent opacity={0.35} side={THREE.DoubleSide} />;
+  return (
+    <group position={[2.4, 0, z]}>
+      {[[-1.6, -1.4], [1.6, -1.4], [1.6, 1.4], [3.0, 1.4], [3.0, 3.5], [1.6, 3.5]].map(([x, zz], i) => (
+        <mesh key={i} position={[x, 0.9, zz]} castShadow><boxGeometry args={[0.07, 1.8, 0.07]} /><meshStandardMaterial color="#c9a227" metalness={0.4} roughness={0.4} /></mesh>
+      ))}
+      <mesh position={[0, 0.95, -1.4]}><planeGeometry args={[3.2, 1.5]} />{panel}</mesh>
+      <mesh position={[1.6, 0.95, 0]} rotation={[0, Math.PI / 2, 0]}><planeGeometry args={[2.8, 1.5]} />{panel}</mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}><ringGeometry args={[1.5, 1.6, 64]} /><meshStandardMaterial color="#c9a227" roughness={0.7} /></mesh>
+    </group>
+  );
+}
+
 function Building() {
+  const tex = useTextures();
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[60, 40]} />
-        <MeshReflectorMaterial blur={[400, 120]} resolution={1024} mixBlur={1} mixStrength={18} roughness={0.9} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.4} color="#0b1116" metalness={0.55} mirror={0} />
+        <MeshReflectorMaterial blur={[400, 120]} resolution={1024} mixBlur={1} mixStrength={12} roughness={0.85} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.4} color="#4a5560" metalness={0.4} mirror={0} map={tex?.concrete} roughnessMap={tex?.concrete} />
       </mesh>
       {LINES.map((z) => <mesh key={z} rotation={[-Math.PI / 2, 0, 0]} position={[-4, 0.01, z + 1.05]}><planeGeometry args={[11, 0.08]} /><meshStandardMaterial color="#c9a227" roughness={0.6} /></mesh>)}
       <mesh position={[0, 5, -11.5]} receiveShadow><boxGeometry args={[40, 10, 0.3]} />{M.wall}</mesh>
@@ -247,6 +314,8 @@ function Building() {
           <mesh position={[x, 8.6, 0]}><boxGeometry args={[0.2, 0.35, 24]} />{M.graphite}</mesh>
         </group>
       ))}
+      <Racks />
+      {LINES.map((z) => <Fence key={`f${z}`} z={z} />)}
       {LINES.map((z) => (
         <group key={z} position={[-4, 6.2, z]}>
           <mesh><boxGeometry args={[9, 0.08, 0.35]} /><meshStandardMaterial color="#ffffff" emissive="#dff3ff" emissiveIntensity={3} toneMapped={false} /></mesh>
@@ -264,10 +333,11 @@ export default function Fleet3D({ fleet, selected, onSelect }: { fleet: Robot[];
   return (
     <Canvas shadows camera={{ position: [13, 9, 15], fov: 38 }} dpr={[1, 1.5]} gl={{ antialias: false, toneMapping: THREE.ACESFilmicToneMapping }}>
       <color attach="background" args={["#02070A"]} />
+      <SoftShadows size={22} samples={10} focus={0.6} />
       <fog attach="fog" args={["#02070A", 20, 48]} />
       <hemisphereLight args={["#9fd8ff", "#1a0d08", 0.35]} />
       <directionalLight position={[8, 14, 6]} intensity={0.9} castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-14} shadow-bias={-0.0003} />
-      <pointLight position={[-10, 3, 6]} color="#0297DE" intensity={45} distance={18} />
+      <pointLight position={[-10, 3, 6]} color="#0297DE" intensity={14} distance={14} />
       <pointLight position={[11, 2, 8]} color="#FC734D" intensity={30} distance={16} />
       <Building />
       {LINES.map((z, i) => <Conveyor key={z} z={z} jammed={!!by("Arm")[i]?.faulted} />)}
@@ -276,13 +346,12 @@ export default function Fleet3D({ fleet, selected, onSelect }: { fleet: Robot[];
       {by("AMR").map((rb, i) => <Amr key={rb.id} {...props(rb)} i={i} />)}
       {by("Quadruped").map((rb, i) => <Quadruped key={rb.id} {...props(rb)} i={i} />)}
       <ContactShadows position={[0, 0.015, 0]} scale={40} blur={2.4} far={4} opacity={0.6} />
-      <Environment resolution={256} frames={1}>
+      <Environment resolution={512} frames={1} environmentIntensity={0.9}>
         <Lightformer form="rect" intensity={3} color="#ffffff" position={[0, 8, 0]} rotation-x={Math.PI / 2} scale={[20, 4, 1]} />
         <Lightformer form="rect" intensity={4} color="#0297DE" position={[-12, 3, -4]} rotation-y={Math.PI / 2} scale={[12, 6, 1]} />
         <Lightformer form="rect" intensity={3} color="#FC734D" position={[12, 2, 6]} rotation-y={-Math.PI / 2} scale={[10, 4, 1]} />
       </Environment>
       <EffectComposer multisampling={0}>
-        <N8AO aoRadius={1.2} intensity={2.2} distanceFalloff={0.6} />
         <Bloom mipmapBlur luminanceThreshold={1} intensity={0.9} radius={0.7} />
         <Vignette eskil={false} offset={0.15} darkness={0.75} />
       </EffectComposer>

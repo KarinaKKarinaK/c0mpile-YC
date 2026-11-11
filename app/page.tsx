@@ -1,142 +1,136 @@
 import Link from "next/link";
-import TileGlow from "@/components/TileGlow";
-import { Counter, Logo, Reveal, Tilt } from "@/components/Ui";
+import { GrainField, Ticker } from "@/components/Hero";
+import { Counter, Logo, Reveal } from "@/components/Ui";
 import { Accordion, AccordionItem, MobileMenu } from "@/components/kit";
 
 const STATS = [
   { v: 1.51, pre: "$", suf: "T", dec: 2, l: "US equipment finance", s: "ELFA 2025", u: "https://www.supplychain247.com/article/industry_horizon_report_shows_equipment_finance_industry_expanded_to_1.5_trillion" },
   { v: 47.4, pre: "$", suf: "B", dec: 1, l: "Physical AI raised, H1 2026", s: "Crunchbase", u: "https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/" },
-  { v: 75, pre: "", suf: "%", dec: 0, l: "US content for new mobile robots by 2029", s: "FCC, YC RFS", u: "https://docs.fcc.gov/public/attachments/DOC-423682A1.pdf" },
-  { v: 0, pre: "", suf: "", dec: 0, l: "Robot lenders on live telemetry we found", s: "Our scan, Nov 2026", u: "https://github.com/KarinaKKarinaK/c0mpile-YC#why-its-different" },
+  { v: 75, pre: "", suf: "%", dec: 0, l: "US content, new mobile robots, 2029", s: "FCC, YC RFS", u: "https://docs.fcc.gov/public/attachments/DOC-423682A1.pdf" },
 ];
-const HOW = [
-  { k: "Verify", n: "every hour", d: "Billed hours must match energy draw" },
-  { k: "Price", n: "live", d: "Value from earnings, health, FCC status" },
-  { k: "Repay", n: "8 to 30%", d: "Of each job, swept through Stripe" },
-  { k: "Earn twice", n: "80%", d: "Of data licences to the operator" },
+const FLOW = [
+  { n: "01", k: "Verify", big: "1 h", d: "Every billed hour checked against energy draw" },
+  { n: "02", k: "Price", big: "live", d: "Value moves with earnings, health and the news" },
+  { n: "03", k: "Repay", big: "8 to 30%", d: "Of each job. Robot down? You pay less" },
+  { n: "04", k: "Own", big: "$0", d: "Balance hits zero. The robot is yours" },
 ];
-const PROXIES = [
-  { k: "Stripe Capital", d: "Repay as % of sales. 81k+ businesses funded." },
-  { k: "USD.AI", d: "GPU loans priced on live telemetry." },
-  { k: "Formic", d: "Robots as a service, finance bundled." },
-  { k: "Your bank", d: "10.55% fixed. Robot idle? Same bill." },
-];
-const US = [
-  { k: "Zishi", d: "A drone that repays its own lease from verified work. Shenzhen FinTechathon." },
-  { k: "Guild", d: "A market for robot training data. HK AI Summit, finalist, 2nd." },
-  { k: "Arbiter", d: "A rule ledger an AI agent cannot overrule. Nebius x NVIDIA." },
+const COMPARE = [
+  ["", "Your bank", "Stripe Capital", "Formic", "Sweat Equity"],
+  ["Priced on", "Credit score", "Card sales", "Contract", "Live telemetry"],
+  ["Robot down for a week", "Same bill", "n/a", "Bundled", "Pay less"],
+  ["Fake hours", "Invisible", "n/a", "Trust", "Rejected"],
+  ["Data income", "Ignored", "Ignored", "Kept by Formic", "80% to you"],
+  ["FCC US-made rule", "Ignored", "n/a", "Partly", "Priced in"],
 ];
 const FAQ = [
-  { q: "Who brings the capital?", a: "Licensed equipment lenders. We are their underwriting and repayment layer first. Our own credit line comes with loss data." },
-  { q: "Is the data real?", a: "Ledger, oracle, model calls and Stripe are real code. Fleet and telemetry are synthetic and labelled. Next: one fleet partner." },
-  { q: "What stops fake work?", a: "Each billed hour must match the robot's energy draw inside a calibrated band." },
-  { q: "Why now?", a: "FCC rule from 28 Jul 2026. $47.4B raised in H1 2026, mostly equity buying steel. Robots now stream telemetry." },
+  { q: "Who brings the capital?", a: "Licensed equipment lenders. We are their underwriting and repayment rail first. Our own credit line comes with loss data." },
+  { q: "Is the data real?", a: "Robot models, list prices and news are real. Fleet telemetry is synthetic and labelled. Next: one fleet partner." },
+  { q: "Why now?", a: "FCC US-made rule since 28 Jul 2026. $47.4B into physical AI in H1 2026. Robots already stream telemetry." },
 ];
 
 export default function Home() {
   return (
     <main>
       <section className="relative isolate min-h-[100svh] overflow-hidden">
-        <div className="absolute inset-0 -z-10"><TileGlow /></div>
-
-        <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 text-[12px]">
+        <div className="absolute inset-0 -z-10"><GrainField /></div>
+        <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 text-[13px]">
           <Logo />
-          <div className="hidden gap-8 text-white/80 md:flex">
-            <a href="#how" className="hover:text-white"><span className="text-orange">&bull;</span> How</a>
-            <a href="#proof" className="hover:text-white">Numbers</a>
+          <div className="hidden gap-8 text-white/75 md:flex">
+            <a href="#how" className="hover:text-white">How it works</a>
+            <a href="#compare" className="hover:text-white">Compare</a>
             <a href="#us" className="hover:text-white">Team</a>
-            <a href="#faq" className="hover:text-white">FAQ</a>
           </div>
           <div className="flex items-center gap-2">
-            <MobileMenu links={[{ href: "#how", label: "How" }, { href: "#proof", label: "Numbers" }, { href: "#us", label: "Team" }, { href: "#faq", label: "FAQ" }, { href: "/desk", label: "Open the factory" }]} />
-            <Link href="/desk" className="btn btn-light whitespace-nowrap">Finance a robot</Link>
+            <MobileMenu links={[{ href: "#how", label: "How it works" }, { href: "#compare", label: "Compare" }, { href: "#us", label: "Team" }, { href: "/desk", label: "Open your fleet" }]} />
+            <Link href="/desk" className="btn btn-light whitespace-nowrap">Open your fleet</Link>
           </div>
         </nav>
+        <Ticker />
 
-        <div className="relative mx-auto max-w-5xl px-5 pt-[12vh] text-center">
-          <p className="kicker">YC RFS &middot; Wall Street for the Physical Buildout</p>
-          <h1 className="mt-6 font-serif text-[clamp(52px,9vw,124px)] leading-[0.92] tracking-tight">
-            Robots that pay<br />for <em>themselves.</em>
+        <div className="relative mx-auto max-w-6xl px-5 pt-[11vh]">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/60">Robot financing &middot; YC RFS: Wall Street for the Physical Buildout</p>
+          <h1 className="mt-6 font-serif text-[clamp(56px,11vw,150px)] font-light leading-[0.88] tracking-[-0.03em]">
+            Bot and<br />paid <em className="font-normal text-orange">for.</em>
           </h1>
-          <p className="mx-auto mt-6 text-[13px] text-white/80">Robot loans &middot; priced on live telemetry &middot; repaid per verified job</p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/desk" className="btn btn-orange px-6 py-3 text-[13px]">Finance a robot</Link>
-            <Link href="/desk" className="btn btn-ghost glass px-6 py-3 text-[13px]">Watch a line jam</Link>
+          <div className="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <p className="max-w-md text-[17px] leading-snug text-white/80">Finance your robots. They pay the loan back from the work they actually do.</p>
+            <div className="flex gap-3">
+              <Link href="/desk" className="btn btn-orange px-6 py-3 text-[14px]">Open your fleet</Link>
+              <a href="#how" className="btn btn-ghost glass px-6 py-3 text-[14px]">How it works</a>
+            </div>
           </div>
         </div>
 
-        <div id="proof" className="relative mx-auto mt-[14vh] grid max-w-7xl grid-cols-2 gap-3 px-5 pb-10 md:grid-cols-4">
+        <div className="relative mx-auto mt-[10vh] grid max-w-6xl grid-cols-3 gap-px border-t border-white/15 px-5">
           {STATS.map((n) => (
-            <Tilt key={n.l} className="glass rounded-2xl p-5">
-              <div className="font-serif text-5xl md:text-6xl"><Counter to={n.v} prefix={n.pre} suffix={n.suf} decimals={n.dec} /></div>
-              <div className="mt-2 text-[11px] text-white/75">{n.l}</div>
-              <a href={n.u} className="text-[10px] text-white/40 hover:underline">{n.s}</a>
-            </Tilt>
+            <a key={n.l} href={n.u} className="group pt-5 pr-4">
+              <div className="font-serif text-4xl font-light md:text-6xl"><Counter to={n.v} prefix={n.pre} suffix={n.suf} decimals={n.dec} /></div>
+              <div className="mt-1 text-[12px] text-white/65">{n.l}</div>
+              <div className="font-mono text-[10px] text-white/35 group-hover:text-white/70">{n.s}</div>
+            </a>
           ))}
         </div>
       </section>
 
-      <section id="how" className="mx-auto max-w-7xl px-5 py-24">
-        <Reveal><h2 className="font-serif text-5xl md:text-7xl">Banks see a forklift. <em>We see the work.</em></h2></Reveal>
-        <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4">
-          {HOW.map((h, i) => (
-            <Reveal key={h.k} delay={i * 80}>
-              <Tilt className="card h-full p-6">
-                <div className="text-[11px] text-orange">0{i + 1} &middot; {h.k}</div>
-                <div className="mt-8 font-serif text-5xl">{h.n}</div>
-                <div className="mt-2 text-[11px] text-white/60">{h.d}</div>
-              </Tilt>
-            </Reveal>
-          ))}
+      <section id="how" className="mx-auto max-w-6xl px-5 py-28">
+        <Reveal><h2 className="max-w-3xl font-serif text-5xl font-light leading-[1.02] md:text-7xl">Banks see a forklift. <em className="text-orange">We see the work.</em></h2></Reveal>
+        <div className="relative mt-16">
+          <div className="absolute left-0 right-0 top-[34px] hidden h-px bg-gradient-to-r from-blue via-white/30 to-orange md:block" />
+          <div className="grid gap-10 md:grid-cols-4 md:gap-6">
+            {FLOW.map((f, i) => (
+              <Reveal key={f.k} delay={i * 120}>
+                <div className="relative">
+                  <div className={`relative z-10 grid h-[68px] w-[68px] place-items-center rounded-full border font-mono text-[12px] backdrop-blur transition-transform duration-500 hover:scale-110 ${i === 3 ? "border-orange bg-orange text-ink" : "border-white/25 bg-ink"}`}>{f.n}</div>
+                  <div className="mt-6 font-mono text-[11px] uppercase tracking-widest text-white/50">{f.k}</div>
+                  <div className="mt-1 font-serif text-5xl font-light">{f.big}</div>
+                  <p className="mt-2 max-w-[220px] text-[14px] text-white/60">{f.d}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 pb-24">
-        <div className="grid gap-3 md:grid-cols-[1.2fr_1fr]">
-          <Reveal>
-            <Tilt className="card h-full p-8">
-              <p className="kicker">YC RFS, Winter 2027</p>
-              <blockquote className="mt-6 font-serif text-4xl leading-tight md:text-5xl">&ldquo;Banks underwrite a robot like a <em>forklift.</em>&rdquo;</blockquote>
-              <p className="mt-4 text-[11px] text-white/50">Brad Flora, Y Combinator</p>
-            </Tilt>
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="grid h-full grid-cols-2 gap-3">
-              {PROXIES.map((p) => (
-                <Tilt key={p.k} className="card p-5">
-                  <div className="font-serif text-2xl">{p.k}</div>
-                  <div className="mt-2 text-[11px] text-white/60">{p.d}</div>
-                </Tilt>
+      <section id="compare" className="mx-auto max-w-6xl px-5 pb-28">
+        <Reveal>
+          <blockquote className="font-serif text-4xl font-light leading-tight md:text-6xl">&ldquo;Today, banks underwrite a robot like a <em className="text-orange">forklift.</em>&rdquo;</blockquote>
+          <p className="mt-3 font-mono text-[11px] text-white/45">Brad Flora, YC Request for Startups, Winter 2027</p>
+        </Reveal>
+        <Reveal className="mt-14 overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-[14px]">
+            <tbody>
+              {COMPARE.map((row, i) => (
+                <tr key={i} className={i === 0 ? "font-mono text-[11px] uppercase tracking-wider text-white/45" : "border-t border-white/10"}>
+                  {row.map((c, j) => (
+                    <td key={j} className={`py-4 pr-4 ${j === 0 ? "text-white/55" : ""} ${j === 4 ? (i === 0 ? "text-orange" : "font-medium text-white") : i ? "text-white/60" : ""}`}>{c}</td>
+                  ))}
+                </tr>
               ))}
-            </div>
-          </Reveal>
-        </div>
+            </tbody>
+          </table>
+        </Reveal>
       </section>
 
-      <section id="us" className="mx-auto max-w-7xl px-5 pb-24">
-        <Reveal><p className="kicker">Why us: our fourth build in this space</p></Reveal>
-        <div className="mt-6 grid gap-3 md:grid-cols-3">
-          {US.map((u, i) => (
-            <Reveal key={u.k} delay={i * 80}>
-              <Tilt className="card h-full p-6">
-                <div className="font-serif text-4xl">{u.k}</div>
-                <div className="mt-3 text-[11px] text-white/60">{u.d}</div>
-              </Tilt>
-            </Reveal>
+      <section id="us" className="mx-auto max-w-6xl px-5 pb-28">
+        <Reveal><h3 className="font-serif text-4xl font-light md:text-5xl">Our fourth build where <em>machines pay their own way.</em></h3></Reveal>
+        <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 md:grid-cols-3">
+          {[["Zishi", "Drone repays its lease from verified work", "Shenzhen FinTechathon"], ["Guild", "Market for robot training data", "HK AI Summit, finalist, 2nd"], ["Arbiter", "Rules an AI agent cannot overrule", "Nebius x NVIDIA"]].map(([k, d, w]) => (
+            <div key={k} className="bg-ink p-6 transition-colors hover:bg-white/[0.03]">
+              <div className="font-serif text-3xl">{k}</div>
+              <div className="mt-2 text-[14px] text-white/70">{d}</div>
+              <div className="mt-4 font-mono text-[10px] uppercase tracking-wider text-white/40">{w}</div>
+            </div>
           ))}
         </div>
-      </section>
-
-      <section id="faq" className="mx-auto max-w-4xl px-5 pb-24">
-        <Accordion>{FAQ.map((f) => <AccordionItem key={f.q} title={f.q}>{f.a}</AccordionItem>)}</Accordion>
-        <div className="mt-16 flex flex-col items-center gap-5 text-center">
-          <h3 className="font-serif text-5xl md:text-6xl">Fund the robot. <em>It pays you back.</em></h3>
-          <Link href="/desk" className="btn btn-orange px-6 py-3 text-[13px]">Open the factory</Link>
+        <div className="mx-auto mt-20 max-w-3xl"><Accordion>{FAQ.map((f) => <AccordionItem key={f.q} title={f.q}>{f.a}</AccordionItem>)}</Accordion></div>
+        <div className="mt-20 flex flex-col items-center gap-5 text-center">
+          <h3 className="font-serif text-5xl font-light md:text-7xl">Let the robot <em className="text-orange">pay.</em></h3>
+          <Link href="/desk" className="btn btn-orange px-7 py-3 text-[14px]">Open your fleet</Link>
         </div>
       </section>
 
-      <footer className="border-t border-white/10 px-5 py-8 text-center text-[11px] text-white/45">
-        Built at c0mpiled-18, YC Startup School Hackathon, Taipei. Synthetic fleet data, labelled. Not affiliated with Y Combinator.
+      <footer className="border-t border-white/10 px-5 py-8 text-center font-mono text-[10px] text-white/40">
+        Sweat Equity &middot; built at c0mpiled-18, YC Startup School Hackathon, Taipei &middot; fleet telemetry synthetic, labelled &middot; not affiliated with Y Combinator
       </footer>
     </main>
   );

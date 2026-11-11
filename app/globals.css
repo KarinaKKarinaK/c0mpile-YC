@@ -15,12 +15,13 @@
   --color-orange: var(--orange);
   --color-paper: var(--paper);
   --color-muted: var(--muted);
-  --font-serif: var(--font-instrument);
-  --font-mono: var(--font-space-mono);
+  --font-serif: var(--font-display);
+  --font-mono: var(--font-jet);
+  --font-sans: var(--font-body);
 }
 
 html { background: var(--ink); color-scheme: dark; }
-body { overflow-x: clip; background: var(--ink); color: var(--paper); font-family: var(--font-space-mono), ui-monospace, monospace; }
+body { overflow-x: clip; background: var(--ink); color: var(--paper); font-family: var(--font-body), ui-sans-serif, system-ui; }
 
 @layer base {
 .glass {
@@ -72,3 +73,12 @@ body { overflow-x: clip; background: var(--ink); color: var(--paper); font-famil
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* film grain that crawls */
+@keyframes grain { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-3%,2%); } 40% { transform: translate(2%,-3%); } 60% { transform: translate(-2%,-1%); } 80% { transform: translate(3%,2%); } }
+.grain { position: absolute; inset: -20%; opacity: 0.22; mix-blend-mode: overlay; pointer-events: none; animation: grain 0.9s steps(4) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker { animation: ticker 60s linear infinite; }
+.ticker:hover { animation-play-state: paused; }
+@keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6%,-4%) scale(1.12); } }
