@@ -6,6 +6,8 @@
 
 *Robots that pay for themselves.*
 
+**[Live demo: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)**
+
 ![Tests](https://img.shields.io/badge/tests-7_passing-0297DE)
 ![Spoofed hours caught](https://img.shields.io/badge/spoofed_hours_caught-500%2F500-FC734D)
 ![False flags](https://img.shields.io/badge/false_flags-2.4%25-0297DE)
