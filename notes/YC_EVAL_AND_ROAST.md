@@ -46,3 +46,29 @@ A finance product demoed with 100% synthetic data, aimed at two customers at onc
 1. Highest impact: rewrite landing to keywords + numbers + one clear CTA "Finance a robot".
 2. Easiest win: founder tile and proxies tile.
 3. Existential: real users. Film 2 to 3 robot founders at the venue before 22:00.
+
+## Roast 2 (21:35): landing, slogan, name, first-time UX, daily use
+**Verdict:** Four names in three hours and a URL that still says "selfmade": the team has not decided what it is, so a visitor cannot either.
+
+| Dimension | Score | Why |
+|-----------|-------|-----|
+| Value proposition (2x) | 5 | "Credit for the new blue collar" is clever, but nobody reads "robot loan" in 3 seconds |
+| Why software, not a bank form | 7 | Telemetry pricing, sweep and ledger need software |
+| Target user clarity | 6 | Operator now, but hero stats speak to investors ($1.51T, $47.4B) |
+| First-time UX | 4 | Only CTA drops you into someone else's fleet. No "what would I get" in under 10 seconds |
+| Core loop | 6 | Today view is right; nothing pulls the operator back (no alert channel) |
+| Moat | 5 | Loss data per robot model, still unsaid on the landing |
+| Technical execution | 7 | Real tests, real Stripe, real news; 3D now grounded |
+| Naming and messaging | 3 | Renamed 4 times; slogan and URL disagree |
+| Monetization | 5 | 12% flat fee exists in code, invisible on the site |
+| Market timing | 9 | FCC rule, physical AI funding |
+| **Weighted** | **57/110 (52%)** | |
+
+Worst issues:
+1. **No instant value.** Fix: a loan estimator on the landing page. Pick a real robot model, see the advance, the flat fee and the % of each job in one click.
+2. **Market stats in the hero.** Fix: customer numbers: offer in 10 seconds, nothing due when the robot is down, 8 to 30% of each job.
+3. **Unsourced competitor claims** ("Kept by Formic"). Fix: drop the table row claims we cannot source.
+4. **Pricing hidden.** Fix: show "one flat 12% fee, no interest" on the landing.
+5. **Name churn.** Fix: pick one German-rooted name tonight, alias the URL to it.
+
+Fix these now: (1) estimator on landing, (2) customer-value stats and visible pricing, (3) one name and matching URL.
