@@ -8,6 +8,7 @@ import {
   type Covenant, type Event, type Job, type Loan, type Robot,
 } from "@/lib/engine";
 import { Logo } from "@/components/Ui";
+import { Alert, Backdrop } from "@/components/kit";
 
 const Fleet3D = dynamic(() => import("@/components/Fleet3D"), { ssr: false, loading: () => <div className="grid h-full place-items-center text-[12px] text-white/50">Loading fleet</div> });
 
@@ -38,6 +39,7 @@ export default function Desk() {
   const [approvals, setApprovals] = useState<string[]>([]);
   const [chain, setChain] = useState("");
   const [toast, setToast] = useState("");
+  const [explain, setExplain] = useState(false);
 
   const rb = s.fleet.find((r) => r.id === s.sel)!;
   const loan = s.loans[rb.id];
@@ -128,15 +130,15 @@ export default function Desk() {
         <button className="btn btn-ghost" onClick={() => { localStorage.removeItem(KEY); location.reload(); }}>Reset demo</button>
       </header>
 
-      <div className="grid gap-5 p-5 lg:grid-cols-[1.45fr_1fr]">
-        <section className="space-y-5">
-          <div className="card relative h-[58vh] overflow-hidden">
+      <div className="grid gap-5 p-3 sm:p-5 lg:grid-cols-[1.45fr_1fr]">
+        <section className="min-w-0 space-y-5">
+          <div className="card relative h-[46vh] overflow-hidden sm:h-[58vh]">
             <div className="absolute left-4 top-4 z-10"><p className="kicker">Fleet, glowing by verified revenue. Click a robot.</p></div>
             <div className="absolute inset-0"><Fleet3D fleet={s.fleet} selected={s.sel} onSelect={(id) => { setS((p) => ({ ...p, sel: id })); setJob(null); setClipRes(""); }} /></div>
           </div>
           <div className="card overflow-x-auto p-4">
             <p className="kicker mb-3">Robot value index [modelled]</p>
-            <table className="w-full text-left text-[11px]">
+            <table className="w-full min-w-[600px] text-left text-[11px] [&_td]:pr-3">
               <thead className="text-white/45"><tr><th className="py-1">Robot</th><th>Kind</th><th>Verified / mo</th><th>Value</th><th>US content</th><th>FCC status</th></tr></thead>
               <tbody>
                 {s.fleet.map((r) => (
@@ -150,7 +152,7 @@ export default function Desk() {
           </div>
         </section>
 
-        <section className="space-y-5">
+        <section className="min-w-0 space-y-5">
           <div className="card p-5">
             <div className="flex items-start justify-between">
               <div>
@@ -162,7 +164,7 @@ export default function Desk() {
             </div>
 
             {!loan ? (
-              <div className="mt-5 grid grid-cols-2 gap-3 text-[11px]">
+              <div className="mt-5 grid grid-cols-1 gap-3 text-[11px] sm:grid-cols-2">
                 <div className="rounded-xl border border-orange/40 p-3">
                   <div className="text-orange">Selfmade offer</div>
                   <div className="mt-2 font-serif text-3xl">{usd(offerL.advance)}</div>
@@ -176,7 +178,8 @@ export default function Desk() {
                   <div className="text-white/60">fixed {usd(bankPayment(offerL.advance))}/mo for 60 months</div>
                   <div className="text-white/60">same payment if the robot sits idle</div>
                 </div>
-                <button className="btn btn-orange col-span-2 justify-center" onClick={() => log("loan.funded", { ...offerL }, { loans: { ...s.loans, [rb.id]: offerL } })}>Fund this robot</button>
+                <button className="btn btn-orange justify-center sm:col-span-2" onClick={() => log("loan.funded", { ...offerL }, { loans: { ...s.loans, [rb.id]: offerL } })}>Fund this robot</button>
+                <button className="btn btn-ghost justify-center sm:col-span-2" onClick={() => setExplain(true)}>How is this priced?</button>
               </div>
             ) : (
               <div className="mt-5 text-[11px]">
@@ -203,7 +206,7 @@ export default function Desk() {
             <button className="btn btn-blue mt-2" disabled={busy === "read"} onClick={readOffer}>{busy === "read" ? "Reading..." : "Read offer"}</button>
             {job && (
               <div className="mt-4 space-y-2 text-[11px]">
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {[["Task", job.job.task], ["Hours", job.job.hours], ["Pay", `$${job.job.payPerHour}/h`], ["Client", job.job.client]].map(([k, v]) => (
                     <div key={k as string} className="rounded-lg bg-white/5 p-2"><div className="text-white/45">{k}</div><div>{v}</div></div>
                   ))}
@@ -217,7 +220,7 @@ export default function Desk() {
                     <button className="btn btn-orange mt-3" disabled={busy === "pay" || billable === 0} onClick={pay}>Collect {usd(billable)} with Stripe</button>
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-orange/50 p-3 text-orange">Blocked by {job.check.broken.map((c) => `${c.id} "${c.text}"`).join(", ")}. The agent cannot override this.</div>
+                  <Alert tone="warn">Blocked by {job.check.broken.map((c) => `${c.id} "${c.text}"`).join(", ")}. The agent cannot override this.</Alert>
                 )}
               </div>
             )}
@@ -263,7 +266,17 @@ export default function Desk() {
         </section>
       </div>
 
-      {toast && <div className="card fixed bottom-5 left-1/2 z-50 -translate-x-1/2 px-4 py-3 text-[12px]">{toast}</div>}
+      {toast && <Alert tone="ok" className="fixed bottom-5 left-1/2 z-50 w-[min(92vw,560px)] -translate-x-1/2 backdrop-blur">{toast}</Alert>}
+      <Backdrop open={explain} onClose={() => setExplain(false)} label="How the loan is priced">
+        <p className="kicker">How this loan is priced [modelled]</p>
+        <ul className="mt-4 space-y-2 text-[12px] text-white/75">
+          <li>Value = half asset value (list price, 18% a year decline) + half income value (35% margin x 24 months of verified revenue), times health.</li>
+          <li>Mobile robots under 65% US content lose 20%: since 28 Jul 2026 the FCC no longer authorizes new foreign-made models. Fixed arms are out of scope.</li>
+          <li>Advance = 60% of value. One flat fee of 12%, no compounding, like Stripe Capital.</li>
+          <li>Repayment = a share of each verified job, set so the loan clears in about 30 months of normal work.</li>
+          <li>Bank comparison: 10.55% fixed over 60 months, an example equipment rate.</li>
+        </ul>
+      </Backdrop>
     </main>
   );
 }

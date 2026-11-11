@@ -20,8 +20,9 @@
 }
 
 html { background: var(--ink); color-scheme: dark; }
-body { background: var(--ink); color: var(--paper); font-family: var(--font-space-mono), ui-monospace, monospace; }
+body { overflow-x: clip; background: var(--ink); color: var(--paper); font-family: var(--font-space-mono), ui-monospace, monospace; }
 
+@layer base {
 .glass {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--line);
@@ -61,6 +62,8 @@ body { background: var(--ink); color: var(--paper); font-family: var(--font-spac
 
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.8,.2,1); }
 .reveal.in { opacity: 1; transform: none; }
+
+}
 
 @keyframes pulse-o { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .pulse { animation: pulse-o 1.4s ease-in-out infinite; }

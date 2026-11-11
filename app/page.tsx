@@ -1,6 +1,15 @@
 import Link from "next/link";
 import BeadCurtain from "@/components/BeadCurtain";
 import { Counter, Logo, Reveal, Tilt } from "@/components/Ui";
+import { Accordion, AccordionItem, MobileMenu } from "@/components/kit";
+
+const FAQ = [
+  { q: "Where does the lending capital come from?", a: "At first, not from us. Selfmade starts as the underwriting and data layer for licensed equipment lenders: they bring the capital, we bring telemetry pricing, the covenant ledger and the revenue sweep. A credit line comes once loss data exists." },
+  { q: "Is any of this real data?", a: "The ledger, the two-person rule, the audit chain, the work oracle, the model calls and Stripe Checkout are real code. Fleet, prices and telemetry are synthetic and labelled. The first real step is one fleet partner: robots-as-a-service operators already collect uptime." },
+  { q: "Why now?", a: "Robot startups raised $47.4B in H1 2026 (Crunchbase), mostly equity that buys hardware. Since 28 Jul 2026 the FCC blocks new foreign-made mobile robots, which changes what a robot is worth. And GPU lenders already price from telemetry, but nobody does it for robots." },
+  { q: "What stops an operator faking work?", a: "Every billed hour must match the robot's energy draw inside a split-conformal band calibrated on honest hours. On synthetic telemetry it caught 500 of 500 spoofed hours and flagged 2.4% of honest ones." },
+  { q: "Why Taipei?", a: "Taiwan ships most of the world's AI servers and much of the robot supply chain, and Foxconn led the $201M PIPE in Agility Robotics. The machines are built here; the financing should understand them." },
+];
 
 const STEPS = [
   { n: "01", t: "Verify", d: "Every billed hour is checked against the robot's own telemetry. Idle hours and spoofed cycles are rejected before any money moves." },
@@ -32,10 +41,9 @@ export default function Home() {
             <a href="#yc" className="hover:text-white">YC RFS</a>
             <a href="https://github.com/KarinaKKarinaK/c0mpile-YC" className="hover:text-white">GitHub</a>
           </div>
-          <div className="glass flex items-center gap-1 rounded-full p-1">
-            <a href="#how" className="btn px-3 text-white/80">Learn</a>
-            <Link href="/desk" className="btn btn-light">Open the desk</Link>
-          </div>
+          <div className="flex items-center gap-2"><MobileMenu links={[{ href: "#how", label: "How it works" }, { href: "#numbers", label: "Numbers" }, { href: "#yc", label: "YC RFS" }, { href: "#faq", label: "Questions" }, { href: "/desk", label: "Open the desk" }]} /><div className="glass flex items-center gap-1 rounded-full p-1">
+                        <Link href="/desk" className="btn btn-light whitespace-nowrap">Open the desk</Link>
+          </div></div>
         </nav>
 
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center px-5 pt-10 md:grid-cols-[1fr_2.2fr_1fr] md:pt-16">
@@ -51,6 +59,11 @@ export default function Home() {
             <p className="mx-auto mt-6 max-w-xl text-[13px] leading-relaxed text-white/75">
               Selfmade lends against robots based on what they actually earn, and gets repaid from every verified job.
             </p>
+            <div className="mx-auto mt-8 grid max-w-sm grid-cols-2 gap-5 text-left md:hidden">
+              {[["$1.51T", "US equipment finance"], ["$47.4B", "Physical AI raised, H1 2026"], ["75%", "US content by 2029"], ["$500k/yr", "One robot can earn"]].map(([v, l]) => (
+                <div key={l}><div className="font-serif text-3xl">{v}</div><div className="text-[10px] text-white/60">{l}</div></div>
+              ))}
+            </div>
           </div>
           <div className="hidden space-y-8 text-right md:block">
             <div><div className="font-serif text-4xl">65% to 75%</div><div className="text-[11px] text-white/60">US content rule for new mobile robots</div></div>
@@ -158,6 +171,8 @@ export default function Home() {
             ))}
           </div>
         </Reveal>
+
+        <Reveal className="mt-20"><div id="faq"><p className="kicker">Questions judges ask</p><div className="mt-4"><Accordion>{FAQ.map((f) => <AccordionItem key={f.q} title={f.q}>{f.a}</AccordionItem>)}</Accordion></div></div></Reveal>
 
         <div className="mt-20 flex flex-col items-center gap-6 text-center">
           <h3 className="font-serif text-5xl">Fund the robot. <em>Let it pay you back.</em></h3>
