@@ -5,7 +5,7 @@ import type { Scored } from "@/lib/market";
 
 type Series = { kind: Kind; points: { t: number; v: number }[] };
 export type Market = { live: boolean; fetchedAt: number | null; series: Series[]; headlines: Scored[]; counted: number };
-const COLORS: Record<Kind, string> = { Humanoid: "#FC734D", Quadruped: "#0297DE", Arm: "#e9eef2", AMR: "#7fd4ff" };
+const COLORS: Record<Kind, string> = { Humanoid: "#E2774F", Quadruped: "#2A7FB8", Arm: "#e9eef2", AMR: "#7fd4ff" };
 
 export function useMarket() {
   const [m, setM] = useState<Market | null>(null);

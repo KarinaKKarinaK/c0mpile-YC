@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Drip, Estimator, FilmPhoto, Wave } from "@/components/Hero";
 import { PHOTOS } from "@/lib/photos";
-import { Logo } from "@/components/Ui";
+import { Logo, MotionWord } from "@/components/Ui";
 
 const NAV = [["How it works", "#how"], ["Advantages", "#why"], ["Start", "#start"]];
 const HOW = [
@@ -22,9 +22,8 @@ const Label = ({ children }: { children: string }) => <p className="font-mono te
 export default function Home() {
   return (
     <main className="font-light">
-      <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
-        <div className="absolute inset-0 -z-10"><Wave /></div>
-        <nav className="mx-auto flex max-w-7xl items-center justify-between border-x border-b border-dashed border-white/15 px-6 py-5">
+      <header className="sticky top-0 z-50 border-b border-dashed border-white/15 bg-ink/80 backdrop-blur-md">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between border-x border-dashed border-white/15 px-6 py-4">
           <Link href="/"><Logo /></Link>
           <div className="hidden gap-12 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 md:flex">
             {NAV.map(([l, h]) => <a key={h} href={h} className="hover:text-white">{l}</a>)}
@@ -32,9 +31,21 @@ export default function Home() {
           </div>
           <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>
         </nav>
-        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[10vh] md:pl-[16%]">
+      </header>
+      <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
+        <div className="absolute inset-0 -z-10"><Wave /></div>
+        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[6vh] md:pl-[16%]">
+          <div className="mb-14 grid grid-cols-2 gap-px border border-dashed border-white/15 md:grid-cols-4">
+            {[["$1.51T", "US equipment finance, 2025", "ELFA"], ["$47.4B", "into physical AI, H1 2026", "Crunchbase"], ["38,400", "US robot installs in 2025, +12%", "IFR"], ["0", "robot lenders pricing on live data", "our scan"]].map(([v, l, src]) => (
+              <div key={l} className="bg-ink/40 p-4 backdrop-blur-sm md:p-5">
+                <div className="text-3xl font-light tracking-tight md:text-5xl">{v}</div>
+                <div className="mt-1 text-[12px] text-white/70">{l}</div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-white/35">{src}</div>
+              </div>
+            ))}
+          </div>
           <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
-            Your robot pays off<br />its <em>own loan</em>. Finance<br />that <em className="text-orange">clocks in</em>.
+            Your robot pays off<br />its <em>own loan</em>. Finance<br />that <MotionWord className="text-orange">clocks in</MotionWord>.
           </h1>
           <div className="mt-10"><Estimator /></div>
           <Link href="/desk" className="group mt-12 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">
@@ -44,7 +55,6 @@ export default function Home() {
         </div>
         <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-7xl items-end justify-between px-6 text-ink">
           <p className="max-w-xs text-[11px] leading-snug opacity-70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. Robot prices and news are live; demo fleet data is synthetic.</p>
-          <Link href="/desk" className="rounded-md border border-ink/30 bg-white/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.15em] backdrop-blur hover:bg-white">Live demo<Arrow /></Link>
         </div>
       </section>
 
@@ -52,7 +62,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl border-x border-dashed border-white/15 px-6 py-20">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( On the floor )</p>
           <div className="mt-8 grid gap-px bg-white/10 md:grid-cols-3">
-            {PHOTOS.map((ph) => <FilmPhoto key={ph.img} src={ph.img} title={ph.title} line={ph.line} credit={ph.by} page={ph.page} />)}
+            {PHOTOS.map((ph, i) => <FilmPhoto key={ph.img} i={i} src={ph.img} title={ph.title} line={ph.line} credit={ph.by} page={ph.page} />)}
           </div>
         </div>
       </section>
@@ -69,8 +79,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <Drip id="d2" tone="light" className="h-56 opacity-90" />
       </section>
+      <div aria-hidden className="relative h-40 overflow-hidden bg-paper"><div className="mx-auto h-full max-w-7xl border-x border-dashed border-ink/15" /><Drip id="d2" tone="light" className="inset-y-0 h-full" /></div>
 
       <section id="why" className="bg-paper text-ink">
         <div className="mx-auto grid max-w-7xl gap-10 border-x border-t border-dashed border-ink/15 px-6 py-32 md:grid-cols-[16%_1fr_1.3fr]">

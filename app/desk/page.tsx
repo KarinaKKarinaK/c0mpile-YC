@@ -127,7 +127,7 @@ export default function Desk() {
   const fcc = !MOBILE.includes(rb.kind) ? "FCC: out of scope" : fccCompliant(rb) ? "FCC: compliant" : "FCC: new models blocked";
 
   return (
-    <main className="min-h-screen pb-16" style={{ background: "radial-gradient(70% 40% at 50% 0%, rgba(2,151,222,0.16), transparent 70%), #02070A" }}>
+    <main className="min-h-screen pb-16" style={{ background: "radial-gradient(70% 40% at 50% 0%, rgba(42,127,184,0.16), transparent 70%), #02070A" }}>
       <header className="flex items-center justify-between px-4 py-4 text-[12px] sm:px-6">
         <Link href="/"><Logo /></Link>
         <div className="flex items-center gap-2 text-white/60">
