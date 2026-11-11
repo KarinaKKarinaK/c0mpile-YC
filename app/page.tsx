@@ -21,16 +21,16 @@ const Arrow = () => <span aria-hidden className="ml-2">&#8599;</span>;
 const Label = ({ children }: { children: string }) => <p className="font-mono text-[10px] uppercase tracking-[0.2em] opacity-50">( {children} )</p>;
 
 const YC10: [string, string][] = [
-  ["1. Founder fit?", "Our fourth build where machines pay their own way: a drone that repays its lease (Shenzhen), a robot-data market (HK, finalist), an agent rules ledger (Nebius). Gap we are closing: an equipment-finance advisor."],
-  ["2. Market, growing?", "US equipment finance $1.51T in 2025 (ELFA), 55% of equipment spend financed. Physical AI raised $47.4B in H1 2026. US robot installs 38,400 in 2025, +12% (IFR)."],
-  ["3. How acute?", "A fixed bank payment ignores whether the robot worked. One jam or one slow month and a young fleet misses a payment; so founders burn equity on hardware instead."],
-  ["4. Competition?", "Equipment banks (fixed ~10.5%), Formic (robots as a service), USD.AI (GPU loans on telemetry, GPUs only), Stripe Capital (revenue share, card sales only)."],
-  ["5. Who wants it?", "Robot fleet operators who finance hardware, and lenders who cannot see what a robot earns. Today: operators can upload their own logs and get a priced offer."],
-  ["6. Why now?", "FCC rule of 28 Jul 2026 on foreign-made mobile robots, record physical AI funding, robots that already stream telemetry, and AI agents good enough to run collections."],
-  ["7. Proxies?", "Stripe Capital (repay as % of sales, 81k+ businesses funded), USD.AI for GPUs, aircraft and equipment lessors, revenue-based financing."],
-  ["8. Years of work?", "Yes. This is the same thesis we keep returning to: machines are becoming economic actors and need credit."],
-  ["9. Scalable?", "Software fee per loan on partner capital first, then our own credit line, then pools on Back a fleet. Every verified hour improves pricing: the data compounds."],
-  ["10. Good space?", "It is YC's own Winter 2027 request: Wall Street for the Physical Buildout, with a hook into Robots Made in America."],
+  ["Why us", "Our fourth build where machines pay their own way: a drone that repays its lease (Shenzhen), a robot-data market (HK, finalist), an agent rules ledger (Nebius). Gap we are closing: an equipment-finance advisor."],
+  ["How big this gets", "US equipment finance $1.51T in 2025 (ELFA), 55% of equipment spend financed. Physical AI raised $47.4B in H1 2026. US robot installs 38,400 in 2025, +12% (IFR)."],
+  ["Why it hurts today", "A fixed bank payment ignores whether the robot worked. One jam or one slow month and a young fleet misses a payment; so founders burn equity on hardware instead."],
+  ["Who else is trying", "Equipment banks (fixed ~10.5%), Formic (robots as a service), USD.AI (GPU loans on telemetry, GPUs only), Stripe Capital (revenue share, card sales only)."],
+  ["Who it is for", "Robot fleet operators who finance hardware, and lenders who cannot see what a robot earns. Today: operators can upload their own logs and get a priced offer."],
+  ["Why now", "FCC rule of 28 Jul 2026 on foreign-made mobile robots, record physical AI funding, robots that already stream telemetry, and AI agents good enough to run collections."],
+  ["What already works like this", "Stripe Capital (repay as % of sales, 81k+ businesses funded), USD.AI for GPUs, aircraft and equipment lessors, revenue-based financing."],
+  ["Why we are in it for the long run", "Yes. This is the same thesis we keep returning to: machines are becoming economic actors and need credit."],
+  ["How it scales", "Software fee per loan on partner capital first, then our own credit line, then pools on Back a fleet. Every verified hour improves pricing: the data compounds."],
+  ["Where it fits", "Robot financing is the missing piece of the physical buildout: the machines exist, the demand exists, the credit does not. It also helps Robots Made in America: cheaper capital for US-built fleets."],
 ];
 const PLAN: [string, string][] = [
   ["One idea, all in", "Hebl only. Robot credit priced on verified work. Everything else is cut."],
@@ -128,9 +128,9 @@ export default function Home() {
 
       <section id="answers" className="border-t border-dashed border-white/15 bg-ink">
         <div className="mx-auto grid max-w-7xl gap-10 border-x border-dashed border-white/15 px-6 py-24 md:grid-cols-[16%_1fr_1fr]">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( Straight answers )</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( The case for Hebl )</p>
           <div>
-            <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">YC&apos;s ten <em>questions</em></h2>
+            <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">Why this, why <em>now</em></h2>
             <div className="mt-6 divide-y divide-dashed divide-white/15 border-y border-dashed border-white/15">
               {YC10.map(([q, a]) => (
                 <details key={q} className="group py-4">

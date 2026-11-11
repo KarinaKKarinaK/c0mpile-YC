@@ -91,21 +91,21 @@ flowchart LR
   F --> FX[Repayment flexes to zero hours] --> I[Back a fleet pool pauses]
 ```
 
-## YC's ten questions, answered (also on the landing page, "Straight answers")
-| # | Question | Answer |
-|---|----------|--------|
-| 1 | Founder fit | Fourth build where machines pay their own way (Zishi, Guild, Arbiter). Adding an equipment-finance advisor. |
-| 2 | Market | $1.51T US equipment finance; $47.4B into physical AI in H1 2026; robot installs +12%. |
-| 3 | Acute | Fixed payments ignore uptime; one bad month breaks a young fleet; equity gets burned on hardware. |
-| 4 | Competition | Equipment banks, Formic, USD.AI (GPUs), Stripe Capital (card sales). |
-| 5 | Who wants it | Fleet operators financing hardware; lenders who cannot see robot earnings. CSV upload works today. |
+## The case for Hebl (also on the landing page)
+| | | |
+|---|---|---|
+| 1 | Why us | Fourth build where machines pay their own way (Zishi, Guild, Arbiter). Adding an equipment-finance advisor. |
+| 2 | How big this gets | $1.51T US equipment finance; $47.4B into physical AI in H1 2026; robot installs +12%. |
+| 3 | Why it hurts today | Fixed payments ignore uptime; one bad month breaks a young fleet; equity gets burned on hardware. |
+| 4 | Who else is trying | Equipment banks, Formic, USD.AI (GPUs), Stripe Capital (card sales). |
+| 5 | Who it is for | Fleet operators financing hardware; lenders who cannot see robot earnings. CSV upload works today. |
 | 6 | Why now | FCC rule (Jul 2026), record physical AI funding, robots stream telemetry, agents can run collections. |
-| 7 | Proxies | Stripe Capital, USD.AI, aircraft and equipment lessors, revenue-based finance. |
-| 8 | Years | Same thesis across four builds. |
-| 9 | Scalable | Software fee on partner capital, then own credit line, then pools; receipts compound into pricing data. |
-| 10 | Space | YC's own Winter 2027 RFS. |
+| 7 | What already works like this | Stripe Capital, USD.AI, aircraft and equipment lessors, revenue-based finance. |
+| 8 | In it for the long run | Same thesis across four builds. |
+| 9 | How it scales | Software fee on partner capital, then own credit line, then pools; receipts compound into pricing data. |
+| 10 | Where it fits | The missing credit layer of the physical buildout. |
 
-## Jon Xu's test ("How to pick a startup idea")
+## How we chose and commit to this idea
 | His point | Hebl |
 |-----------|------|
 | Pick one, burn the boats | One idea, one name, one customer: robot fleet operators |
