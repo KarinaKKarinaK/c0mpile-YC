@@ -2,11 +2,13 @@
 
 <img src="docs/brand/banner.svg" alt="Hebl: loans for robots, repaid by the work they do" width="100%">
 
-**[Live: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)** | [Operator desk](https://selfmade-yc.vercel.app/desk) | [Back a fleet](https://selfmade-yc.vercel.app/invest) | [Releases](https://github.com/KarinaKKarinaK/c0mpile-YC/releases)
+**[Live demo](https://selfmade-yc.vercel.app)** | [See it run](https://selfmade-yc.vercel.app/pipeline) | [Operator desk](https://selfmade-yc.vercel.app/desk) | [Back a fleet](https://selfmade-yc.vercel.app/invest) | [Releases](https://github.com/KarinaKKarinaK/c0mpile-YC/releases)
 
 ![Tests](https://img.shields.io/badge/tests-11_passing-0297DE) ![Next.js](https://img.shields.io/badge/Next.js-16-02070A) ![Stripe](https://img.shields.io/badge/Stripe-Checkout-635BFF) ![RFS](https://img.shields.io/badge/YC_RFS-Wall_Street_for_the_Physical_Buildout-FC734D)
 
 </div>
+
+<img src="docs/brand/why.svg" alt="Why it works and how an operator uses it" width="100%">
 
 ## In one paragraph
 Hebl lends to companies buying robots. Each robot's own telemetry proves the hours it worked, the client's warehouse system confirms the output, and a fixed share of every verified job repays the loan through Stripe. Nothing is due while the robot is idle; at zero, the operator owns it. Every verified hour becomes a hashed **work receipt** that rolls up into a daily Merkle root, so lenders, insurers and buyers can check a robot's work history without seeing raw data. Agents propose service tickets, payment holidays and lender notices; code bounds them and two people approve.
@@ -23,13 +25,7 @@ Built at c0mpiled-18, YC Startup School Hackathon, Taipei, for Brad Flora's RFS:
 | Revenue-share lending at scale | **81,000+** businesses funded by Stripe Capital | Stripe 2025 annual letter |
 
 ## Fraud check, measured (`node scripts/eval.ts`, synthetic telemetry, 500 hours per row)
-```mermaid
-xychart-beta
-  title "Share of hours flagged (%)"
-  x-axis ["idle billed", "no energy", "faked energy", "faked energy + client check", "honest", "honest + client check", "worn motor", "worn motor, own band"]
-  y-axis "flagged %" 0 --> 100
-  bar [100, 100, 1.2, 100, 0.8, 2.6, 75.8, 2.0]
-```
+<img src="docs/brand/fraud-chart.svg" alt="Share of hours flagged by case" width="100%">
 | Case | Flagged | Read it as |
 |------|---------|-----------|
 | Fraud: idle robot billed as busy | 500/500 | caught |
@@ -156,7 +152,7 @@ node scripts/eval.ts     # the fraud table above
 | `lib/engine.ts` | Oracle, settlement, receipts, Merkle, agent rules, loans, covenants, audit chain |
 | `lib/store.ts` | KV or memory storage |
 | `app/api/*` | Backend routes above |
-| `app/page.tsx`, `app/desk/page.tsx`, `app/invest/page.tsx` | Landing, operator desk, Back a fleet |
+| `app/page.tsx`, `app/desk/page.tsx`, `app/invest/page.tsx`, `app/pipeline/page.tsx` | Landing, operator desk, Back a fleet, live pipeline run |
 | `components/Fleet3D.tsx` | 3D factory |
 
 ## Team

@@ -258,29 +258,6 @@ function Line(p: P & { z: number }) {
   );
 }
 
-function Amr(p: P & { i: number }) {
-  const g = useRef<THREE.Group>(null);
-  useFrame(({ clock }) => {
-    if (!g.current || p.rb.faulted) return;
-    const a = clock.elapsedTime * 0.18 + (p.i * Math.PI * 2) / 3;
-    const x = 7.5 + Math.cos(a) * 2.4, z = Math.sin(a) * 7;
-    g.current.position.set(x, 0, z);
-    g.current.rotation.y = Math.atan2(-Math.cos(a) * 7, -Math.sin(a) * 2.4);
-  });
-  return (
-    <group ref={g} position={[7.5 + 2.4, 0, p.i * 3 - 3]}>
-      <Pickable {...p} height={1}>
-        <RoundedBox args={[1.3, 0.32, 0.9]} radius={0.1} position={[0, 0.28, 0]} castShadow>{M.white}</RoundedBox>
-        <mesh position={[0, 0.45, 0]}><boxGeometry args={[1.32, 0.03, 0.92]} />{M.glowBlue}</mesh>
-        <mesh position={[0.35, 0.56, 0]} castShadow><cylinderGeometry args={[0.12, 0.12, 0.14, 24]} />{M.graphite}</mesh>
-        <RoundedBox args={[0.6, 0.45, 0.6]} radius={0.03} position={[-0.2, 0.68, 0]} castShadow>{M.card}</RoundedBox>
-        {[[-0.45, -0.46], [0.45, -0.46], [-0.45, 0.46], [0.45, 0.46]].map(([x, z]) => (
-          <mesh key={`${x}${z}`} position={[x, 0.12, z]} rotation={[Math.PI / 2, 0, 0]}><cylinderGeometry args={[0.12, 0.12, 0.08, 20]} />{M.rubber}</mesh>
-        ))}
-      </Pickable>
-    </group>
-  );
-}
 
 function Humanoid(p: P & { z: number }) {
   const g = useRef<THREE.Group>(null), armL = useRef<THREE.Group>(null), armR = useRef<THREE.Group>(null), foreL = useRef<THREE.Group>(null), foreR = useRef<THREE.Group>(null);

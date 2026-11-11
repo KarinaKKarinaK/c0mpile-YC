@@ -89,22 +89,6 @@ export function Wave({ className = "" }: { className?: string }) {
   );
 }
 
-// Thin dashed construction lines with tiny corner labels.
-export function CutLines({ labels }: { labels: [string, string, string, string] }) {
-  const L = "pointer-events-none absolute border-white/15";
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
-      <div className={`${L} inset-y-0 left-[16%] border-l border-dashed`} />
-      <div className={`${L} inset-y-0 right-[16%] border-l border-dashed`} />
-      <div className={`${L} inset-x-0 top-[28%] border-t border-dashed`} />
-      <div className={`${L} inset-x-0 bottom-[26%] border-t border-dashed`} />
-      {[["left-[17%] top-[29%]", 0], ["right-[17%] top-[29%] text-right", 1], ["left-[17%] bottom-[22%]", 2], ["right-[17%] bottom-[22%] text-right", 3]].map(([pos, i]) => (
-        <span key={i as number} className={`absolute ${pos} whitespace-pre-line font-mono text-[9px] uppercase leading-tight tracking-[0.18em] text-white/45`}>{labels[i as number]}</span>
-      ))}
-      <svg className="absolute bottom-[23%] left-1/2 -translate-x-1/2 text-white/40" width="26" height="26" viewBox="0 0 26 26"><g stroke="currentColor" strokeWidth="1"><path d="M13 0V26M0 13H26M4 4L22 22M22 4L4 22" /></g></svg>
-    </div>
-  );
-}
 
 // Real photo: static, black and white, heavy film grain.
 export function FilmPhoto({ src, title, line, credit, page }: { src: string; title: string; line: string; credit: string; page: string; i?: number }) {

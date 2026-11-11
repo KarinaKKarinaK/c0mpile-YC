@@ -7,6 +7,7 @@ import { Logo } from "@/components/Ui";
 // Back a fleet: the capital side. Lenders list pools of telemetry-priced robot loans; qualified investors fund slices
 // and are paid from the same verified-job sweep. Demo only, every figure [modelled].
 const KINDS: Kind[] = ["Humanoid", "Quadruped", "Arm", "AMR"];
+const TINT: Record<Kind, string> = { Humanoid: "#FC734D", Quadruped: "#0297DE", Arm: "#E9D8A6", AMR: "#7FD4FF" };
 const usd = (n: number) => (n >= 1e4 ? `$${(n / 1e3).toFixed(1)}k` : `$${Math.round(n).toLocaleString()}`);
 type Feed = { id: number; robot: string; kind: Kind; amount: number; paused: boolean };
 
@@ -52,6 +53,7 @@ export default function Invest() {
           <div className="flex gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
             <Link href="/" className="hover:text-white">Home</Link>
             <Link href="/desk" className="hover:text-white">Operators</Link>
+            <Link href="/pipeline" className="hover:text-white">Pipeline</Link>
             <span className="text-white">Back a fleet</span>
           </div>
         </nav>
@@ -66,12 +68,13 @@ export default function Invest() {
         <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.15em] text-orange/90">Accredited and institutional investors only, via a licensed partner &middot; demo, not an offer &middot; figures [modelled]</p>
       </section>
 
+      <p className="mx-auto max-w-7xl border-x border-dashed border-white/15 px-6 pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( 1. Choose a pool )</p>
       <section className="border-y border-dashed border-white/15">
         <div className="mx-auto grid max-w-7xl gap-px border-x border-dashed border-white/15 bg-white/10 md:grid-cols-4">
           {pools.map((p) => (
-            <div key={p.k} className="bg-ink p-6">
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">{p.k} pool &middot; {p.rs.length} robots</div>
-              <div className="mt-4 text-5xl font-light tracking-tight">{p.yieldPct.toFixed(1)}%</div>
+            <div key={p.k} className="relative bg-ink p-6" style={{ boxShadow: `inset 0 3px 0 ${TINT[p.k]}`, backgroundImage: `linear-gradient(180deg, ${TINT[p.k]}14, transparent 45%)` }}>
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/60"><span className="h-2 w-2 rounded-full" style={{ background: TINT[p.k] }} />{p.k} pool &middot; {p.rs.length} robots</div>
+              <div className="mt-4 text-5xl font-light tracking-tight" style={{ color: TINT[p.k] }}>{p.yieldPct.toFixed(1)}%</div>
               <div className="text-[12px] text-white/55">target yield, paid per verified job</div>
               <dl className="mt-5 space-y-1.5 text-[12px]">
                 <div className="flex justify-between"><dt className="text-white/50">Pool size</dt><dd>{usd(p.size)}</dd></div>
@@ -89,12 +92,13 @@ export default function Invest() {
 
       <section className="mx-auto grid max-w-7xl gap-10 border-x border-dashed border-white/15 px-6 py-16 md:grid-cols-[1.2fr_1fr]">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( Live payouts )</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">( 2. Live payouts )</p>
+          <div className="mt-3 flex flex-wrap gap-4 text-[11px] text-white/55">{KINDS.map((k) => <span key={k} className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: TINT[k] }} />{k}</span>)}<span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#ff5a3c]" />paused</span></div>
           <ul className="mt-5 divide-y divide-dashed divide-white/10 font-mono text-[12px]">
             {feed.map((f) => (
               <li key={f.id} className="flex items-center justify-between py-2.5">
-                <span><span className={`mr-2 inline-block h-1.5 w-1.5 rounded-full ${f.paused ? "bg-orange" : "bg-blue"}`} />{f.robot} <span className="text-white/35">{f.kind}</span></span>
-                <span className={f.paused ? "text-orange" : "text-white"}>{f.paused ? "paused: robot down" : `+$${f.amount.toFixed(2)}`}</span>
+                <span><span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ background: f.paused ? "#ff5a3c" : TINT[f.kind] }} />{f.robot} <span className="text-white/35">{f.kind}</span></span>
+                <span className={`rounded px-2 py-0.5 ${f.paused ? "bg-orange/15 text-orange" : "bg-white/5 text-white"}`}>{f.paused ? "paused: robot down" : `+$${f.amount.toFixed(2)}`}</span>
               </li>
             ))}
             {!feed.length && <li className="py-2.5 text-white/40">Waiting for the first verified job...</li>}

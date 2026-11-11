@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+<defs>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.3 0"/></filter>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+  <radialGradient id="bgb" cx="15%" cy="100%" r="70%"><stop offset="0" stop-color="#2A7FB8" stop-opacity="0.45"/><stop offset="1" stop-color="#02070A" stop-opacity="0"/></radialGradient>
+  <radialGradient id="bgo" cx="90%" cy="110%" r="55%"><stop offset="0" stop-color="#E2774F" stop-opacity="0.4"/><stop offset="1" stop-color="#02070A" stop-opacity="0"/></radialGradient>
+  <linearGradient id="barO" x1="0" x2="1"><stop offset="0" stop-color="#FC734D"/><stop offset="1" stop-color="#FFB08F"/></linearGradient>
+  <linearGradient id="barB" x1="0" x2="1"><stop offset="0" stop-color="#0297DE"/><stop offset="1" stop-color="#7FD4FF"/></linearGradient>
+</defs>
+<rect width="1200" height="520" rx="18" fill="#02070A"/><rect width="1200" height="520" rx="18" fill="url(#bgb)"/><rect width="1200" height="520" rx="18" fill="url(#bgo)"/>
+<text x="40" y="50" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="12" letter-spacing="3">( WHY IT WORKS )</text>
+<rect x="40" y="70" width="270" height="170" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<rect x="40" y="70" width="270" height="3" fill="#FC734D"/>
+<text x="62" y="150" fill="#FC734D" font-family="Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="300" letter-spacing="-2">$1.51T</text>
+<text x="62" y="186" fill="#fff" fill-opacity="0.85" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">US equipment finance, 2025</text>
+<text x="62" y="214" fill="#fff" fill-opacity="0.4" font-family="Menlo, monospace" font-size="11">ELFA</text>
+<rect x="326" y="70" width="270" height="170" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<rect x="326" y="70" width="270" height="3" fill="#7FD4FF"/>
+<text x="348" y="150" fill="#7FD4FF" font-family="Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="300" letter-spacing="-2">$0</text>
+<text x="348" y="186" fill="#fff" fill-opacity="0.85" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">due while a robot sits idle</text>
+<text x="348" y="214" fill="#fff" fill-opacity="0.4" font-family="Menlo, monospace" font-size="11">How Hebl repays</text>
+<rect x="612" y="70" width="270" height="170" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<rect x="612" y="70" width="270" height="3" fill="#FC734D"/>
+<text x="634" y="150" fill="#FC734D" font-family="Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="300" letter-spacing="-2">100%</text>
+<text x="634" y="186" fill="#fff" fill-opacity="0.85" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">careful fakes caught with the client check</text>
+<text x="634" y="214" fill="#fff" fill-opacity="0.4" font-family="Menlo, monospace" font-size="11">scripts/eval.ts</text>
+<rect x="898" y="70" width="270" height="170" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<rect x="898" y="70" width="270" height="3" fill="#7FD4FF"/>
+<text x="920" y="150" fill="#7FD4FF" font-family="Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="300" letter-spacing="-2">1 hour</text>
+<text x="920" y="186" fill="#fff" fill-opacity="0.85" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">= 1 hashed work receipt</text>
+<text x="920" y="214" fill="#fff" fill-opacity="0.4" font-family="Menlo, monospace" font-size="11">Merkle root per day</text>
+<text x="40" y="292" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="12" letter-spacing="3">( HOW AN OPERATOR USES IT )</text>
+<rect x="40" y="312" width="360" height="160" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<text x="62" y="352" fill="#FC734D" font-family="Menlo, monospace" font-size="13">01</text><text x="62" y="392" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">Upload or connect</text><text x="62" y="428" fill="#fff" fill-opacity="0.6" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">Robot telemetry and your warehouse counts</text>
+<text x="404" y="398" fill="#fff" fill-opacity="0.4" font-family="Helvetica Neue, Arial, sans-serif" font-size="18">&#8594;</text>
+<rect x="420" y="312" width="360" height="160" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<text x="442" y="352" fill="#FC734D" font-family="Menlo, monospace" font-size="13">02</text><text x="442" y="392" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">Get an offer</text><text x="442" y="428" fill="#fff" fill-opacity="0.6" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">Priced on what the robot really earns</text>
+<text x="784" y="398" fill="#fff" fill-opacity="0.4" font-family="Helvetica Neue, Arial, sans-serif" font-size="18">&#8594;</text>
+<rect x="800" y="312" width="360" height="160" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="4 5"/>
+<text x="822" y="352" fill="#FC734D" font-family="Menlo, monospace" font-size="13">03</text><text x="822" y="392" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">Run the fleet</text><text x="822" y="428" fill="#fff" fill-opacity="0.6" font-family="Helvetica Neue, Arial, sans-serif" font-size="15">Each paid job repays a share. Agents handle breakdowns</text>
+<rect width="1200" height="520" rx="18" filter="url(#grain)" opacity="0.6"/></svg>

@@ -38,6 +38,7 @@ const PLAN: [string, string][] = [
   ["Edge of what AI can do", "Agents propose service tickets, payment holidays and lender notices; code and two people approve. Work receipts prove every hour."],
   ["Own the outcome", "Start as rails for licensed lenders, then lend from our own book: be the lender, not software for lenders."],
   ["Most ambitious version", "The credit system for every machine that works: robots, GPUs, solar, EV fleets. Receipts become each machine's credit history."],
+  ["If the loan business stalls", "The work-receipt layer stands on its own: insurers, buyers and lenders all need proof of what a machine actually did."],
 ];
 
 export default function Home() {
@@ -46,7 +47,7 @@ export default function Home() {
       <StickyHeader>
         <nav className="mx-auto flex max-w-7xl items-center justify-between border-x border-dashed border-white/15 px-6 py-4">
           <Link href="/"><Logo /></Link>
-          <NavLinks items={[{ label: "How it works", href: "#how" }, { label: "For lenders", href: "#why" }, { label: "Start", href: "#start" }, { label: "Back a fleet", href: "/invest" }, { label: "Live demo", href: "/desk" }]} />
+          <NavLinks items={[{ label: "How it works", href: "#how" }, { label: "For lenders", href: "#why" }, { label: "See it run", href: "/pipeline" }, { label: "Back a fleet", href: "/invest" }, { label: "Live demo", href: "/desk" }]} />
           <Link href="/desk" className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white md:hidden">Demo<Arrow /></Link>
         </nav>
       </StickyHeader>
@@ -60,7 +61,7 @@ export default function Home() {
           <p className="fade-line mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80" style={{ animationDelay: "320ms" }}>You get the robot with our money. It pays us back a small share of every job it does, and nothing on days it sits idle.</p>
           <ol className="fade-line mt-8 grid max-w-3xl gap-px border border-dashed border-white/15 sm:grid-cols-3" style={{ animationDelay: "480ms" }}>
             {[["1", "Your robot works", "It logs every hour itself."], ["2", "We verify each hour", "Its telemetry and your warehouse system must agree."], ["3", "A share repays the loan", "Of every paid job. Idle hours cost nothing."]].map(([n, k, d]) => (
-              <li key={n} className="bg-ink/40 p-4 backdrop-blur-sm"><span className="font-mono text-[10px] text-orange">{n}</span><div className="mt-1 text-[15px] font-bold">{k}</div><div className="text-[12px] text-white/60">{d}</div></li>
+              <li key={n} className="step-glow p-4 backdrop-blur-sm" style={{ animationDelay: `${(+n - 1) * 2 + 1.2}s` }}><span className="font-mono text-[10px] text-orange">{n}</span><div className="mt-1 text-[15px] font-bold">{k}</div><div className="text-[12px] text-white/60">{d}</div></li>
             ))}
           </ol>
           <Link href="/desk" style={{ animationDelay: "640ms" }} className="fade-line group mt-10 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">

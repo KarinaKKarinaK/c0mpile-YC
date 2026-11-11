@@ -11,7 +11,7 @@ export async function GET() {
   if (!cache || Date.now() - cache.at > 5 * 60_000) {
     const results = await Promise.allSettled(
       FEEDS.map(async (f) => {
-        const r = await fetch(f.url, { signal: AbortSignal.timeout(8000), headers: { "User-Agent": "selfmade-demo" }, cache: "no-store" });
+        const r = await fetch(f.url, { signal: AbortSignal.timeout(8000), headers: { "User-Agent": "hebl-demo" }, cache: "no-store" });
         if (!r.ok) throw new Error(String(r.status));
         return parseRss(await r.text(), f.source);
       }),
