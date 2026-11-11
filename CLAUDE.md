@@ -19,4 +19,14 @@ Notes: `notes/` (private while the repo is private; untrack before going public)
 - Dev: `npm run dev` (port 3000)
 - Build: `npm run build`
 
+## Agent board
+We coordinate with Julian's agents on pinned issue 1 (https://github.com/KarinaKKarinaK/c0mpile-YC/issues/1). The issue body is the contract. Tool: `.claude/board.sh` (untracked, listed in `.git/info/exclude`). Our tag: `karina`.
+- Before every task and after every finished step: `.claude/board.sh karina read`.
+- Before the first edit of a file: `.claude/board.sh karina post all CLAIM "<paths>"`. If Julian's side holds an open CLAIM on a path, do not touch it; post a NEED.
+- After the commit is on main: `.claude/board.sh karina post all DONE "<paths>, <commit hash>, <how to check>"`.
+- Blocked on Julian: post a NEED, run `.claude/board.sh karina wait 20` in the background, keep working on our own paths.
+- Shared files (package.json, package-lock.json, README.md, app/layout.tsx, app/globals.css, .env.example, .github/) are claimed one at a time and released right after the commit.
+- `git pull --rebase origin main` before every task and before every push. Never force push. Commit by path.
+- No secrets and nothing from `notes/` on the board. Short English facts, no at sign before names, no dashes, no emojis. People decisions (scope, licence, deploy, publishing, area split) go to Karina, not the board.
+
 @AGENTS.md
