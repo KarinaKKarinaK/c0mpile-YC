@@ -1,60 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="564" viewBox="0 0 1200 564">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="646" viewBox="0 0 1200 646">
 <defs>
-  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.3 0"/></filter>
-  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
-  <radialGradient id="bgb" cx="15%" cy="100%" r="70%"><stop offset="0" stop-color="#2A7FB8" stop-opacity="0.45"/><stop offset="1" stop-color="#02070A" stop-opacity="0"/></radialGradient>
-  <radialGradient id="bgo" cx="90%" cy="110%" r="55%"><stop offset="0" stop-color="#E2774F" stop-opacity="0.4"/><stop offset="1" stop-color="#02070A" stop-opacity="0"/></radialGradient>
-  <linearGradient id="barO" x1="0" x2="1"><stop offset="0" stop-color="#FC734D"/><stop offset="1" stop-color="#FFB08F"/></linearGradient>
-  <linearGradient id="barB" x1="0" x2="1"><stop offset="0" stop-color="#0297DE"/><stop offset="1" stop-color="#7FD4FF"/></linearGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.22 0"/></filter>
+  <radialGradient id="bgb" cx="8%" cy="110%" r="60%"><stop offset="0" stop-color="#0297DE" stop-opacity="0.28"/><stop offset="1" stop-color="#02070A" stop-opacity="0"/></radialGradient>
+  <radialGradient id="bgo" cx="95%" cy="115%" r="45%"><stop offset="0" stop-color="#FC734D" stop-opacity="0.25"/><stop offset="1" stop-color="#02070A" stop-opacity="0"/></radialGradient>
 </defs>
-<rect width="1200" height="564" rx="18" fill="#02070A"/><rect width="1200" height="564" rx="18" fill="url(#bgb)"/><rect width="1200" height="564" rx="18" fill="url(#bgo)"/>
-<text x="40" y="52" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="300">Share of hours flagged, 500 hours per row</text><text x="40" y="76" fill="#ffffff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="12" letter-spacing="2">NODE SCRIPTS/EVAL.TS  /  SYNTHETIC TELEMETRY</text>
-<text x="40" y="130" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Idle robot billed as busy</text>
-<text x="40" y="150" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">FRAUD: WANT HIGH</text>
-<rect x="430" y="118" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="118" width="640" height="22" rx="11" fill="url(#barO)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="118" width="640" height="22" rx="11" fill="url(#barO)"/>
-<text x="1086" y="135" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">100%</text>
-<text x="438" y="158" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">500/500 caught</text>
-<text x="40" y="188" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Cycles with no energy behind them</text>
-<text x="40" y="208" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">FRAUD: WANT HIGH</text>
-<rect x="430" y="176" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="176" width="640" height="22" rx="11" fill="url(#barO)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="176" width="640" height="22" rx="11" fill="url(#barO)"/>
-<text x="1086" y="193" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">100%</text>
-<text x="438" y="216" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">500/500 caught</text>
-<text x="40" y="246" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Energy faked to match cycles</text>
-<text x="40" y="266" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">FRAUD: WANT HIGH</text>
-<rect x="430" y="234" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="234" width="8" height="22" rx="11" fill="url(#barO)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="234" width="8" height="22" rx="11" fill="url(#barO)"/>
-<text x="1086" y="251" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">1.2%</text>
-<text x="438" y="274" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">6/500 caught: slips past one band</text>
-<text x="40" y="304" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Same, checked vs client output</text>
-<text x="40" y="324" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">FRAUD: WANT HIGH</text>
-<rect x="430" y="292" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="292" width="640" height="22" rx="11" fill="url(#barO)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="292" width="640" height="22" rx="11" fill="url(#barO)"/>
-<text x="1086" y="309" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">100%</text>
-<text x="438" y="332" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">500/500 caught</text>
-<text x="40" y="362" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Honest hours</text>
-<text x="40" y="382" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">HONEST: WANT LOW</text>
-<rect x="430" y="350" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="350" width="5" height="22" rx="11" fill="url(#barB)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="350" width="5" height="22" rx="11" fill="url(#barB)"/>
-<text x="1086" y="367" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">0.8%</text>
-<text x="438" y="390" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">4/500 wrongly flagged</text>
-<text x="40" y="420" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Honest, with client check</text>
-<text x="40" y="440" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">HONEST: WANT LOW</text>
-<rect x="430" y="408" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="408" width="17" height="22" rx="11" fill="url(#barB)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="408" width="17" height="22" rx="11" fill="url(#barB)"/>
-<text x="1086" y="425" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">2.6%</text>
-<text x="438" y="448" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">13/500 wrongly flagged</text>
-<text x="40" y="478" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Worn motor, fleet-wide band</text>
-<text x="40" y="498" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">HONEST: WANT LOW</text>
-<rect x="430" y="466" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="466" width="485" height="22" rx="11" fill="url(#barB)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="466" width="485" height="22" rx="11" fill="url(#barB)"/>
-<text x="1086" y="483" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">75.8%</text>
-<text x="438" y="506" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">379/500 wrongly flagged</text>
-<text x="40" y="536" fill="#fff" fill-opacity="0.9" font-family="Helvetica Neue, Arial, sans-serif" font-size="16">Worn motor, its own band</text>
-<text x="40" y="556" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="11">HONEST: WANT LOW</text>
-<rect x="430" y="524" width="640" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.12" stroke-dasharray="3 4"/>
-<rect x="430" y="524" width="13" height="22" rx="11" fill="url(#barB)" filter="url(#glow)" opacity="0.6"/><rect x="430" y="524" width="13" height="22" rx="11" fill="url(#barB)"/>
-<text x="1086" y="541" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">2%</text>
-<text x="438" y="564" fill="#fff" fill-opacity="0.5" font-family="Menlo, monospace" font-size="11">10/500 wrongly flagged</text>
-<rect width="1200" height="564" rx="18" filter="url(#grain)" opacity="0.6"/></svg>
+<rect width="1200" height="646" rx="14" fill="#02070A"/><rect width="1200" height="646" rx="14" fill="url(#bgb)"/><rect width="1200" height="646" rx="14" fill="url(#bgo)"/><rect x="0.5" y="0.5" width="1199" height="645" rx="14" fill="none" stroke="#fff" stroke-opacity="0.12" stroke-dasharray="4 6"/>
+<text x="40" y="54" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="300">Share of hours flagged</text><text x="40" y="80" fill="#fff" fill-opacity="0.45" font-family="Menlo, monospace" font-size="12" letter-spacing="2">500 HOURS PER ROW  /  NODE SCRIPTS/EVAL.TS  /  SYNTHETIC TELEMETRY</text>
+<circle cx="760" cy="74" r="5" fill="#FC734D"/><text x="772" y="78" fill="#fff" fill-opacity="0.6" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="13">fraud: higher is better</text><circle cx="960" cy="74" r="5" fill="#0297DE"/><text x="972" y="78" fill="#fff" fill-opacity="0.6" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="13">honest: lower is better</text>
+<text x="40" y="134" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Idle robot billed as busy</text><text x="40" y="156" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">500/500 caught</text>
+<line x1="470" y1="130" x2="1070" y2="130" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="125" width="600" height="10" rx="5" fill="#FC734D"/>
+<text x="1090" y="135" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">100%</text>
+<text x="40" y="196" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Cycles with no energy behind them</text><text x="40" y="218" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">500/500 caught</text>
+<line x1="470" y1="192" x2="1070" y2="192" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="187" width="600" height="10" rx="5" fill="#FC734D"/>
+<text x="1090" y="197" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">100%</text>
+<text x="40" y="258" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Energy faked to match cycles</text><text x="40" y="280" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">6/500 caught by one physics band</text>
+<line x1="470" y1="254" x2="1070" y2="254" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="249" width="7" height="10" rx="5" fill="#FC734D"/>
+<text x="1090" y="259" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">1.2%</text>
+<text x="40" y="320" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Same fake, checked against client output</text><text x="40" y="342" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">500/500 caught</text>
+<line x1="470" y1="316" x2="1070" y2="316" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="311" width="600" height="10" rx="5" fill="#FC734D"/>
+<text x="1090" y="321" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">100%</text>
+<text x="40" y="382" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Honest hours</text><text x="40" y="404" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">4/500 wrongly flagged</text>
+<line x1="470" y1="378" x2="1070" y2="378" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="373" width="5" height="10" rx="5" fill="#0297DE"/>
+<text x="1090" y="383" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">0.8%</text>
+<text x="40" y="444" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Honest hours, with client check</text><text x="40" y="466" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">13/500 wrongly flagged</text>
+<line x1="470" y1="440" x2="1070" y2="440" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="435" width="16" height="10" rx="5" fill="#0297DE"/>
+<text x="1090" y="445" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">2.6%</text>
+<text x="40" y="506" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Worn motor, one band for the fleet</text><text x="40" y="528" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">379/500 wrongly flagged</text>
+<line x1="470" y1="502" x2="1070" y2="502" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="497" width="455" height="10" rx="5" fill="#0297DE"/>
+<text x="1090" y="507" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">75.8%</text>
+<text x="40" y="568" fill="#fff" fill-opacity="0.88" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="16">Worn motor, its own band</text><text x="40" y="590" fill="#fff" fill-opacity="0.42" font-family="Menlo, monospace" font-size="11">10/500 wrongly flagged</text>
+<line x1="470" y1="564" x2="1070" y2="564" stroke="#fff" stroke-opacity="0.15" stroke-dasharray="3 5"/>
+<rect x="470" y="559" width="12" height="10" rx="5" fill="#0297DE"/>
+<text x="1090" y="569" fill="#fff" font-family="Red Hat Display, Helvetica Neue, Arial, sans-serif" font-size="17" font-weight="500">2%</text>
+<rect width="1200" height="646" rx="14" filter="url(#grain)" opacity="0.5"/></svg>
