@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 // A business pays the robot's job invoice through Stripe Checkout (test mode).
-// Bluecollar then sweeps the loan share from that verified payment.
+// Fleiss then sweeps the loan share from that verified payment.
 const key = process.env.STRIPE_SECRET_KEY;
 const stripe = key ? new Stripe(key) : null;
 

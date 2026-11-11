@@ -61,15 +61,16 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
 }
 
 export function Logo() {
-  // Two collar points folded into a check mark: blue collar, approved.
+  // An F that is also a progress meter: blue stem and top bar, orange lower bar = the loan being paid down.
   return (
-    <span className="flex items-center gap-2 text-[15px] font-semibold tracking-tight">
-      <svg width="24" height="20" viewBox="0 0 24 20" aria-hidden>
-        <path d="M2 3 L9 3 L12 9 L5 15 Z" fill="#0297DE" />
-        <path d="M22 3 L15 3 L12 9 L19 15 Z" fill="#0297DE" opacity="0.65" />
-        <path d="M6.5 11.5 L11 16 L19.5 6.5" fill="none" stroke="#FC734D" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+    <span className="flex items-center gap-2.5 text-[17px] font-extrabold tracking-[-0.03em]">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+        <rect x="2" y="2" width="5" height="18" rx="2.5" fill="#0297DE" />
+        <rect x="2" y="2" width="18" height="5" rx="2.5" fill="#0297DE" />
+        <rect x="9" y="10" width="7" height="5" rx="2.5" fill="#FC734D" />
+        <rect x="17" y="10" width="3" height="5" rx="1.5" fill="#FC734D" opacity="0.35" />
       </svg>
-      Bluecollar
+      Fleiss
     </span>
   );
 }

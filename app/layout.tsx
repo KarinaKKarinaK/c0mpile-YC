@@ -6,7 +6,7 @@ const sans = Montserrat({ variable: "--font-geist", subsets: ["latin"], weight: 
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Bluecollar: your robot pays its own loan",
+  title: "Fleiss: your robot pays its own loan",
   description: "Robot financing priced on verified hours and repaid as a share of every job. Nothing due when the robot is down.",
 };
 
