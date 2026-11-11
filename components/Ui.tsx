@@ -61,14 +61,15 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
 }
 
 export function Logo() {
-  // A sweat drop with a rising equity line inside.
+  // Two collar points folded into a check mark: blue collar, approved.
   return (
-    <span className="flex items-center gap-2 text-[15px] font-medium tracking-tight">
-      <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden>
-        <path d="M10 1 C10 1 2 10.5 2 15.5 A8 8 0 0 0 18 15.5 C18 10.5 10 1 10 1 Z" fill="#FC734D" />
-        <path d="M5.5 17.5 L8.6 14.6 L10.8 16.4 L14.6 12.2" fill="none" stroke="#02070A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <span className="flex items-center gap-2 text-[15px] font-semibold tracking-tight">
+      <svg width="24" height="20" viewBox="0 0 24 20" aria-hidden>
+        <path d="M2 3 L9 3 L12 9 L5 15 Z" fill="#0297DE" />
+        <path d="M22 3 L15 3 L12 9 L19 15 Z" fill="#0297DE" opacity="0.65" />
+        <path d="M6.5 11.5 L11 16 L19.5 6.5" fill="none" stroke="#FC734D" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      Sweat Equity
+      Bluecollar
     </span>
   );
 }

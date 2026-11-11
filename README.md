@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="docs/landing.png" alt="Sweat Equity landing page" width="100%">
+<img src="docs/landing.png" alt="Bluecollar landing page" width="100%">
 
-# Sweat Equity
+# Bluecollar
 
-*Bot and paid for.*
+*Credit for the new blue collar.*
 
 **[Live demo: selfmade-yc.vercel.app](https://selfmade-yc.vercel.app)**
 
@@ -19,7 +19,7 @@
 
 </div>
 
-Robot fleets borrow like it is 1995: a bank prices the robot like a forklift and wants the same payment whether it worked all month or sat broken. Sweat Equity lends against what a robot actually earns, reads that from the robot's own telemetry, and takes repayment as a share of every verified job through Stripe. A robot is the first asset with two cash flows, work and data, and we underwrite both.
+Robot fleets borrow like it is 1995: a bank prices the robot like a forklift and wants the same payment whether it worked all month or sat broken. Bluecollar lends against what a robot actually earns, reads that from the robot's own telemetry, and takes repayment as a share of every verified job through Stripe. A robot is the first asset with two cash flows, work and data, and we underwrite both.
 
 Built in four hours at c0mpiled-18, the YC Startup School Hackathon in Taipei, for YC's Request for Startups **Wall Street for the Physical Buildout** (Brad Flora), with a hook into **Robots Made in America** (Diana Hu).
 
@@ -136,7 +136,7 @@ Next.js 16, React 19, Tailwind 4, three.js with react-three-fiber and drei, Stri
 
 ## Known limits
 - No real robots yet: telemetry, prices and the fleet are synthetic.
-- The loan is not funded with real money; Sweat Equity would start as the underwriting layer for licensed equipment lenders.
+- The loan is not funded with real money; Bluecollar would start as the underwriting layer for licensed equipment lenders.
 - State lives in the browser (localStorage) for the demo.
 - The FCC discount is a modelled assumption, not market data.
 

@@ -15,13 +15,13 @@
   --color-orange: var(--orange);
   --color-paper: var(--paper);
   --color-muted: var(--muted);
-  --font-serif: var(--font-display);
-  --font-mono: var(--font-jet);
-  --font-sans: var(--font-body);
+  --font-serif: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist);
 }
 
 html { background: var(--ink); color-scheme: dark; }
-body { overflow-x: clip; background: var(--ink); color: var(--paper); font-family: var(--font-body), ui-sans-serif, system-ui; }
+body { overflow-x: clip; background: var(--ink); color: var(--paper); font-family: var(--font-geist), ui-sans-serif, system-ui; }
 
 @layer base {
 .glass {
@@ -82,3 +82,7 @@ body { overflow-x: clip; background: var(--ink); color: var(--paper); font-famil
 .ticker { animation: ticker 60s linear infinite; }
 .ticker:hover { animation-play-state: paused; }
 @keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6%,-4%) scale(1.12); } }
+
+/* Geist has no italic: emphasis is colour, not slant */
+h1 em, h2 em, h3 em, blockquote em { font-style: normal; }
+.font-serif { letter-spacing: -0.035em; }

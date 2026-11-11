@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GrainField, Ticker } from "@/components/Hero";
+import { TileGrain } from "@/components/Hero";
 import { Counter, Logo, Reveal } from "@/components/Ui";
 import { Accordion, AccordionItem, MobileMenu } from "@/components/kit";
 
@@ -15,7 +15,7 @@ const FLOW = [
   { n: "04", k: "Own", big: "$0", d: "Balance hits zero. The robot is yours" },
 ];
 const COMPARE = [
-  ["", "Your bank", "Stripe Capital", "Formic", "Sweat Equity"],
+  ["", "Your bank", "Stripe Capital", "Formic", "Bluecollar"],
   ["Priced on", "Credit score", "Card sales", "Contract", "Live telemetry"],
   ["Robot down for a week", "Same bill", "n/a", "Bundled", "Pay less"],
   ["Fake hours", "Invisible", "n/a", "Trust", "Rejected"],
@@ -32,25 +32,24 @@ export default function Home() {
   return (
     <main>
       <section className="relative isolate min-h-[100svh] overflow-hidden">
-        <div className="absolute inset-0 -z-10"><GrainField /></div>
+        <div className="absolute inset-0 -z-10"><TileGrain /></div>
         <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 text-[13px]">
           <Logo />
           <div className="hidden gap-8 text-white/75 md:flex">
             <a href="#how" className="hover:text-white">How it works</a>
             <a href="#compare" className="hover:text-white">Compare</a>
-            <a href="#us" className="hover:text-white">Team</a>
+            <a href="#faq" className="hover:text-white">FAQ</a>
           </div>
           <div className="flex items-center gap-2">
-            <MobileMenu links={[{ href: "#how", label: "How it works" }, { href: "#compare", label: "Compare" }, { href: "#us", label: "Team" }, { href: "/desk", label: "Open your fleet" }]} />
+            <MobileMenu links={[{ href: "#how", label: "How it works" }, { href: "#compare", label: "Compare" }, { href: "#faq", label: "FAQ" }, { href: "/desk", label: "Open your fleet" }]} />
             <Link href="/desk" className="btn btn-light whitespace-nowrap">Open your fleet</Link>
           </div>
         </nav>
-        <Ticker />
 
         <div className="relative mx-auto max-w-6xl px-5 pt-[11vh]">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/60">Robot financing &middot; YC RFS: Wall Street for the Physical Buildout</p>
-          <h1 className="mt-6 font-serif text-[clamp(56px,11vw,150px)] font-light leading-[0.88] tracking-[-0.03em]">
-            Bot and<br />paid <em className="font-normal text-orange">for.</em>
+          <h1 className="mt-6 font-serif text-[clamp(56px,11vw,150px)] font-medium leading-[0.88] tracking-[-0.03em]">
+            Credit for the<br />new <em className="text-blue">blue collar.</em>
           </h1>
           <div className="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <p className="max-w-md text-[17px] leading-snug text-white/80">Finance your robots. They pay the loan back from the work they actually do.</p>
@@ -64,7 +63,7 @@ export default function Home() {
         <div className="relative mx-auto mt-[10vh] grid max-w-6xl grid-cols-3 gap-px border-t border-white/15 px-5">
           {STATS.map((n) => (
             <a key={n.l} href={n.u} className="group pt-5 pr-4">
-              <div className="font-serif text-4xl font-light md:text-6xl"><Counter to={n.v} prefix={n.pre} suffix={n.suf} decimals={n.dec} /></div>
+              <div className="font-serif text-4xl font-medium md:text-6xl"><Counter to={n.v} prefix={n.pre} suffix={n.suf} decimals={n.dec} /></div>
               <div className="mt-1 text-[12px] text-white/65">{n.l}</div>
               <div className="font-mono text-[10px] text-white/35 group-hover:text-white/70">{n.s}</div>
             </a>
@@ -73,7 +72,7 @@ export default function Home() {
       </section>
 
       <section id="how" className="mx-auto max-w-6xl px-5 py-28">
-        <Reveal><h2 className="max-w-3xl font-serif text-5xl font-light leading-[1.02] md:text-7xl">Banks see a forklift. <em className="text-orange">We see the work.</em></h2></Reveal>
+        <Reveal><h2 className="max-w-3xl font-serif text-5xl font-medium leading-[1.02] md:text-7xl">Banks see a forklift. <em className="text-orange">We see the work.</em></h2></Reveal>
         <div className="relative mt-16">
           <div className="absolute left-0 right-0 top-[34px] hidden h-px bg-gradient-to-r from-blue via-white/30 to-orange md:block" />
           <div className="grid gap-10 md:grid-cols-4 md:gap-6">
@@ -82,7 +81,7 @@ export default function Home() {
                 <div className="relative">
                   <div className={`relative z-10 grid h-[68px] w-[68px] place-items-center rounded-full border font-mono text-[12px] backdrop-blur transition-transform duration-500 hover:scale-110 ${i === 3 ? "border-orange bg-orange text-ink" : "border-white/25 bg-ink"}`}>{f.n}</div>
                   <div className="mt-6 font-mono text-[11px] uppercase tracking-widest text-white/50">{f.k}</div>
-                  <div className="mt-1 font-serif text-5xl font-light">{f.big}</div>
+                  <div className="mt-1 font-serif text-5xl font-medium">{f.big}</div>
                   <p className="mt-2 max-w-[220px] text-[14px] text-white/60">{f.d}</p>
                 </div>
               </Reveal>
@@ -93,7 +92,7 @@ export default function Home() {
 
       <section id="compare" className="mx-auto max-w-6xl px-5 pb-28">
         <Reveal>
-          <blockquote className="font-serif text-4xl font-light leading-tight md:text-6xl">&ldquo;Today, banks underwrite a robot like a <em className="text-orange">forklift.</em>&rdquo;</blockquote>
+          <blockquote className="font-serif text-4xl font-medium leading-tight md:text-6xl">&ldquo;Today, banks underwrite a robot like a <em className="text-orange">forklift.</em>&rdquo;</blockquote>
           <p className="mt-3 font-mono text-[11px] text-white/45">Brad Flora, YC Request for Startups, Winter 2027</p>
         </Reveal>
         <Reveal className="mt-14 overflow-x-auto">
@@ -111,26 +110,16 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <section id="us" className="mx-auto max-w-6xl px-5 pb-28">
-        <Reveal><h3 className="font-serif text-4xl font-light md:text-5xl">Our fourth build where <em>machines pay their own way.</em></h3></Reveal>
-        <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 md:grid-cols-3">
-          {[["Zishi", "Drone repays its lease from verified work", "Shenzhen FinTechathon"], ["Guild", "Market for robot training data", "HK AI Summit, finalist, 2nd"], ["Arbiter", "Rules an AI agent cannot overrule", "Nebius x NVIDIA"]].map(([k, d, w]) => (
-            <div key={k} className="bg-ink p-6 transition-colors hover:bg-white/[0.03]">
-              <div className="font-serif text-3xl">{k}</div>
-              <div className="mt-2 text-[14px] text-white/70">{d}</div>
-              <div className="mt-4 font-mono text-[10px] uppercase tracking-wider text-white/40">{w}</div>
-            </div>
-          ))}
-        </div>
+      <section id="faq" className="mx-auto max-w-6xl px-5 pb-28">
         <div className="mx-auto mt-20 max-w-3xl"><Accordion>{FAQ.map((f) => <AccordionItem key={f.q} title={f.q}>{f.a}</AccordionItem>)}</Accordion></div>
         <div className="mt-20 flex flex-col items-center gap-5 text-center">
-          <h3 className="font-serif text-5xl font-light md:text-7xl">Let the robot <em className="text-orange">pay.</em></h3>
+          <h3 className="font-serif text-5xl font-medium md:text-7xl">Let the robot <em className="text-orange">pay.</em></h3>
           <Link href="/desk" className="btn btn-orange px-7 py-3 text-[14px]">Open your fleet</Link>
         </div>
       </section>
 
       <footer className="border-t border-white/10 px-5 py-8 text-center font-mono text-[10px] text-white/40">
-        Sweat Equity &middot; built at c0mpiled-18, YC Startup School Hackathon, Taipei &middot; fleet telemetry synthetic, labelled &middot; not affiliated with Y Combinator
+        Bluecollar &middot; built at c0mpiled-18, YC Startup School Hackathon, Taipei &middot; fleet telemetry synthetic, labelled &middot; not affiliated with Y Combinator
       </footer>
     </main>
   );
