@@ -17,8 +17,8 @@ const M = {
   white: <meshPhysicalMaterial color="#e9eef2" roughness={0.38} clearcoat={0.6} clearcoatRoughness={0.3} />,
   rubber: <meshStandardMaterial color="#0d1114" roughness={0.95} />,
   card: <meshStandardMaterial color="#b88a5a" roughness={0.88} />,
-  glowBlue: <meshStandardMaterial color="#0297DE" emissive="#0297DE" emissiveIntensity={4} toneMapped={false} />,
-  wall: <meshStandardMaterial color="#0b1218" roughness={0.85} metalness={0.2} />,
+  glowBlue: <meshStandardMaterial color="#0297DE" emissive="#0297DE" emissiveIntensity={0.9} />,
+  wall: <meshStandardMaterial color="#2a3238" roughness={0.95} metalness={0.05} />,
 };
 // Procedural textures (no downloads): concrete grain and brushed-metal streaks.
 function noiseTex(w: number, h: number, paint: (ctx: CanvasRenderingContext2D) => void, repeat: number) {
@@ -58,8 +58,8 @@ function Pickable({ rb, selected, onSelect, max, children, height = 2 }: P & { c
     >
       {children}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <ringGeometry args={[1.05, selected ? 1.2 : 1.1, 64]} />
-        <meshBasicMaterial color={rb.faulted ? "#FC734D" : selected ? "#FC734D" : "#0297DE"} transparent opacity={selected || hover ? 0.95 : 0.3} toneMapped={false} />
+        <ringGeometry args={[1.08, 1.13, 64]} />
+        <meshBasicMaterial color={rb.faulted || selected ? "#FC734D" : "#ffffff"} transparent opacity={rb.faulted ? 0.7 : selected ? 0.55 : hover ? 0.25 : 0} />
       </mesh>
       {rb.faulted && <Beacon y={height + 0.25} />}
       {(hover || selected || rb.faulted) && (
@@ -113,7 +113,25 @@ function Conveyor({ z, jammed }: { z: number; jammed: boolean }) {
       {[-8.6, -5, -1.5, 0.6].map((x) => [-0.55, 0.55].map((dz) => (
         <mesh key={`${x}${dz}`} position={[x, 0.37, dz]} castShadow><boxGeometry args={[0.1, 0.74, 0.1]} />{M.steel}</mesh>
       )))}
-      <mesh position={[(BELT_START + BELT_END) / 2, 0.75, 0.66]}><boxGeometry args={[len, 0.03, 0.02]} />{jammed ? <meshStandardMaterial color="#FC734D" emissive="#FC734D" emissiveIntensity={4} toneMapped={false} /> : M.glowBlue}</mesh>
+      {[-0.6, 0.6].map((dz) => (
+        <group key={dz}>
+          <mesh position={[(BELT_START + BELT_END) / 2, 1.12, dz]} castShadow><boxGeometry args={[len, 0.04, 0.04]} />{M.steel}</mesh>
+          {Array.from({ length: 9 }, (_, k) => BELT_START + 0.4 + k * (len - 0.8) / 8).map((x) => <mesh key={x} position={[x, 1.02, dz]}><boxGeometry args={[0.03, 0.2, 0.03]} />{M.steel}</mesh>)}
+        </group>
+      ))}
+      <group position={[BELT_START - 0.35, 0, 0]}>
+        <RoundedBox args={[0.6, 0.5, 1.2]} radius={0.04} position={[0, 0.82, 0]} castShadow>{M.graphite}</RoundedBox>
+        <mesh position={[0, 0.82, 0.75]} rotation={[Math.PI / 2, 0, 0]} castShadow><cylinderGeometry args={[0.16, 0.16, 0.35, 28]} />{M.white}</mesh>
+      </group>
+      <group position={[BELT_START - 0.4, 0, -1.3]}>
+        <RoundedBox args={[0.7, 1.7, 0.45]} radius={0.03} position={[0, 0.85, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
+        <mesh position={[0, 1.25, 0.231]}><planeGeometry args={[0.42, 0.28]} /><meshStandardMaterial color="#0b2233" emissive={jammed ? "#FC734D" : "#0297DE"} emissiveIntensity={0.6} /></mesh>
+        <mesh position={[0.18, 0.75, 0.231]}><circleGeometry args={[0.05, 20]} /><meshStandardMaterial color="#c62828" /></mesh>
+        <mesh position={[0, 2.05, 0]}><cylinderGeometry args={[0.025, 0.025, 0.6, 10]} />{M.steel}</mesh>
+        {[["#2e7d32", !jammed], ["#f9a825", jammed], ["#c62828", false]].map(([c, on], k) => (
+          <mesh key={k} position={[0, 2.4 + k * 0.13, 0]}><cylinderGeometry args={[0.07, 0.07, 0.12, 20]} /><meshStandardMaterial color={c as string} emissive={c as string} emissiveIntensity={on ? 2.2 : 0.05} transparent opacity={0.9} /></mesh>
+        ))}
+      </group>
       <group ref={boxes}>
         {Array.from({ length: 5 }, (_, i) => (
           <RoundedBox key={i} args={[0.55, 0.42, 0.55]} radius={0.03} position={[0, 1.17, 0]} castShadow>{M.card}</RoundedBox>
@@ -140,6 +158,7 @@ function Arm(p: P & { z: number }) {
     <group position={[2.4, 0, p.z]}>
       <Pickable {...p} height={2.6}>
         <RoundedBox args={[1.2, 0.3, 1.2]} radius={0.05} position={[0, 0.15, 0]} castShadow>{M.graphite}</RoundedBox>
+        {[[-0.48, -0.48], [0.48, -0.48], [-0.48, 0.48], [0.48, 0.48]].map(([x, z]) => <mesh key={`${x}${z}`} position={[x, 0.32, z]}><cylinderGeometry args={[0.04, 0.04, 0.05, 12]} />{M.steel}</mesh>)}
         <group ref={turret} position={[0, 0.3, 0]}>
           <mesh position={[0, 0.25, 0]} castShadow><cylinderGeometry args={[0.42, 0.5, 0.5, 40]} />{M.paint}</mesh>
           <group ref={shoulder} position={[0, 0.65, 0]}>
@@ -295,17 +314,18 @@ function Building() {
   const tex = useTextures();
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[60, 40]} />
-        <MeshReflectorMaterial blur={[400, 120]} resolution={1024} mixBlur={1} mixStrength={12} roughness={0.85} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.4} color="#4a5560" metalness={0.4} mirror={0} map={tex?.concrete} roughnessMap={tex?.concrete} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1, 0, 0.25]} receiveShadow>
+        <planeGeometry args={[30, 24]} />
+        <MeshReflectorMaterial blur={[300, 80]} resolution={512} mixBlur={1} mixStrength={2.5} roughness={0.92} depthScale={0.6} minDepthThreshold={0.6} maxDepthThreshold={1.2} color="#7d878f" metalness={0.15} mirror={0} map={tex?.concrete} roughnessMap={tex?.concrete} />
       </mesh>
       {LINES.map((z) => <mesh key={z} rotation={[-Math.PI / 2, 0, 0]} position={[-4, 0.01, z + 1.05]}><planeGeometry args={[11, 0.08]} /><meshStandardMaterial color="#c9a227" roughness={0.6} /></mesh>)}
-      <mesh position={[0, 5, -11.5]} receiveShadow><boxGeometry args={[40, 10, 0.3]} />{M.wall}</mesh>
-      <mesh position={[-14, 5, 0]} receiveShadow><boxGeometry args={[0.3, 10, 24]} />{M.wall}</mesh>
+      <mesh position={[1, 5, -11.6]} receiveShadow><boxGeometry args={[30, 10, 0.3]} />{M.wall}</mesh>
+      <mesh position={[1, 0.25, -11.4]}><boxGeometry args={[30, 0.5, 0.05]} /><meshStandardMaterial color="#c9a227" roughness={0.6} /></mesh>
+      <mesh position={[-14.15, 5, 0.25]} receiveShadow><boxGeometry args={[0.3, 10, 24]} />{M.wall}</mesh>
       {Array.from({ length: 13 }, (_, i) => -13 + i * 2.2).map((x) => (
         <group key={x}>
           <mesh position={[x, 5, -11.3]}><boxGeometry args={[0.18, 10, 0.12]} />{M.graphite}</mesh>
-          <mesh position={[x + 1.1, 7.4, -11.32]}><boxGeometry args={[1.6, 1.2, 0.02]} /><meshStandardMaterial color="#0d2a3d" emissive="#0297DE" emissiveIntensity={0.9} /></mesh>
+          <mesh position={[x + 1.1, 7.4, -11.32]}><boxGeometry args={[1.6, 1.2, 0.02]} /><meshStandardMaterial color="#9fb3c2" emissive="#cfe3ef" emissiveIntensity={0.35} /></mesh>
         </group>
       ))}
       {[-10, -4, 2, 8].map((x) => (
@@ -334,11 +354,10 @@ export default function Fleet3D({ fleet, selected, onSelect }: { fleet: Robot[];
     <Canvas shadows camera={{ position: [13, 9, 15], fov: 38 }} dpr={[1, 1.5]} gl={{ antialias: false, toneMapping: THREE.ACESFilmicToneMapping }}>
       <color attach="background" args={["#02070A"]} />
       <SoftShadows size={22} samples={10} focus={0.6} />
-      <fog attach="fog" args={["#02070A", 20, 48]} />
-      <hemisphereLight args={["#9fd8ff", "#1a0d08", 0.35]} />
+      <fog attach="fog" args={["#05090c", 26, 60]} />
+      <hemisphereLight args={["#dfefff", "#2a2420", 0.55]} />
       <directionalLight position={[8, 14, 6]} intensity={0.9} castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-14} shadow-bias={-0.0003} />
-      <pointLight position={[-10, 3, 6]} color="#0297DE" intensity={14} distance={14} />
-      <pointLight position={[11, 2, 8]} color="#FC734D" intensity={30} distance={16} />
+            <pointLight position={[11, 4, 8]} color="#ffe9d6" intensity={18} distance={18} />
       <Building />
       {LINES.map((z, i) => <Conveyor key={z} z={z} jammed={!!by("Arm")[i]?.faulted} />)}
       {by("Arm").map((rb, i) => <Arm key={rb.id} {...props(rb)} z={LINES[i]} />)}
@@ -348,14 +367,14 @@ export default function Fleet3D({ fleet, selected, onSelect }: { fleet: Robot[];
       <ContactShadows position={[0, 0.015, 0]} scale={40} blur={2.4} far={4} opacity={0.6} />
       <Environment resolution={512} frames={1} environmentIntensity={0.9}>
         <Lightformer form="rect" intensity={3} color="#ffffff" position={[0, 8, 0]} rotation-x={Math.PI / 2} scale={[20, 4, 1]} />
-        <Lightformer form="rect" intensity={4} color="#0297DE" position={[-12, 3, -4]} rotation-y={Math.PI / 2} scale={[12, 6, 1]} />
-        <Lightformer form="rect" intensity={3} color="#FC734D" position={[12, 2, 6]} rotation-y={-Math.PI / 2} scale={[10, 4, 1]} />
+        <Lightformer form="rect" intensity={2} color="#e8f2ff" position={[-12, 3, -4]} rotation-y={Math.PI / 2} scale={[12, 6, 1]} />
+        <Lightformer form="rect" intensity={1.5} color="#fff1e6" position={[12, 2, 6]} rotation-y={-Math.PI / 2} scale={[10, 4, 1]} />
       </Environment>
       <EffectComposer multisampling={0}>
-        <Bloom mipmapBlur luminanceThreshold={1} intensity={0.9} radius={0.7} />
-        <Vignette eskil={false} offset={0.15} darkness={0.75} />
+        <Bloom mipmapBlur luminanceThreshold={1.3} intensity={0.35} radius={0.5} />
+        <Vignette eskil={false} offset={0.25} darkness={0.45} />
       </EffectComposer>
-      <OrbitControls enableDamping autoRotate autoRotateSpeed={0.25} enablePan={false} minDistance={9} maxDistance={30} maxPolarAngle={1.32} target={[0, 1, 0]} />
+      <OrbitControls enableDamping enablePan={false} minDistance={9} maxDistance={30} maxPolarAngle={1.32} target={[0, 1, 0]} />
     </Canvas>
   );
 }
