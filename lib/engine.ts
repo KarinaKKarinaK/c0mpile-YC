@@ -18,6 +18,11 @@ export type Robot = {
   x: number;
   z: number;
   faulted?: boolean;
+  model?: string;
+  maker?: string;
+  madeIn?: string;
+  priceNote?: string;
+  source?: string;
 };
 
 // Deterministic PRNG so seeded data and measured numbers are reproducible.
@@ -36,6 +41,8 @@ const KINDS: Kind[] = ["AMR", "Arm", "Humanoid", "Quadruped"];
 const SITES = ["Columbus, OH", "Austin, TX", "Fremont, CA", "Reno, NV"];
 const PRICE: Record<Kind, number> = { AMR: 45000, Arm: 70000, Humanoid: 160000, Quadruped: 90000 };
 const RATE: Record<Kind, number> = { AMR: 22, Arm: 30, Humanoid: 48, Quadruped: 38 };
+
+import { MODELS } from "./models.ts";
 
 export function seedFleet(seed = 18): Robot[] {
   const r = rng(seed);
@@ -57,6 +64,8 @@ export function seedFleet(seed = 18): Robot[] {
       x: (i % 4) * 3 - 4.5,
       z: Math.floor(i / 4) * 3 - 3,
     });
+    const m = MODELS[i];
+    if (m) Object.assign(out[i], { model: m.model, maker: m.maker, madeIn: m.madeIn, priceNote: m.note, source: m.source, listPrice: m.price, domesticPct: m.usPct, ratePerHour: m.rate, name: `${m.maker} ${m.model}` });
   }
   return out;
 }
@@ -110,7 +119,8 @@ export function robotValue(rb: Robot) {
   const asset = rb.listPrice * Math.pow(0.82, rb.ageMonths / 12); // [modelled] 18%/yr decline
   const income = monthlyRevenue(rb) * 0.35 * 24; // 35% margin x 24 months [modelled]
   const fcc = MOBILE.includes(rb.kind) && !fccCompliant(rb) ? 0.8 : 1; // [modelled] no new FCC auth
-  return Math.round((0.5 * asset + 0.5 * income) * rb.health * fcc);
+  // ponytail: cap at 1.2x depreciated list so cheap robots with high synthetic rates stay sane
+  return Math.round(Math.min(0.5 * asset + 0.5 * income, asset * 1.2) * rb.health * fcc);
 }
 
 // ---------- 3. Lend: revenue-share loan vs a bank's fixed loan ----------
