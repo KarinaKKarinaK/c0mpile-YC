@@ -85,4 +85,7 @@ body { overflow-x: clip; background: var(--ink); color: var(--paper); font-famil
 
 /* Geist has no italic: emphasis is colour, not slant */
 h1 em, h2 em, h3 em, blockquote em { font-style: normal; }
+.font-serif { font-weight: 800; }
 .font-serif { letter-spacing: -0.035em; }
+
+@keyframes breathe { 0%,100% { scale: 1.04; } 50% { scale: 1.1; } }

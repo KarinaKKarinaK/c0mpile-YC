@@ -1,54 +1,56 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { bankPayment, monthlyRevenue, offerLoan, type Robot } from "@/lib/engine";
+import { MODELS } from "@/lib/models";
 
-// Tiled facade with heavy, uneven grain. No glows: each tile is a flat vertical gradient
-// with its own tone; grain is three noise layers at different scales, masked unevenly.
-// Tiles near the cursor lift a step in tone; scrolling slides the tones like slats.
-const TILES = [6, 4, 7, 3, 5, 8, 4, 6, 3, 7, 5, 4, 8, 3, 6, 5, 4, 7];
-const TOTAL = TILES.reduce((a, b) => a + b, 0);
-const TONES = ["#04121b", "#062338", "#0a3654", "#0297DE", "#0b2c44", "#05182a", "#0d4a73", "#FC734D", "#08273d", "#03101a"];
-const noise = (f: number, o: number) =>
-  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='${f}' numOctaves='${o}' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
-
-export function TileGrain() {
+// The reference fluted-glass backdrop, recoloured to our blue with an orange core,
+// heavy grain on top. It drifts slowly and leans toward the cursor.
+export function GlassBackdrop() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current!;
-    const tiles = Array.from(el.querySelectorAll<HTMLDivElement>("[data-t]"));
-    const centers = (() => { let a = 0; return TILES.map((w) => { const c = (a + w / 2) / TOTAL; a += w; return c; }); })();
-    let tx = -1, x = -1, raf = 0;
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0;
     const tick = () => {
-      x += (tx - x) * 0.12;
-      const sy = window.scrollY;
-      tiles.forEach((t, i) => {
-        const lift = tx < 0 ? 0 : Math.max(0, 1 - Math.abs(centers[i] - x) * 7);
-        t.style.filter = `brightness(${1 + lift * 0.45})`;
-        t.style.backgroundPosition = `0 ${(sy * (0.15 + (i % 4) * 0.08)).toFixed(1)}px`;
-      });
+      x += (tx - x) * 0.05; y += (ty - y) * 0.05;
+      el.style.setProperty("--px", `${x * -24}px`); el.style.setProperty("--py", `${y * -14}px`);
       raf = requestAnimationFrame(tick);
     };
-    const move = (e: PointerEvent) => { const r = el.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width; if (x < 0) x = tx; };
-    const leave = () => { tx = -1; };
-    el.addEventListener("pointermove", move); el.addEventListener("pointerleave", leave); tick();
-    return () => { cancelAnimationFrame(raf); el.removeEventListener("pointermove", move); el.removeEventListener("pointerleave", leave); };
+    const move = (e: PointerEvent) => { tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5; };
+    window.addEventListener("pointermove", move); tick();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("pointermove", move); };
   }, []);
-  let left = 0;
   return (
     <div ref={ref} aria-hidden className="absolute inset-0 overflow-hidden bg-ink">
-      {TILES.map((w, i) => {
-        const l = (left / TOTAL) * 100; left += w;
-        const a = TONES[(i * 3) % TONES.length], b = TONES[(i * 7 + 2) % TONES.length];
-        return (
-          <div key={i} data-t className="absolute inset-y-0 border-r border-black/50 transition-[filter] duration-300"
-            style={{ left: `${l}%`, width: `${(w / TOTAL) * 100 + 0.04}%`, backgroundImage: `linear-gradient(180deg, #02070A 0%, ${a} ${30 + (i % 5) * 9}%, ${b} 82%, #02070A 100%)`, backgroundSize: "100% 140%" }}>
-            <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.06), transparent 40%, rgba(0,0,0,0.35))" }} />
-          </div>
-        );
-      })}
-      <div className="grain" style={{ backgroundImage: noise(0.9, 3), opacity: 0.45, mixBlendMode: "overlay" }} />
-      <div className="grain" style={{ backgroundImage: noise(2.4, 1), opacity: 0.35, mixBlendMode: "soft-light", animationDuration: "1.3s",
-        maskImage: `${noise(0.012, 2)}`, WebkitMaskImage: `${noise(0.012, 2)}`, maskSize: "900px", WebkitMaskSize: "900px" }} />
-      <div className="absolute inset-x-0 bottom-0 h-40" style={{ background: "linear-gradient(transparent, #02070A)" }} />
+      <div className="absolute -inset-10" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center 40%", filter: "hue-rotate(-34deg) saturate(1.15) brightness(0.95)", transform: "translate(var(--px,0), var(--py,0))", animation: "breathe 16s ease-in-out infinite" }} />
+      <div className="absolute inset-0" style={{ background: "radial-gradient(38% 16% at 50% 66%, #FC734D, transparent 75%)", mixBlendMode: "color", opacity: 0.85 }} />
+      <div className="grain" style={{ opacity: 0.32 }} />
+      <div className="absolute inset-x-0 bottom-0 h-48" style={{ background: "linear-gradient(transparent, #02070A)" }} />
+    </div>
+  );
+}
+
+// Instant value: pick a real robot, see the offer.
+export function Estimator() {
+  const [i, setI] = useState(7);
+  const m = MODELS[i];
+  const { loan, rev } = useMemo(() => {
+    const rb: Robot = { id: "R-99", name: m.model, kind: m.kind, site: "", ageMonths: 0, listPrice: m.price, domesticPct: m.usPct, ratePerHour: m.rate, hoursPerMonth: 480, uptime: 0.92, health: 0.95, x: 0, z: 0 };
+    return { loan: offerLoan(rb), rev: monthlyRevenue(rb) };
+  }, [m]);
+  return (
+    <div className="mx-auto w-full max-w-2xl rounded-3xl border border-white/15 bg-black/55 p-5 text-left backdrop-blur-xl sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <label className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60" htmlFor="model">Your robot</label>
+        <select id="model" value={i} onChange={(e) => setI(+e.target.value)} className="rounded-full border border-white/20 bg-black/40 px-4 py-2 text-[14px] font-semibold outline-none focus:border-blue">
+          {MODELS.map((x, k) => <option key={x.model} value={k}>{x.maker} {x.model} (${x.price.toLocaleString()})</option>)}
+        </select>
+      </div>
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        {[["You get", `$${loan.advance.toLocaleString()}`], ["Repay per job", `${Math.round(loan.sweepPct * 100)}%`], ["Flat fee", `$${loan.fee.toLocaleString()}`]].map(([k, v]) => (
+          <div key={k}><div className="text-[11px] text-white/55">{k}</div><div className="text-xl font-extrabold tracking-tight sm:text-3xl">{v}</div></div>
+        ))}
+      </div>
+      <p className="mt-4 text-[12px] text-white/55">Robot idle for a week? You pay nothing that week. A bank wants ${bankPayment(loan.advance).toLocaleString()}/mo either way. Estimate at ~${Math.round(rev).toLocaleString()}/mo of work [modelled].</p>
     </div>
   );
 }
