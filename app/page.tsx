@@ -55,10 +55,10 @@ export default function Home() {
         <div className="absolute inset-0 -z-10"><Wave /></div>
         <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[20vh] md:pl-[16%]">
           <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
-            <span className="fade-line inline-block">Loans for robots,</span><br />
-            <span className="fade-line inline-block" style={{ animationDelay: "160ms" }}>repaid by the <em className="text-orange">work they do</em>.</span>
+            <span className="fade-line inline-block">Every machine that works</span><br />
+            <span className="fade-line inline-block" style={{ animationDelay: "160ms" }}>deserves <em className="text-orange">credit</em>.</span>
           </h1>
-          <p className="fade-line mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80" style={{ animationDelay: "320ms" }}>You get the robot with our money. It pays us back a small share of every job it does, and nothing on days it sits idle.</p>
+          <p className="fade-line mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80" style={{ animationDelay: "320ms" }}>Hebl finances robots and gets repaid from the work they actually do: a small share of every job, and nothing on the days they sit idle. The robot earns its own way.</p>
           <ol className="fade-line mt-8 grid max-w-3xl gap-px border border-dashed border-white/15 sm:grid-cols-3" style={{ animationDelay: "480ms" }}>
             {[["1", "Your robot works", "It logs every hour itself."], ["2", "We verify each hour", "Its telemetry and your warehouse system must agree."], ["3", "A share repays the loan", "Of every paid job. Idle hours cost nothing."]].map(([n, k, d]) => (
               <li key={n} className="step-glow p-4 backdrop-blur-sm" style={{ animationDelay: `${(+n - 1) * 2 + 1.2}s` }}><span className="font-mono text-[10px] text-orange">{n}</span><div className="mt-1 text-[15px] font-bold">{k}</div><div className="text-[12px] text-white/60">{d}</div></li>

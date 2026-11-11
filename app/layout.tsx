@@ -6,11 +6,11 @@ const sans = Red_Hat_Display({ variable: "--font-geist", subsets: ["latin"], wei
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Hebl: leverage that clocks in",
+  title: "Hebl: every machine that works deserves credit",
   description: "Hebl: robot financing priced on telemetry-verified hours, repaid as a share of every job, nothing due when the robot is idle. Work receipts, Merkle proofs, agent-run collections. Built for YC's RFS: Wall Street for the Physical Buildout.",
   keywords: ["robot financing", "equipment finance", "revenue-based financing", "physical AI", "telemetry", "work receipts", "Merkle proof", "AI agents", "Stripe", "YC Request for Startups"],
   metadataBase: new URL("https://selfmade-yc.vercel.app"),
-  openGraph: { title: "Hebl: loans for robots, repaid by the work they do", description: "Robot financing priced on verified work.", type: "website" },
+  openGraph: { title: "Hebl: every machine that works deserves credit", description: "Robot financing priced on verified work.", type: "website" },
 };
 
 const jsonLd = {

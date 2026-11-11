@@ -12,6 +12,8 @@
 
 <img src="docs/brand/why.svg" alt="Why it works and how an operator uses it" width="100%">
 
+> **Every machine that works deserves credit.**
+
 ## In one paragraph
 Hebl lends to companies buying robots. Each robot's own telemetry proves the hours it worked, the client's warehouse system confirms the output, and a fixed share of every verified job repays the loan through Stripe. Nothing is due while the robot is idle; at zero, the operator owns it. Every verified hour becomes a hashed **work receipt** that rolls up into a daily Merkle root, so lenders, insurers and buyers can check a robot's work history without seeing raw data. Agents propose service tickets, payment holidays and lender notices; code bounds them and two people approve.
 
