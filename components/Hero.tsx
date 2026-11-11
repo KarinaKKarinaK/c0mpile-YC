@@ -16,8 +16,8 @@ export function Drip({ id, flip = false, tone = "dark", className = "" }: { id: 
         </filter>
       </defs>
       <g filter={`url(#${id})`}>
-        <path d="M-100,620 L-100,330 C140,250 300,410 520,320 C690,250 760,190 900,270 C1050,350 1180,220 1300,250 C1400,275 1460,240 1540,260 L1540,620 Z" fill="#2A7FB8" />
-        <path d="M-100,620 L-100,430 C200,380 380,470 560,410 C700,360 800,330 930,390 C1080,460 1220,380 1540,420 L1540,620 Z" fill="#E2774F" opacity="0.9" />
+        <path d="M-100,620 L-100,330 C140,250 300,410 520,320 C690,250 760,190 900,270 C1050,350 1180,220 1300,250 C1400,275 1460,240 1540,260 L1540,620 Z" fill="#0297DE" />
+        <path d="M-100,620 L-100,430 C200,380 380,470 560,410 C700,360 800,330 930,390 C1080,460 1220,380 1540,420 L1540,620 Z" fill="#FC734D" opacity="0.9" />
         <path d="M-100,620 L-100,500 C260,470 520,540 760,490 C980,450 1200,520 1540,500 L1540,620 Z" fill="#F4F1EC" />
         <path d="M300,330 C420,290 520,360 600,330 C640,315 680,300 720,320 L720,360 C620,380 420,380 300,360 Z" fill={base} opacity="0.85" />
       </g>
@@ -106,14 +106,14 @@ export function CutLines({ labels }: { labels: [string, string, string, string] 
   );
 }
 
-// Real photo in black and white, slowly panning inside its frame. Hover restores colour.
-export function FilmPhoto({ src, title, line, credit, page, i = 0 }: { src: string; title: string; line: string; credit: string; page: string; i?: number }) {
+// Real photo: static, black and white, heavy film grain.
+export function FilmPhoto({ src, title, line, credit, page }: { src: string; title: string; line: string; credit: string; page: string; i?: number }) {
   return (
-    <figure className="group relative aspect-[4/5] overflow-hidden bg-ink">
-      <div className="absolute -inset-[8%] grayscale transition-[filter] duration-700 group-hover:grayscale-0"
-        style={{ backgroundImage: `url(${src}?w=1000&q=75&auto=format)`, backgroundSize: "cover", backgroundPosition: "center", animation: `pan${i % 2} ${22 + i * 4}s ease-in-out infinite alternate`, filter: "contrast(1.1)" }} />
+    <figure className="relative aspect-[4/5] overflow-hidden bg-ink">
+      <div className="absolute inset-0" style={{ backgroundImage: `url(${src}?w=1000&q=75&auto=format)`, backgroundSize: "cover", backgroundPosition: "center", filter: "grayscale(1) contrast(1.15) brightness(0.9)" }} />
+      <div className="absolute inset-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", opacity: 0.55, mixBlendMode: "overlay" }} />
       <div className="absolute inset-0" style={{ background: "linear-gradient(transparent 50%, rgba(2,7,10,0.88))" }} />
-      <figcaption className="absolute inset-x-0 bottom-0 p-6 transition-transform duration-500 group-hover:-translate-y-2">
+      <figcaption className="absolute inset-x-0 bottom-0 p-6">
         <div className="text-2xl font-light tracking-tight">{title}</div>
         <p className="mt-2 max-w-[260px] text-[13px] leading-snug text-white/75">{line}</p>
         <a href={page} className="mt-3 block font-mono text-[9px] uppercase tracking-[0.15em] text-white/35 hover:text-white">Photo {credit} / Unsplash</a>

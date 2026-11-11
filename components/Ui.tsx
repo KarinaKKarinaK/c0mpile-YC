@@ -79,14 +79,3 @@ export function Logo() {
   );
 }
 
-// A word that runs: blurred copies streak in behind it on a loop, like a motion trail.
-export function MotionWord({ children, className = "" }: { children: string; className?: string }) {
-  return (
-    <em className={`relative inline-block ${className}`}>
-      {[0, 1, 2].map((k) => (
-        <span key={k} aria-hidden className="pointer-events-none absolute inset-0 select-none" style={{ animation: `trail 3.6s cubic-bezier(.2,.7,.2,1) ${k * 0.07}s infinite`, filter: `blur(${4 + k * 3}px)` }}>{children}</span>
-      ))}
-      <span className="relative" style={{ animation: "runin 3.6s cubic-bezier(.2,.7,.2,1) infinite" }}>{children}</span>
-    </em>
-  );
-}

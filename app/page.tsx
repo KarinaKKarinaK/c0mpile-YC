@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Drip, Estimator, FilmPhoto, Wave } from "@/components/Hero";
 import { PHOTOS } from "@/lib/photos";
-import { Logo, MotionWord } from "@/components/Ui";
+import { Logo } from "@/components/Ui";
 
 const NAV = [["How it works", "#how"], ["Advantages", "#why"], ["Start", "#start"]];
 const HOW = [
@@ -34,19 +34,11 @@ export default function Home() {
       </header>
       <section className="relative isolate min-h-[100svh] overflow-hidden bg-ink">
         <div className="absolute inset-0 -z-10"><Wave /></div>
-        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[6vh] md:pl-[16%]">
-          <div className="mb-14 grid grid-cols-2 gap-px border border-dashed border-white/15 md:grid-cols-4">
-            {[["$1.51T", "US equipment finance, 2025", "ELFA"], ["$47.4B", "into physical AI, H1 2026", "Crunchbase"], ["38,400", "US robot installs in 2025, +12%", "IFR"], ["0", "robot lenders pricing on live data", "our scan"]].map(([v, l, src]) => (
-              <div key={l} className="bg-ink/40 p-4 backdrop-blur-sm md:p-5">
-                <div className="text-3xl font-light tracking-tight md:text-5xl">{v}</div>
-                <div className="mt-1 text-[12px] text-white/70">{l}</div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-white/35">{src}</div>
-              </div>
-            ))}
-          </div>
+        <div className="mx-auto min-h-[70svh] max-w-7xl border-x border-dashed border-white/15 px-6 pt-[10vh] md:pl-[16%]">
           <h1 className="text-[clamp(38px,5.6vw,76px)] font-light leading-[1.08] tracking-[-0.02em]">
-            Your robot pays off<br />its <em>own loan</em>. Finance<br />that <MotionWord className="text-orange">clocks in</MotionWord>.
+            Loans for robots,<br />repaid by the <em className="text-orange">work they do</em>.
           </h1>
+          <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-white/80">Hebl lends to companies buying robots. We read each robot&apos;s live data, take a small share of every job it completes as repayment, and take nothing when it sits idle. When the balance hits zero, the robot is yours.</p>
           <div className="mt-10"><Estimator /></div>
           <Link href="/desk" className="group mt-12 inline-flex items-center gap-5 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-ink transition hover:bg-orange">
             Open the live factory
@@ -54,7 +46,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-7xl items-end justify-between px-6 text-ink">
-          <p className="max-w-xs text-[11px] leading-snug opacity-70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. Robot prices and news are live; demo fleet data is synthetic.</p>
+          <p className="max-w-xs text-[11px] leading-snug text-white/70">Built for YC&apos;s Request for Startups: Wall Street for the Physical Buildout. Robot prices and news are live; demo fleet data is synthetic.</p>
         </div>
       </section>
 
@@ -79,8 +71,8 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <Drip id="d2" tone="light" className="h-56 opacity-90" />
       </section>
-      <div aria-hidden className="relative h-40 overflow-hidden bg-paper"><div className="mx-auto h-full max-w-7xl border-x border-dashed border-ink/15" /><Drip id="d2" tone="light" className="inset-y-0 h-full" /></div>
 
       <section id="why" className="bg-paper text-ink">
         <div className="mx-auto grid max-w-7xl gap-10 border-x border-t border-dashed border-ink/15 px-6 py-32 md:grid-cols-[16%_1fr_1.3fr]">

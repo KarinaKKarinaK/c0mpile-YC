@@ -11,13 +11,13 @@ import { monthlyRevenue } from "@/lib/engine";
 // humanoids tend the lines, quadrupeds patrol. A faulted robot jams its station.
 
 const M = {
-  paint: <meshPhysicalMaterial color="#E2774F" roughness={0.32} metalness={0.15} clearcoat={1} clearcoatRoughness={0.18} />,
+  paint: <meshPhysicalMaterial color="#FC734D" roughness={0.32} metalness={0.15} clearcoat={1} clearcoatRoughness={0.18} />,
   graphite: <meshStandardMaterial color="#26313a" metalness={0.85} roughness={0.32} />,
   steel: <meshStandardMaterial color="#a9b6c0" metalness={1} roughness={0.22} />,
   white: <meshPhysicalMaterial color="#e9eef2" roughness={0.38} clearcoat={0.6} clearcoatRoughness={0.3} />,
   rubber: <meshStandardMaterial color="#0d1114" roughness={0.95} />,
   card: <meshStandardMaterial color="#b88a5a" roughness={0.88} />,
-  glowBlue: <meshStandardMaterial color="#2A7FB8" emissive="#2A7FB8" emissiveIntensity={0.9} />,
+  glowBlue: <meshStandardMaterial color="#0297DE" emissive="#0297DE" emissiveIntensity={0.9} />,
   wall: <meshStandardMaterial color="#2a3238" roughness={0.95} metalness={0.05} />,
 };
 // Procedural textures (no downloads): concrete grain and brushed-metal streaks.
@@ -43,14 +43,35 @@ function useTextures() {
   }, []);
 }
 
-// Corrugated carton: kraft body, clear tape across the top seam, shipping label.
-function Carton({ w = 0.55, h = 0.42, d = 0.55 }: { w?: number; h?: number; d?: number }) {
+// Worn corrugated cartons: six texture variants (fibres, scuffs, scratches, a crease, dark edges)
+// plus a small per-box bend, so no two boxes look the same. Textures are cached per variant.
+const CARTON_TEX: THREE.Texture[] = [];
+function cartonTex(v: number) {
+  if (typeof document === "undefined") return null;
+  const k = ((v % 6) + 6) % 6;
+  if (CARTON_TEX[k]) return CARTON_TEX[k];
+  let seed = 17 + k * 101;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  CARTON_TEX[k] = noiseTex(256, 256, (g) => {
+    const tone = 150 + k * 6;
+    g.fillStyle = `rgb(${tone},${Math.round(tone * 0.72)},${Math.round(tone * 0.45)})`; g.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 1400; i++) { g.strokeStyle = `rgba(${rnd() > 0.5 ? "60,35,15" : "230,200,160"},${rnd() * 0.08})`; g.beginPath(); const x = rnd() * 256, y = rnd() * 256; g.moveTo(x, y); g.lineTo(x + rnd() * 18 - 9, y + rnd() * 4 - 2); g.stroke(); }
+    for (let i = 0; i < 3 + k; i++) { const x = rnd() * 256, y = rnd() * 256, r = 10 + rnd() * 34; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(55,35,18,${0.18 + rnd() * 0.2})`); gr.addColorStop(1, "rgba(55,35,18,0)"); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
+    for (let i = 0; i < 4 + (k % 3) * 2; i++) { g.strokeStyle = `rgba(240,225,200,${0.25 + rnd() * 0.3})`; g.lineWidth = 0.6 + rnd(); g.beginPath(); const x = rnd() * 256, y = rnd() * 256; g.moveTo(x, y); g.lineTo(x + rnd() * 60 - 30, y + rnd() * 26 - 13); g.stroke(); }
+    g.strokeStyle = "rgba(70,45,20,0.35)"; g.lineWidth = 2; g.beginPath(); g.moveTo(0, 90 + k * 14); g.quadraticCurveTo(128, 70 + rnd() * 60, 256, 100 + k * 10); g.stroke();
+    const edge = g.createLinearGradient(0, 0, 0, 256); edge.addColorStop(0, "rgba(40,25,10,0.35)"); edge.addColorStop(0.08, "rgba(40,25,10,0)"); edge.addColorStop(0.92, "rgba(40,25,10,0)"); edge.addColorStop(1, "rgba(40,25,10,0.35)"); g.fillStyle = edge; g.fillRect(0, 0, 256, 256);
+  }, 1);
+  return CARTON_TEX[k];
+}
+function Carton({ w = 0.55, h = 0.42, d = 0.55, v = 0 }: { w?: number; h?: number; d?: number; v?: number }) {
+  const tex = useMemo(() => cartonTex(v), [v]);
+  const bend = ((v * 37) % 7 - 3) * 0.012, sq = 1 + ((v * 13) % 5 - 2) * 0.015;
   return (
-    <group>
-      <RoundedBox args={[w, h, d]} radius={0.015} castShadow receiveShadow><meshStandardMaterial color="#a77b4f" roughness={0.92} /></RoundedBox>
-      <mesh position={[0, h / 2 + 0.002, 0]}><boxGeometry args={[w * 1.01, 0.004, 0.09]} /><meshStandardMaterial color="#c9a477" roughness={0.35} metalness={0.05} /></mesh>
-      <mesh position={[w * 0.18, 0, d / 2 + 0.002]}><planeGeometry args={[w * 0.32, h * 0.38]} /><meshStandardMaterial color="#f2efe8" roughness={0.8} /></mesh>
-      <mesh position={[w * 0.18, -h * 0.05, d / 2 + 0.003]}><planeGeometry args={[w * 0.22, h * 0.06]} /><meshStandardMaterial color="#1a1a1a" /></mesh>
+    <group rotation={[bend * 0.6, (v % 4) * 0.04 - 0.06, bend]} scale={[sq, 2 - sq, 1 + bend]}>
+      <RoundedBox args={[w, h, d]} radius={0.012} castShadow receiveShadow><meshStandardMaterial map={tex} color="#e8d9c4" roughness={0.95} /></RoundedBox>
+      <mesh position={[0, h / 2 + 0.002, 0]} rotation={[0, 0, bend * 2]}><boxGeometry args={[w * 1.01, 0.004, 0.09]} /><meshStandardMaterial color="#c9a477" roughness={0.3} transparent opacity={0.85} /></mesh>
+      {v % 3 !== 2 && <mesh position={[w * 0.18, 0, d / 2 + 0.002]}><planeGeometry args={[w * 0.32, h * 0.38]} /><meshStandardMaterial color="#efebe2" roughness={0.85} /></mesh>}
+      {v % 3 !== 2 && <mesh position={[w * 0.18, -h * 0.05, d / 2 + 0.003]}><planeGeometry args={[w * 0.22, h * 0.06]} /><meshStandardMaterial color="#1a1a1a" /></mesh>}
     </group>
   );
 }
@@ -100,7 +121,7 @@ function Pickable({ rb, selected, onSelect, max, children, height = 2 }: P & { c
       {children}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <ringGeometry args={[1.08, 1.13, 64]} />
-        <meshBasicMaterial color={rb.faulted || selected ? "#E2774F" : "#ffffff"} transparent opacity={rb.faulted ? 0.7 : selected ? 0.55 : hover ? 0.25 : 0} />
+        <meshBasicMaterial color={rb.faulted || selected ? "#FC734D" : "#ffffff"} transparent opacity={rb.faulted ? 0.7 : selected ? 0.55 : hover ? 0.25 : 0} />
       </mesh>
       {rb.faulted && <Beacon y={height + 0.25} />}
       {(hover || selected || rb.faulted) && (
@@ -120,10 +141,10 @@ function Beacon({ y }: { y: number }) {
   useFrame((_, d) => { if (g.current) g.current.rotation.y += d * 6; });
   return (
     <group position={[0, y, 0]}>
-      <mesh><cylinderGeometry args={[0.12, 0.14, 0.22, 24]} /><meshStandardMaterial color="#E2774F" emissive="#E2774F" emissiveIntensity={6} toneMapped={false} /></mesh>
+      <mesh><cylinderGeometry args={[0.12, 0.14, 0.22, 24]} /><meshStandardMaterial color="#FC734D" emissive="#FC734D" emissiveIntensity={6} toneMapped={false} /></mesh>
       <group ref={g}>
-        <spotLight position={[0, 0, 0]} target-position={[3, -2, 0]} color="#E2774F" intensity={60} angle={0.5} penumbra={0.6} distance={9} />
-        <pointLight color="#E2774F" intensity={8} distance={5} />
+        <spotLight position={[0, 0, 0]} target-position={[3, -2, 0]} color="#FC734D" intensity={60} angle={0.5} penumbra={0.6} distance={9} />
+        <pointLight color="#FC734D" intensity={8} distance={5} />
       </group>
     </group>
   );
@@ -184,13 +205,13 @@ function Line(p: P & { z: number }) {
         <RoundedBox args={[1.3, 1.9, 1.6]} radius={0.05} position={[0, 0.95, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
         <mesh position={[0.651, 1.2, 0]}><planeGeometry args={[0.02, 0.01]} /></mesh>
         <mesh position={[0.66, 1.18, 0]} rotation={[0, Math.PI / 2, 0]}><planeGeometry args={[0.8, 0.55]} /><meshStandardMaterial color="#05090c" /></mesh>
-        <mesh position={[0, 1.95, 0.81]}><planeGeometry args={[0.5, 0.3]} /><meshStandardMaterial color="#0b2233" emissive="#2A7FB8" emissiveIntensity={0.4} /></mesh>
+        <mesh position={[0, 1.95, 0.81]}><planeGeometry args={[0.5, 0.3]} /><meshStandardMaterial color="#0b2233" emissive="#0297DE" emissiveIntensity={0.4} /></mesh>
       </group>
-      <group ref={boxes}>{Array.from({ length: 8 }, (_, i) => <group key={i}><Carton /></group>)}</group>
+      <group ref={boxes}>{Array.from({ length: 8 }, (_, i) => <group key={i}><Carton v={i} /></group>)}</group>
       {/* control cabinet + stack light */}
       <group position={[BELT_START + 1.6, 0, -1.3]}>
         <RoundedBox args={[0.7, 1.7, 0.45]} radius={0.03} position={[0, 0.85, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
-        <mesh position={[0, 1.25, 0.231]}><planeGeometry args={[0.42, 0.28]} /><meshStandardMaterial color="#0b2233" emissive={jammed ? "#E2774F" : "#2A7FB8"} emissiveIntensity={0.6} /></mesh>
+        <mesh position={[0, 1.25, 0.231]}><planeGeometry args={[0.42, 0.28]} /><meshStandardMaterial color="#0b2233" emissive={jammed ? "#FC734D" : "#0297DE"} emissiveIntensity={0.6} /></mesh>
         <mesh position={[0, 2.05, 0]}><cylinderGeometry args={[0.025, 0.025, 0.6, 10]} />{M.steel}</mesh>
         {[["#2e7d32", !jammed], ["#f9a825", jammed], ["#c62828", false]].map(([c, on], k) => (
           <mesh key={k} position={[0, 2.4 + k * 0.13, 0]}><cylinderGeometry args={[0.07, 0.07, 0.12, 20]} /><meshStandardMaterial color={c as string} emissive={c as string} emissiveIntensity={on ? 2.2 : 0.05} /></mesh>
@@ -212,7 +233,7 @@ function Line(p: P & { z: number }) {
                 <group position={[0, 1.3, 0]} rotation={[0, 0, 1.6]}>
                   <mesh castShadow><cylinderGeometry args={[0.11, 0.11, 0.26, 24]} />{M.steel}</mesh>
                   {[-0.1, 0.1].map((dz) => <mesh key={dz} position={[0, -0.22, dz]} castShadow><boxGeometry args={[0.06, 0.24, 0.04]} />{M.steel}</mesh>)}
-                  <group ref={held} position={[0, -0.55, 0]}><Carton w={0.5} h={0.4} d={0.5} /></group>
+                  <group ref={held} position={[0, -0.55, 0]}><Carton w={0.5} h={0.4} d={0.5} v={3} /></group>
                 </group>
               </group>
             </group>
@@ -225,7 +246,7 @@ function Line(p: P & { z: number }) {
         <mesh position={[0, 0.94, 0]}><boxGeometry args={[0.85, 0.03, 1.85]} />{M.rubber}</mesh>
         {[-0.7, 0.7].map((dz) => [-0.4, 0.4].map((dx) => <mesh key={`${dx}${dz}`} position={[dx, 0.38, dz]}><boxGeometry args={[0.08, 0.76, 0.08]} />{M.steel}</mesh>))}
       </group>
-      <group ref={outBoxes}>{Array.from({ length: 8 }, (_, i) => <group key={i}><Carton /></group>)}</group>
+      <group ref={outBoxes}>{Array.from({ length: 8 }, (_, i) => <group key={i}><Carton v={i} /></group>)}</group>
       <group position={[2.4, 0, OUT_FROM + OUT_LEN + 0.35]}>
         <RoundedBox args={[1.4, 1.6, 1.0]} radius={0.05} position={[0, 0.8, 0]} castShadow receiveShadow>{M.white}</RoundedBox>
         <mesh position={[0, 1.15, -0.505]}><planeGeometry args={[0.8, 0.55]} /><meshStandardMaterial color="#05090c" /></mesh>
@@ -274,7 +295,7 @@ function Humanoid(p: P & { z: number }) {
     if (foreR.current) foreR.current.rotation.x = -0.9 + Math.sin(t + 0.6) * 0.35;
   });
   const shell = <meshPhysicalMaterial color="#111518" roughness={0.28} metalness={0.3} clearcoat={1} clearcoatRoughness={0.15} />;
-  const joint = <meshStandardMaterial color="#2A7FB8" emissive="#2A7FB8" emissiveIntensity={1.4} />;
+  const joint = <meshStandardMaterial color="#0297DE" emissive="#0297DE" emissiveIntensity={1.4} />;
   const limb = (len: number, r: number) => (
     <group>
       <mesh position={[0, -len / 2, 0]} castShadow><capsuleGeometry args={[r, len, 8, 20]} />{shell}</mesh>
@@ -311,46 +332,67 @@ function Humanoid(p: P & { z: number }) {
       </Pickable>
       <RoundedBox args={[1.4, 0.08, 0.7]} radius={0.02} position={[0, 0.95, 0.75]} castShadow receiveShadow>{M.steel}</RoundedBox>
       {[[-0.6, 0.45], [0.6, 0.45], [-0.6, 1.05], [0.6, 1.05]].map(([x, z]) => <mesh key={`${x}${z}`} position={[x, 0.47, z]} castShadow><boxGeometry args={[0.05, 0.95, 0.05]} />{M.steel}</mesh>)}
-      <group position={[0.3, 1.2, 0.75]}><Carton w={0.45} h={0.32} d={0.45} /></group>
+      <group position={[0.3, 1.2, 0.75]}><Carton w={0.45} h={0.32} d={0.45} v={4} /></group>
     </group>
   );
 }
 
-// Robot dogs ferry cartons on their own lanes: load, walk, unload, walk back. No shared lanes, no collisions.
+// Robot dogs ferry cartons on their own lanes: take one off the source pallet, walk it over,
+// set it on the destination stack, walk back. Stacks shrink and grow; nothing appears from nowhere.
 const DOG_LANES = [-8.4, 9.3, 10.7];
+const STACK = [[-0.27, 0.21, -0.22], [0.27, 0.21, -0.22], [-0.27, 0.21, 0.22], [0.27, 0.21, 0.22], [-0.27, 0.63, 0], [0.27, 0.63, 0]];
+function Pallet({ x, z, refFn, v0 }: { x: number; z: number; refFn: React.RefObject<THREE.Group | null>; v0: number }) {
+  return (
+    <group position={[x, 0, z]}>
+      <mesh position={[0, 0.06, 0]} castShadow receiveShadow><boxGeometry args={[1.2, 0.12, 1.0]} /><meshStandardMaterial color="#7a5c3a" roughness={0.95} /></mesh>
+      <group ref={refFn}>{STACK.map(([px, py, pz], k) => <group key={k} position={[px, py + 0.12, pz]}><Carton w={0.5} h={0.42} d={0.42} v={v0 + k} /></group>)}</group>
+    </group>
+  );
+}
 function Quadruped(p: P & { i: number }) {
   const g = useRef<THREE.Group>(null), legs = useRef<THREE.Group>(null), cargo = useRef<THREE.Group>(null);
+  const src = useRef<THREE.Group>(null), dst = useRef<THREE.Group>(null);
+  const C = 22, xa = -9 + p.i, xb = 6 - p.i, lane = DOG_LANES[p.i] ?? 10;
   useFrame(({ clock }, d) => {
-    if (!g.current || p.rb.faulted) return;
-    const C = 22, t = (clock.elapsedTime + p.i * 7.3) % C, xa = -9 + p.i, xb = 6 - p.i;
+    if (!g.current) return;
+    const T = clock.elapsedTime + p.i * 7.3, n = Math.floor(T / C), t = T % C, done = n % 6;
+    if (p.rb.faulted) return;
     let x = xa, moving = false, out = true;
-    if (t < 1.6) x = xa;                                    // loading
+    if (t < 1.6) x = xa;
     else if (t < 10.4) { x = xa + (xb - xa) * smooth((t - 1.6) / 8.8); moving = true; }
-    else if (t < 12) { x = xb; out = false; }              // unloading
+    else if (t < 12) { x = xb; out = false; }
     else if (t < 20.8) { x = xb + (xa - xb) * smooth((t - 12) / 8.8); moving = true; out = false; }
     g.current.position.x = x;
     g.current.rotation.y = THREE.MathUtils.lerp(g.current.rotation.y, out ? 0 : Math.PI, Math.min(1, d * 4));
-    if (cargo.current) cargo.current.visible = t >= 1.2 && t < 10.8;
-    legs.current?.children.forEach((l, k) => { l.rotation.z = moving ? Math.sin(clock.elapsedTime * 9 + (k % 2 ? Math.PI : 0) + (k > 1 ? Math.PI : 0)) * 0.4 : THREE.MathUtils.lerp(l.rotation.z, 0, 0.2); });
+    const carrying = t >= 1.2 && t < 10.8;
+    if (cargo.current) cargo.current.visible = carrying;
+    const taken = done + (t >= 1.2 ? 1 : 0), dropped = done + (t >= 10.8 ? 1 : 0);
+    src.current?.children.forEach((c, k) => { c.visible = k < 6 - taken; });
+    dst.current?.children.forEach((c, k) => { c.visible = k < dropped; });
+    legs.current?.children.forEach((l, k) => { l.rotation.z = moving ? Math.sin(clock.elapsedTime * 9 + (k % 2 ? Math.PI : 0)) * 0.4 : THREE.MathUtils.lerp(l.rotation.z, 0, 0.2); });
   });
   return (
-    <group ref={g} position={[-9 + p.i, 0, DOG_LANES[p.i] ?? 10]}>
-      <Pickable {...p} height={1.3}>
-        <RoundedBox args={[1.1, 0.28, 0.48]} radius={0.12} position={[0, 0.72, 0]} castShadow>{M.graphite}</RoundedBox>
-        <RoundedBox args={[0.8, 0.04, 0.42]} radius={0.02} position={[0, 0.88, 0]} castShadow>{M.steel}</RoundedBox>
-        <RoundedBox args={[0.28, 0.2, 0.3]} radius={0.06} position={[0.62, 0.8, 0]} castShadow>{M.paint}</RoundedBox>
-        <mesh position={[0.77, 0.82, 0]}><boxGeometry args={[0.02, 0.05, 0.2]} />{M.glowBlue}</mesh>
-        <group ref={cargo} position={[0, 1.11, 0]}><Carton w={0.5} h={0.42} d={0.42} /></group>
-        <group ref={legs}>
-          {[[0.42, -0.21], [-0.42, 0.21], [0.42, 0.21], [-0.42, -0.21]].map(([x, z]) => (
-            <group key={`${x}${z}`} position={[x, 0.66, z]}>
-              <mesh position={[0, -0.17, 0]} castShadow><capsuleGeometry args={[0.055, 0.26, 6, 12]} />{M.graphite}</mesh>
-              <mesh position={[0.04, -0.47, 0]} rotation={[0, 0, 0.25]} castShadow><capsuleGeometry args={[0.04, 0.28, 6, 12]} />{M.steel}</mesh>
-            </group>
-          ))}
-        </group>
-      </Pickable>
-    </group>
+    <>
+      <Pallet x={xa - 1.05} z={lane} refFn={src} v0={p.i * 2} />
+      <Pallet x={xb + 1.05} z={lane} refFn={dst} v0={p.i * 2 + 1} />
+      <group ref={g} position={[xa, 0, lane]}>
+        <Pickable {...p} height={1.3}>
+          <RoundedBox args={[1.1, 0.28, 0.48]} radius={0.12} position={[0, 0.72, 0]} castShadow>{M.graphite}</RoundedBox>
+          <RoundedBox args={[0.8, 0.04, 0.42]} radius={0.02} position={[0, 0.88, 0]} castShadow>{M.steel}</RoundedBox>
+          <RoundedBox args={[0.28, 0.2, 0.3]} radius={0.06} position={[0.62, 0.8, 0]} castShadow>{M.paint}</RoundedBox>
+          <mesh position={[0.77, 0.82, 0]}><boxGeometry args={[0.02, 0.05, 0.2]} />{M.glowBlue}</mesh>
+          <group ref={cargo} position={[0, 1.11, 0]}><Carton w={0.5} h={0.42} d={0.42} v={p.i + 5} /></group>
+          <group ref={legs}>
+            {[[0.42, -0.21], [-0.42, 0.21], [0.42, 0.21], [-0.42, -0.21]].map(([x, z]) => (
+              <group key={`${x}${z}`} position={[x, 0.66, z]}>
+                <mesh position={[0, -0.17, 0]} castShadow><capsuleGeometry args={[0.055, 0.26, 6, 12]} />{M.graphite}</mesh>
+                <mesh position={[0.04, -0.47, 0]} rotation={[0, 0, 0.25]} castShadow><capsuleGeometry args={[0.04, 0.28, 6, 12]} />{M.steel}</mesh>
+              </group>
+            ))}
+          </group>
+        </Pickable>
+      </group>
+    </>
   );
 }
 
