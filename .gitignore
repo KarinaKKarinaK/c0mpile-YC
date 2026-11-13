@@ -43,3 +43,7 @@ next-env.d.ts
 # keep the example env
 !.env.example
 AGENTS.md
+
+# working notes and agent rules stay local
+/notes/
+/CLAUDE.md
